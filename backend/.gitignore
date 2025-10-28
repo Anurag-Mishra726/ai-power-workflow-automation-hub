@@ -1,0 +1,36 @@
+# ------------------------------------
+# 1. DEPENDENCIES & BUILD ARTIFACTS
+# ------------------------------------
+node_modules/
+/dist
+/build
+/out
+/coverage
+
+# Logs
+*.log
+npm-debug.log*
+
+# Lock file version 2 is usually generated automatically but can be ignored
+# if you only use v3 (though generally safer to keep package-lock.json)
+# package-lock.json (Keep this file UNLESS you are in a monorepo)
+
+# ------------------------------------
+# 2. SECRETS AND ENVIRONMENT
+# ------------------------------------
+# Sensitive or local environment variables
+.env
+.env.local
+.env.*.local
+.DS_Store
+
+# ------------------------------------
+# 3. EDITOR / OS SPECIFIC
+# ------------------------------------
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+# Windows
+Thumbs.db
