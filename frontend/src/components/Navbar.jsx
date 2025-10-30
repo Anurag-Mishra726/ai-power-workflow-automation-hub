@@ -2,7 +2,7 @@ import React from 'react'
 import './Navbar.css'
 import {Link} from 'react-router-dom'
 import Logo from '../assets/logo.png'
-
+import Button from './Button'
 
 const Navbar = () => {
   return (
@@ -23,7 +23,7 @@ const Navbar = () => {
                 </ul>
             </div>
             <div className="nav-right">
-                <button className='get-started-btn  '><Link to="#" onClick={(e) => e.preventDefault()}>Get Started</Link></button>
+                <button className='get-started-btn '><Button text="Get Started" to="#" /> </button>
             </div>
         </div>
     </>
