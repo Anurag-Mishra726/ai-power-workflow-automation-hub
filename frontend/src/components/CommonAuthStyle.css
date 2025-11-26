@@ -1,27 +1,13 @@
-
-/* .form-signup{
-    display: flex;
-    flex-direction: column;
-    gap: 7em;
-} */
-
-/* .row-1, .row-2{
-    display: flex;
-    justify-content: space-between;
-    gap: 4em;
-    width: 100%;
-} */
-
-/* .input-fields{
+.input-fields{
     position: relative;
     font-size: 1.3em;
     width: 100%;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-} */
+}
 
-/* input{
+input{
     padding: 10px 0 5px 0;
     font-size: 1em;
     border: none;
@@ -30,9 +16,8 @@
     color: white; 
     outline: none;
     transition: all 0.5s ease-in-out;
-} */
+}
 
-/* 
 .input-fields label {
     position: absolute;
     top: 10px; 
@@ -52,19 +37,9 @@
   top: -20px;
   font-size: 0.8em;
   color: #c3c3c3;
-} */
+}
 
-/* .row-3{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.4em;
-   
-    margin-top: -1em;
-} */
-
-/* .submit-btn{
+.submit-btn{
     text-decoration: none;
     color: #fff;
     font-size: 1em;
@@ -77,4 +52,4 @@
 .submit-btn:hover{
     box-shadow: inset -3px -3px 7px 1px #fff, inset 3px 3px 7px 1px #ffffff;
     transition: 0.3s ease-in-out;
-} */
+}

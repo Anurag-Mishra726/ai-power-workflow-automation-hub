@@ -1,6 +1,7 @@
 import { useState } from "react"
 import React from 'react'
 import "./Signup.css"
+
 import Button from "./Button"
 
 const Signup = () => {
@@ -37,10 +38,10 @@ const Signup = () => {
 
   return (
     <>
-      <div className="form-container mt-20">
-        <form action="#" onSubmit={handleSubmit} className='form-signup '>
+      <div className="form-container auth-signup mt-20">
+        <form onSubmit={handleSubmit} className='form-signup flex flex-col gap-28'>
 
-            <div className='row-1 '>
+            <div className='row-1 flex justify-between gap-16 w-full '>
                 <div className="input-fields">
                     <input 
                         type="text"
@@ -69,7 +70,7 @@ const Signup = () => {
                 </div>
             </div>
 
-            <div className='row-2'>
+            <div className='row-2 flex justify-between gap-16 w-full'>
                 <div className="input-fields">
                     <input 
                         type="password" 
@@ -99,11 +100,9 @@ const Signup = () => {
                 </div>
             </div>
 
-            <div className='row-3'>
-                <button className="submit-btn" type='submit' onClick={handleSubmit} >< Button text="Sign Up" to="#" /> </button>
-                <div className="para text-white">Already have an accoutn? <span className="text-gray-400 underline"><Button text="Login" to="#" /></span> </div>
+            <div className='row-3 flex flex-col justify-center items-center text-[1.4em] gap-[0.7em] mt-[-1em] '>
+                <button className="submit-btn" type='submit' >Sign Up</button>
             </div>
-            
         </form>
       </div>
     </>
