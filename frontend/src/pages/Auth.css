@@ -4,16 +4,6 @@
     align-items: center;
     height: 55em;
     width: 55em;
-    /* box-shadow: inset -10px 15px 10px rgba(255, 255, 255, 0.1),
-                inset -5px -5px 20px rgba(209, 217, 230, 0.9),
-                inset -15px 0px 30px rgba(249, 249, 249, 0.5); */
-
-    /* box-shadow: inset 18px 18px 10px rgba(255, 255, 255, 0.2), 
-            inset 8px 5px 25px rgba(209, 217, 230, 0.7),  
-            inset 15px 0px 35px rgba(249, 249, 249, 0.3);   */
-            box-shadow: inset 10px 15px 10px rgba(255, 255, 255, 0.1),
-            inset 10px -15px 30px rgba(209, 217, 230, 0.5),
-            inset 5px 0px 20px rgba(249, 249, 249, 0.5);  
     border-radius: 50%;
     box-sizing: border-box;
     transition: box-shadow 0.5s ease-in-out;
@@ -26,13 +16,6 @@
     -webkit-text-fill-color: transparent;
 }
 
-/* .bubble:hover{
-    box-shadow: inset -10px 15px 10px rgba(255, 255, 255, 0.1),
-                inset -5px -5px 20px rgba(209, 217, 230, 0.9),
-                inset -15px 0px 30px rgba(249, 249, 249, 0.5);
-} */
-
-
 .auth-transition {
     animation: fadeMove 1.5s ease;
   }
@@ -40,7 +23,7 @@
   @keyframes fadeMove {
     0% {
       opacity: 0;
-      transform: translateY(20px) scale(0.97);
+      transform: translateY(200px) scale(0.97);
     }
     60% {
       opacity: 1;
@@ -51,7 +34,6 @@
     }
   }
   
-  /* Bubble morphs when switching */
   .bubble.signup-mode {
     box-shadow: inset 10px 15px 10px rgba(255, 255, 255, 0.1),
             inset 10px -15px 30px rgba(209, 217, 230, 0.5),

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Logo from '../assets/logo.png'
 import "./Auth.css"
+import StarPattern from '../components/StarPattern';
 import Signup from '../components/Signup';
 import Login from '../components/Login';
 import "../components/CommonAuthStyle.css"
@@ -13,7 +14,9 @@ const Auth = ({type}) => {
 
   return (
       <>
+        
         <div className="auth-page flex justify-center items-center overflow-hidden relative bg-black h-screen w-screen text-white">
+        <StarPattern/>
           <div className={`bubble absolute  top-5 ${show ? "login-mode" : "signup-mode"}`}>
             <div className="form-box text-white top-20 absolute  w-[35em] transition-all ease-in-out ">
               <div className="logo flex justify-center items-center gap-2 mb-4">
