@@ -12,7 +12,8 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/auth" element={<Auth/>} />
+          <Route path='/auth/login' element={<Auth type='login' />} />
+          <Route path='/auth/signup' element={<Auth type= 'signup' />} />
           <Route path="/test" element={<Test/>} />
         </Routes>
       </Router>

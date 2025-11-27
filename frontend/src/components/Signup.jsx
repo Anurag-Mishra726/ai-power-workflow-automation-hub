@@ -38,7 +38,7 @@ const Signup = () => {
 
   return (
     <>
-      <div className="form-container auth-signup mt-20">
+      <div className="form-container auth-transition auth-signup mt-20">
         <form onSubmit={handleSubmit} className='form-signup flex flex-col gap-28'>
 
             <div className='row-1 flex justify-between gap-16 w-full '>

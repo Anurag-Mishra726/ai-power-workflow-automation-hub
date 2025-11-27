@@ -31,7 +31,7 @@ const Login = () => {
 
   return (
     <>
-      <div className="form-container auth-login mt-20">
+      <div className="form-container auth-transition auth-login mt-20 ">
         <form onSubmit={handleSubmit} className="form-login">
 
           <div className="row-1 ">
