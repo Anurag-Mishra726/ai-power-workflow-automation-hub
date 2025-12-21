@@ -101,16 +101,16 @@
 
 .ai-model-img img {
   position: relative;
-  z-index: 2; /* above the glow */
+  z-index: 2; 
   width: 100%;
   max-width: 650px;
   height: auto;
   box-shadow: 
-        0px   /* Horizontal Offset (0 means no shadow on left/right) */
-        20px  /* Vertical Offset (Positive value pushes the shadow downwards) */
-        5px   /* Blur Radius (Controls the softness of the edge) */
-        -10px  /* Spread Radius (Negative value helps contain the blur strictly to the bottom) */
-        rgba(0, 0, 0, 1); /* Color and Opacity */
+        0px   
+        20px  
+        5px  
+        -10px  
+        rgba(0, 0, 0, 1); 
 }
 
 .model-glow1{

@@ -7,6 +7,8 @@ import Signup from '../components/Signup';
 import Login from '../components/Login';
 import "../components/CommonAuthStyle.css"
 import Button from "../components/Button"
+
+
 const Auth = ({type}) => {
 
   const navigate = useNavigate();
@@ -14,7 +16,6 @@ const Auth = ({type}) => {
 
   return (
       <>
-        
         <div className="auth-page flex justify-center items-center overflow-hidden relative bg-black h-screen w-screen text-white">
         <StarPattern/>
           <div className={`bubble absolute  top-5 ${show ? "login-mode" : "signup-mode"}`}>

@@ -17,7 +17,7 @@ const HeroSection = () => {
                     Experience cutting-edge solutions designed to elevate productivity and
                     deliver results like never before.
                 </p>
-                <button className='hero-action-btn'><Button text="Get Started" to="#" /></button>
+                <button className='hero-action-btn'><Button text="Get Started" to="/auth/login" /></button>
             </div>
 
             <div className="hero-image">
