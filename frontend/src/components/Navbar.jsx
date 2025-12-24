@@ -23,7 +23,7 @@ const Navbar = () => {
                 </ul>
             </div>
             <div className="nav-right">
-                <button className='get-started-btn '><Button text="Get Started" to="#" /> </button>
+                <button className='get-started-btn '><Button text="Get Started" to="/auth/login" /> </button>
             </div>
         </div>
     </>

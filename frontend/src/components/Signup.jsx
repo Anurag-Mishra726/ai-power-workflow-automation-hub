@@ -39,9 +39,10 @@ const Signup = () => {
   return (
     <>
       <div className="form-container auth-transition auth-signup mt-20">
-        <form onSubmit={handleSubmit} className='form-signup flex flex-col gap-28'>
+        <form onSubmit={handleSubmit} className='form-signup flex flex-col gap-12 md:gap-28'>
 
-            <div className='row-1 flex justify-between gap-16 w-full '>
+            {/* <div className='row-1 flex justify-between gap-16 w-full '> */}
+<div className="row-1 flex flex-col md:flex-row gap-8 w-full">
                 <div className="input-fields">
                     <input 
                         type="text"
@@ -70,7 +71,9 @@ const Signup = () => {
                 </div>
             </div>
 
-            <div className='row-2 flex justify-between gap-16 w-full'>
+            {/* <div className='row-2 flex justify-between gap-16 w-full'> */}
+<div className="row-2 flex flex-col md:flex-row gap-8 w-full">
+
                 <div className="input-fields">
                     <input 
                         type="password" 

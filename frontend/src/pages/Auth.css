@@ -1,4 +1,4 @@
-.bubble{
+/* .bubble{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -7,8 +7,25 @@
     border-radius: 50%;
     box-sizing: border-box;
     transition: box-shadow 0.5s ease-in-out;
+} */
+
+.bubble {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: min(90vw, 55em);
+    width: min(90vw, 55em);
+    border-radius: 50%;
+    box-sizing: border-box;
+    transition: box-shadow 0.5s ease-in-out;
 }
 
+@media (max-width: 640px) {
+  .bubble {
+    height: 95vw;
+    width: 95vw;
+  }
+}
 .web-name{
     background: linear-gradient(90deg, #fff, #b3b3b3);
     text-decoration: underline #b3b3b3 ;
@@ -45,4 +62,18 @@
                 inset -15px 0px 30px rgba(249, 249, 249, 0.5);
   }
 
-  
+  @media (max-width: 640px) {
+  .auth-login {
+    margin-top: 2rem !important;
+  }
+
+  .row-2 {
+    margin-bottom: 4rem !important;
+  }
+}
+@media (max-width: 640px) {
+  .submit-btn {
+    padding: 8px 32px;
+    font-size: 0.95em;
+  }
+}

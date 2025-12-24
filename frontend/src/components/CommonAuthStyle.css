@@ -53,3 +53,13 @@ input{
     box-shadow: inset -3px -3px 7px 1px #fff, inset 3px 3px 7px 1px #ffffff;
     transition: 0.3s ease-in-out;
 }
+
+@media (max-width: 640px) {
+  .input-fields {
+    font-size: 1.1em;
+  }
+
+  input {
+    font-size: 0.95em;
+  }
+}

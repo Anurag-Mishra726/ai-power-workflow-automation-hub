@@ -1,18 +1,15 @@
 import express from "express";
-import os from "node:os";
-import fs from "fs";
+import "./src/config/env.js"
+import connectDB from "./src/config/db.js";
 
 const app = express();
+await connectDB();
 
-console.log(os.homedir());
+app.get("/", (req, res) => {
+     res.send("Welcome to the AI Power Workflow Automation Hub!");
+    
+});
 
-// app.get("/", (req, res) => {
-//     // res.send("Welcome to the AI Power Workflow Automation Hub!");
-//     res.json({
-//         message: "Welcome to the AI Power Workflow Automation Hub!"
-//     })
-// });
-
-// app.listen(5000, () => {
-//     console.log("Server is running on http://localhost:5000");
-// })
+app.listen(5000, () => {
+    console.log("Server is running on http://localhost:5000");
+})

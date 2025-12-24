@@ -229,8 +229,8 @@ const Main = () => {
                 </div>
               </div>
             </section>
-            <div class="text-center pt-8 pb-4">
-              <p class="text-[10px] text-zinc-600 font-mono tracking-widest uppercase">
+            <div className="text-center pt-8 pb-4">
+              <p className="text-[10px] text-zinc-600 font-mono tracking-widest uppercase">
                 FlowAI System • v1.0.0 • Stable
               </p>
             </div>

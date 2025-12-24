@@ -19,10 +19,13 @@ const Auth = ({type}) => {
         <div className="auth-page flex justify-center items-center overflow-hidden relative bg-black h-screen w-screen text-white">
         <StarPattern/>
           <div className={`bubble absolute  top-5 ${show ? "login-mode" : "signup-mode"}`}>
-            <div className="form-box text-white top-20 absolute  w-[35em] transition-all ease-in-out ">
+            {/* <div className="form-box text-white top-20 absolute  w-[35em] transition-all ease-in-out "> */}
+            <div className="form-box text-white top-20 absolute w-full max-w-[35em] px-6 transition-all ease-in-out">
               <div className="logo flex justify-center items-center gap-2 mb-4">
                 <img src={Logo} alt="" width={80}  />
-                <h1 className='text-7xl font-semibold'><span className='web-name bg-clip-text'>FlowAI</span></h1>
+                {/* <h1 className='text-7xl font-semibold'> */}
+                <h1 className='text-4xl sm:text-5xl md:text-6xl font-semibold'>
+                  <span className='web-name bg-clip-text'>FlowAI</span></h1>
               </div>
               <div className= {`form-auth-box  `}>
               {show ? (
