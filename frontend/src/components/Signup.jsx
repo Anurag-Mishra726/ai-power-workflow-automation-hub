@@ -1,73 +1,44 @@
-import { useState } from "react"
-import React from 'react'
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signupSchema } from "../schemas/signupSchema";
 import "./Signup.css"
 
-import Button from "./Button"
 
 const Signup = () => {
 
-    const [formData, setformData] = useState({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: ""
-    });
+   const {
+    register,
+    handleSubmit,
+    formState: {errors},
+    reset,
+   } = useForm({
+        resolver: zodResolver(signupSchema),
+   });
 
-    const handleChagne = (e) => {
-        const {name, value} = e.target;
-        setformData({
-            ...formData,
-            [name]: value
-        });
-    };
+   const onSubmit = (data) => {
+    console.log("Form Data : ", data);
+    reset();
+   }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Form Data : ",formData);
-
-        // Clear the form after submission
-        setformData({
-            name: "",
-            email: "",
-            password: "",
-            confirmPassword: "",
-          });
-        // You can add further submission logic here, like sending data to a server
-
-    }
 
   return (
     <>
       <div className="form-container auth-transition auth-signup mt-20">
-        <form onSubmit={handleSubmit} className='form-signup flex flex-col gap-12 md:gap-28'>
+        <form onSubmit={handleSubmit(onSubmit)} className='form-signup flex flex-col gap-12 md:gap-28'>
 
             {/* <div className='row-1 flex justify-between gap-16 w-full '> */}
 <div className="row-1 flex flex-col md:flex-row gap-8 w-full">
                 <div className="input-fields">
-                    <input 
-                        type="text"
-                        name='name'
-                        value={formData.name}
-                        onChange={handleChagne}
-                        placeholder=" "
-                        required 
-                    />
+                    <input {...register("name")} placeholder=" " />
                     <label htmlFor="name">Username</label>
+                    {errors.name && <p className="error text-sm">{errors.name.message}</p>}
 
                 </div>
 
                 <div className="input-fields">
-                    <input 
-                        type="text" 
-                        id='email' 
-                        name='email' 
-                        value={formData.email} 
-                        onChange={handleChagne} 
-                        placeholder=" " 
-                        required 
-                    />
+                    <input {...register("email")} placeholder=" " />
                     <label htmlFor="email">Email</label>
-
+                    {errors.email && <p className="error text-sm">{errors.email.message}</p>}
                 </div>
             </div>
 
@@ -75,30 +46,16 @@ const Signup = () => {
 <div className="row-2 flex flex-col md:flex-row gap-8 w-full">
 
                 <div className="input-fields">
-                    <input 
-                        type="password" 
-                        id='password' 
-                        name='password' 
-                        value={formData.password} 
-                        onChange={handleChagne} 
-                        placeholder=" " 
-                        required 
-                    />
+                    <input {...register("password")} placeholder=" " />
                 <label htmlFor="password">Password</label>
+                    {errors.password && <p className="error text-sm ">{errors.password.message}</p>}
 
                 </div>
 
                 <div className="input-fields">
-                    <input 
-                        type="password" 
-                        id='confirmPassword' 
-                        name='confirmPassword' 
-                        value={formData.confirmPassword} 
-                        onChange={handleChagne} 
-                        placeholder=" " 
-                        required 
-                    />
+                    <input {...register("confirmPassword")} placeholder=" " />
                     <label htmlFor="confirmPassword">Confirm Password</label>
+                    {errors.confirmPassword && <p className="error text-sm">{errors.confirmPassword.message}</p>}
 
                 </div>
             </div>

@@ -1,64 +1,42 @@
-import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema } from "../schemas/loginSchema";
 import "./Login.css";   
 
 const Login = () => {
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: ""
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: {errors},
+    reset,
+   } = useForm({
+        resolver: zodResolver(loginSchema),
+   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Login Data:", formData);
-
-    // Reset the form after submit
-    setFormData({
-      email: "",
-      password: ""
-    });
-
-    // Add login logic here (API call, backend auth, etc.)
-  };
+  const onSubmit = (data) => {
+    console.log("Form Data : ", data);
+    reset();
+  }
 
   return (
     <>
       <div className="form-container auth-transition auth-login mt-20 ">
-        <form onSubmit={handleSubmit} className="form-login">
+        <form onSubmit={handleSubmit(onSubmit)} className="form-login">
 
           <div className="row-1 ">
             <div className="input-fields">
-              <input
-                type="text"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder=" "
-                required
-              />
+              <input {...register("email")} placeholder=" " />
               <label htmlFor="email">Email</label>
+              {errors.email && <p className="error text-sm text-red-600">{errors.email.message}</p>}
             </div>
           </div>
 
           <div className="row-2 mt-20 mb-28">
             <div className="input-fields">
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder=" "
-                required
-              />
+              <input {...register("password")} placeholder=" " />
               <label htmlFor="password">Password</label>
+              {errors.password && <p className="error text-sm text-red-600">{errors.password.message}</p>}
             </div>
           </div>
 
