@@ -1,6 +1,6 @@
 import "./Home.css"
-import Sidebar from '../components/Sidebar'
-import Main from '../components/Main'
+import Sidebar from '../../components/layout/SideBar'
+import Main from '../../components/layout/Main'
 const Home = () => {
   return (
     <>

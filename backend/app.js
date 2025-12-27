@@ -1,7 +1,9 @@
 import express from "express";
-import authRoutes from "./src/routes/auth.routes.js";
 import "./src/config/env.js"
 import connectDB from "./src/config/db.js";
+
+import authRoutes from "./src/routes/auth.routes.js";
+import profileRoutes from "./src/routes/profile.routes.js";
 
 const app = express();
 await connectDB();
@@ -16,6 +18,10 @@ app.get("/", (req, res) => {
 
 
 app.use("/api/auth", authRoutes);
+app.get("/api/profile", (req, res) => {
+    res.send("Profile route is working");
+});
+app.use("/api/user", profileRoutes);
 
 app.use((err, req, res, next) => {
     console.log("app.js --> ", err.message);

@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHouse, faMicrochip, faTableCellsLarge, faCirclePlay, faBook, faCircleNodes, faRobot, faList, faGear } from '@fortawesome/free-solid-svg-icons'
 import "./SideBar.css"
-import Logo from "../assets/logo.png"
+import Logo from "../../assets/logo.png"
 
 
 const Sidebar = () => {

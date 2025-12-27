@@ -6,7 +6,7 @@ import {
   faGear, 
   faChartSimple 
 } from '@fortawesome/free-solid-svg-icons';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../components/layout/SideBar';
 const Test = () => {
   
 

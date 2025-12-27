@@ -1,9 +1,7 @@
-import React from 'react'
-import { useEffect } from 'react'
 import './Landing.css'
-import Navbar from '../components/Navbar'
-import HeroSection from '../components/HeroSection'
-import StarPattern from '../components/StarPattern'
+import Navbar from '../../components/landing/Navbar'
+import HeroSection from '../../components/landing/HeroSection'
+import StarPattern from '../../components/common/StarPattern'
 const Landing = () => {
 
 
