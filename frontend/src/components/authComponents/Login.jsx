@@ -1,8 +1,14 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../../schemas/loginSchema";
+import { useLogin } from "../../hooks/useAuth";
+import {useNavigate} from 'react-router-dom';
+import {toast} from 'react-hot-toast';
 
 const Login = () => {
+
+  const loginMutaion = useLogin();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -13,8 +19,16 @@ const Login = () => {
         resolver: zodResolver(loginSchema),
    });
 
-  const onSubmit = (data) => {
+  const onSubmit = async(data) => {
     console.log("Form Data : ", data);
+    try {
+        await loginMutaion.mutateAsync(data);
+        toast.success("Login Successful");
+        navigate('/home');
+    } catch (error) {
+        toast.error(error);
+        console.error("Login Error: ", error);
+    }
     reset();
   }
 
@@ -40,7 +54,7 @@ const Login = () => {
           </div>
 
           <div className="row-3 flex flex-col justify-center items-center text-[1.4em] ">
-            <button className="submit-btn" type="submit"> Login </button>
+            <button className="submit-btn" type="submit"> {loginMutaion.isPending ? "Logging in..." : "Login"} </button>
           </div>
 
         </form>

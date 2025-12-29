@@ -1,12 +1,21 @@
 import express from "express";
 import "./src/config/env.js"
 import connectDB from "./src/config/db.js";
+import cors from "cors";
 
 import authRoutes from "./src/routes/auth.routes.js";
 import profileRoutes from "./src/routes/profile.routes.js";
 
 const app = express();
 await connectDB();
+
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:5173'],  // React ports
+  credentials: true,  // Allow cookies (matches withCredentials: true)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));

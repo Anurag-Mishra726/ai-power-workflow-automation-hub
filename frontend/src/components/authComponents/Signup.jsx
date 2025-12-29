@@ -1,10 +1,16 @@
+import "./Signup.css"
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema } from "../../schemas/signupSchema";
-import "./Signup.css"
+import { useSignup } from "../../hooks/useAuth";
+import {useNavigate} from 'react-router-dom';
+import {toast} from 'react-hot-toast';
 
 
 const Signup = () => {
+
+    const signupMutation = useSignup();
+    const navigate = useNavigate();
 
    const {
     register,
@@ -15,8 +21,16 @@ const Signup = () => {
         resolver: zodResolver(signupSchema),
    });
 
-   const onSubmit = (data) => {
+   const onSubmit = async (data) => {
     console.log("Form Data : ", data);
+    try {
+        await signupMutation.mutateAsync(data);
+        toast.success("Signup Successful");
+        navigate('/home');
+    } catch (error) {
+        console.error("Signup Error: ", error);
+        toast.error(error);
+    }
     reset();
    }
 
@@ -61,7 +75,7 @@ const Signup = () => {
             </div>
 
             <div className='row-3 flex flex-col justify-center items-center text-[1.4em] gap-[0.7em] mt-[-1em] '>
-                <button className="submit-btn" type='submit' >Sign Up</button>
+                <button className="submit-btn" type='submit' >{signupMutation.isPending ? "Signing up..." : "Sign Up"}</button>
             </div>
         </form>
       </div>
