@@ -1,3 +1,5 @@
+import { signupService, loginService } from '../services/auth.service.js';
+
 export const signup = async (req, res) => {
     try {
         const user = await signupService(req.body);

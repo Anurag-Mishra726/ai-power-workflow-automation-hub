@@ -3,6 +3,10 @@ import "./src/config/env.js"
 import connectDB from "./src/config/db.js";
 import cors from "cors";
 
+import {serve} from "inngest/express";
+import {inngest} from "./src/inngest/client.js";
+import { helloWorld } from "./src/inngest/functions.js";
+
 import authRoutes from "./src/routes/auth.routes.js";
 import profileRoutes from "./src/routes/profile.routes.js";
 
@@ -10,21 +14,49 @@ const app = express();
 await connectDB();
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173'],  // React ports
-  credentials: true,  // Allow cookies (matches withCredentials: true)
+  origin: ['http://localhost:3000', 'http://localhost:5173'],  
+  credentials: true,  
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 
-app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(express.json());
+
+app.use("/api/inngest", serve({
+    client: inngest,
+    functions : [helloWorld]
+}));
 
 app.get("/", (req, res) => {
      res.send("Welcome to the AI Power Workflow Automation Hub!");
     
 });
 
+app.post("/api/test", async (req, res) => {
+
+    try {
+        console.log("Starting Inngest................");
+        const {ids} = await inngest.send({
+            name: "test/hello",
+            data: {
+                name: req.body.name || "Anurag",
+                timestamp: new Date().toISOString()
+            }
+        })
+
+        console.log("IDS ------>   ", ids[0]);
+
+        res.json({
+            message: "Inngest event sent successfully",
+            eventId: ids[0],
+        })
+    } catch (error) {
+        console.log("Error : " , error);
+    }
+
+});
 
 app.use("/api/auth", authRoutes);
 app.get("/api/profile", (req, res) => {

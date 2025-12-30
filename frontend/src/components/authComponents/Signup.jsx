@@ -16,7 +16,7 @@ const Signup = () => {
     register,
     handleSubmit,
     formState: {errors},
-    reset,
+    reset, 
    } = useForm({
         resolver: zodResolver(signupSchema),
    });
@@ -43,9 +43,9 @@ const Signup = () => {
             {/* <div className='row-1 flex justify-between gap-16 w-full '> */}
 <div className="row-1 flex flex-col md:flex-row gap-8 w-full">
                 <div className="input-fields">
-                    <input {...register("name")} placeholder=" " />
-                    <label htmlFor="name">Username</label>
-                    {errors.name && <p className="error text-sm">{errors.name.message}</p>}
+                    <input {...register("username")} placeholder=" " />
+                    <label htmlFor="username">Username</label>
+                    {errors.username && <p className="error text-sm">{errors.username.message}</p>}
 
                 </div>
 
