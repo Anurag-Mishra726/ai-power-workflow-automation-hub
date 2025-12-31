@@ -5,7 +5,9 @@ import cors from "cors";
 
 import {serve} from "inngest/express";
 import {inngest} from "./src/inngest/client.js";
-import { helloWorld } from "./src/inngest/functions.js";
+import { helloWorld, aiTest } from "./src/inngest/functions.js";
+
+import {gemini, perplexity} from "./src/ai/generateText.js";
 
 import authRoutes from "./src/routes/auth.routes.js";
 import profileRoutes from "./src/routes/profile.routes.js";
@@ -26,7 +28,7 @@ app.use(express.json());
 
 app.use("/api/inngest", serve({
     client: inngest,
-    functions : [helloWorld]
+    functions : [helloWorld, aiTest]
 }));
 
 app.get("/", (req, res) => {
@@ -57,6 +59,31 @@ app.post("/api/test", async (req, res) => {
     }
 
 });
+
+app.post("/api/test-ai", async (req, res) => {
+    try {
+        const {ids} = await inngest.send({
+            name: "test/ai", 
+        })
+        console.log(ids);
+        return res.json({
+            message: "AI Test event sent successfully",
+            eventId: ids[0],
+        })
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+app.get("/api/test-ai", async (req, res) => {
+    const text = await perplexity("what is the capital of india?");
+    console.log(text);
+    res.json({
+        message: "Perplexity Test Successful",
+        response: text,
+    })
+})
+
 
 app.use("/api/auth", authRoutes);
 app.get("/api/profile", (req, res) => {

@@ -1,4 +1,9 @@
 import { inngest } from "./client.js";
+import {gemini, perplexity} from "../ai/generateText.js";
+import { generateText } from "ai"; 
+import { perplexitySonar } from "../ai/perplexity.js";
+
+
 
 export const helloWorld = inngest.createFunction(
     {id: "hello-world"},
@@ -31,3 +36,21 @@ export const helloWorld = inngest.createFunction(
 
 
 
+export const aiTest = inngest.createFunction(
+  { id: "test-ai" },
+  { event: "test/ai" },
+  async ({ step }) => {
+    const { steps } = await step.ai.wrap(
+      "Test-AI-Step",
+      generateText,  
+      {
+        model: perplexitySonar,     
+        prompt: "What is the capital of India? List 2 more facts."
+      }
+    );
+    console.log("Printingin the funtion Inngest : ", steps);
+    return {
+      aiResponse: steps
+    };
+  }
+);
