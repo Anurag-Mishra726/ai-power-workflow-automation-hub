@@ -22,7 +22,8 @@ const Login = () => {
   const onSubmit = async(data) => {
     console.log("Form Data : ", data);
     try {
-        await loginMutaion.mutateAsync(data);
+        const userData = await loginMutaion.mutateAsync(data);
+        console.log(userData)
         toast.success("Login Successful");
         navigate('/home');
     } catch (error) {
@@ -54,7 +55,7 @@ const Login = () => {
           </div>
 
           <div className="row-3 flex flex-col justify-center items-center text-[1.4em] ">
-            <button className="submit-btn" type="submit"> {loginMutaion.isPending ? "Logging in..." : "Login"} </button>
+            <button className="submit-btn" disabled= {loginMutaion.isPending} type="submit"> {loginMutaion.isPending ? "Logging in..." : "Login"} </button>
           </div>
 
         </form>

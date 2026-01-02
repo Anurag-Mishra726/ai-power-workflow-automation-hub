@@ -75,7 +75,7 @@ const Signup = () => {
             </div>
 
             <div className='row-3 flex flex-col justify-center items-center text-[1.4em] gap-[0.7em] mt-[-1em] '>
-                <button className="submit-btn" type='submit' >{signupMutation.isPending ? "Signing up..." : "Sign Up"}</button>
+                <button className="submit-btn" disabled= {signupMutation.isPending} type='submit' >{signupMutation.isPending ? "Signing up..." : "Sign Up"}</button>
             </div>
         </form>
       </div>

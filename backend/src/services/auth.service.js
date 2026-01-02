@@ -27,6 +27,7 @@ export const signupService = async (userData) => {
 
     return {
         userId: user._id,
+        username: user.username,
         email: user.email,
         token,
     };
@@ -55,6 +56,7 @@ export const loginService = async (userData) => {
 
     return {
         userId: user._id,
+        username: user.username,
         email: user.email,
         token,
     };
