@@ -2,10 +2,13 @@ import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHouse, faMicrochip, faTableCellsLarge, faCirclePlay, faBook, faCircleNodes, faRobot, faList, faGear } from '@fortawesome/free-solid-svg-icons'
 import "./SideBar.css"
+import useAuthStore from '../../stores/authStore'
 import Logo from "../../assets/logo.png"
 
 
 const Sidebar = () => {
+
+  const username = useAuthStore( (state) => state.username );
 
   const basicStyle = " flex items-center px-3 py-2.5 rounded-lg text-sxl font-medium font-mono transition-all duration-200"
 
@@ -62,8 +65,8 @@ const Sidebar = () => {
             ` ${basicStyle} ${isActive ? " text-white bg-zinc-800 shadow-lg ":  "text-zinc-400 hover:bg-zinc-900 hover:text-white" }
             `}
           >
-            <div className='w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center font-bold mr-2'>JD</div>
-            <span className="font-medium text-white">John Doe</span>
+            <div className='w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center font-bold mr-2'>{username[0] || "!"}</div>
+            <span className="font-medium text-white">{username || "Login!"}</span>
 
           </NavLink>          
         </div>

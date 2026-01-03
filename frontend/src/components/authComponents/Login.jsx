@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../../schemas/loginSchema";
 import { useLogin } from "../../hooks/useAuth";
+import useAuthStore from "../../stores/authStore";
 import {useNavigate} from 'react-router-dom';
 import {toast} from 'react-hot-toast';
 
@@ -9,6 +10,7 @@ const Login = () => {
 
   const loginMutaion = useLogin();
   const navigate = useNavigate();
+  const setAuth = useAuthStore( (state) => state.setAuth );
 
   const {
     register,
@@ -23,7 +25,8 @@ const Login = () => {
     console.log("Form Data : ", data);
     try {
         const userData = await loginMutaion.mutateAsync(data);
-        console.log(userData)
+        console.log("Login jsx : ", userData.data);
+        setAuth(userData.data);
         toast.success("Login Successful");
         navigate('/home');
     } catch (error) {

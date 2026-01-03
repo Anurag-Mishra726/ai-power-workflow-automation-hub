@@ -1,6 +1,7 @@
 import express from "express";
 import "./src/config/env.js"
 import connectDB from "./src/config/db.js";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import {serve} from "inngest/express";
@@ -25,6 +26,7 @@ app.use(cors({
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/api/inngest", serve({
     client: inngest,

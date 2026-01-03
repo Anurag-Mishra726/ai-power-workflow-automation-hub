@@ -22,7 +22,7 @@ export const signupService = async (userData) => {
     const token = jwt.sign(
         {userId: user._id , email: user.email},
         process.env.JWT_SECRET_KEY,
-        {expiresIn: "1d"}
+        {expiresIn: "7d"}
     )
 
     return {
@@ -51,8 +51,9 @@ export const loginService = async (userData) => {
     const token = jwt.sign(
         {userId: user._id , email: user.email},
         process.env.JWT_SECRET_KEY,
-        {expiresIn: "1d"}
+        {expiresIn: "7d"}
     )
+
 
     return {
         userId: user._id,

@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema } from "../../schemas/signupSchema";
 import { useSignup } from "../../hooks/useAuth";
+import useAuthStore from "../../stores/authStore"
 import {useNavigate} from 'react-router-dom';
 import {toast} from 'react-hot-toast';
 
@@ -11,7 +12,8 @@ const Signup = () => {
 
     const signupMutation = useSignup();
     const navigate = useNavigate();
-
+    const setAuth = useAuthStore( (state) => state.setAuth );
+    
    const {
     register,
     handleSubmit,
@@ -24,7 +26,9 @@ const Signup = () => {
    const onSubmit = async (data) => {
     console.log("Form Data : ", data);
     try {
-        await signupMutation.mutateAsync(data);
+        const userData = await signupMutation.mutateAsync(data);
+        console.log("signup jsx : ", userData.data)
+        setAuth(userData.data);
         toast.success("Signup Successful");
         navigate('/home');
     } catch (error) {
