@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHouse, faMicrochip, faTableCellsLarge, faCirclePlay, faBook, faCircleNodes, faRobot, faList, faGear } from '@fortawesome/free-solid-svg-icons'
+import { FaRegUser } from "react-icons/fa";
+import { LuLogIn, LuLogOut} from "react-icons/lu";
 import "./SideBar.css"
 import useAuthStore from '../../stores/authStore'
 import Logo from "../../assets/logo.png"
@@ -8,19 +10,21 @@ import Logo from "../../assets/logo.png"
 
 const Sidebar = () => {
 
-  const username = useAuthStore( (state) => state.username );
+  const username = useAuthStore( (state) => state.username ) || "Guest";
+  const isAuthenticated  = useAuthStore( (state) => state.isAuthenticated ) || false;
+  const logout = useAuthStore( (state) => state.logout );
 
   const basicStyle = " flex items-center px-3 py-2.5 rounded-lg text-sxl font-medium font-mono transition-all duration-200"
 
   const navItems = [
     {name: "Home", to: "/home", icon: faHouse},
-    {name: "Automation", to: "/automation", icon: faMicrochip},
+    {name: "Workflow", to: "/workflow", icon: faMicrochip},
     {name: "Integrations", to: "/integration", icon: faTableCellsLarge},
     {name: "Runs", to: "/runs", icon: faCirclePlay},
     {name: "Logs", to: "/logs", icon: faBook},
     {name: "Webhooks", to: "/webhooks", icon: faCircleNodes},
     {name: "AI Assistant", to: "/ai", icon: faRobot},
-    {name: "test", to: "/test", icon: faRobot}
+    {name: "test", to: "/test", icon: faRobot},
   ]
 
   return (
@@ -59,14 +63,27 @@ const Sidebar = () => {
 
           </NavLink>
 
+          {
+            isAuthenticated  ? (
+              <button onClick={logout} className="flex items-center px-3 py-2.5 rounded-lg text-sxl font-medium font-mono transition-all duration-200 text-zinc-400 hover:bg-zinc-900 hover:text-white"><LuLogOut className='mr-2 rotate-180' />Logout</button>
+            ):(
+              <NavLink to="/auth/login" className={({isActive}) => 
+            ` ${basicStyle} ${isActive ? " text-white bg-zinc-800 shadow-lg ":  "text-zinc-400 hover:bg-zinc-900 hover:text-white" }
+            `}> 
+                <LuLogIn className='mr-2' />
+                <span className='font-medium'>Login</span>
+              </NavLink>
+            )
+          }
+
           <NavLink 
             to="/profile"
             className={({isActive}) => 
             ` ${basicStyle} ${isActive ? " text-white bg-zinc-800 shadow-lg ":  "text-zinc-400 hover:bg-zinc-900 hover:text-white" }
             `}
           >
-            <div className='w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center font-bold mr-2'>{username[0] || "!"}</div>
-            <span className="font-medium text-white">{username || "Login!"}</span>
+            <div className='w-8 h-8 rounded-full border border-emerald-50 flex items-center justify-center font-bold mr-2'>{/* {username[0]} */} <FaRegUser /></div>
+            <span className="font-medium text-white">{username}</span>
 
           </NavLink>          
         </div>

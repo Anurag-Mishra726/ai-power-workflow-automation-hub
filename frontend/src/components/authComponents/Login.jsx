@@ -25,6 +25,7 @@ const Login = () => {
     console.log("Form Data : ", data);
     try {
         const userData = await loginMutaion.mutateAsync(data);
+        console.log("status", loginMutaion.isPending)
         console.log("Login jsx : ", userData.data);
         setAuth(userData.data);
         toast.success("Login Successful");
