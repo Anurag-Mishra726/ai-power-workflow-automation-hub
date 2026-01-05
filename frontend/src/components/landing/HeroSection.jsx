@@ -1,10 +1,10 @@
 import React from 'react'
 import './HeroSection.css'
-import AI_Model from '../../assets/LandingPageAssets/ai_model.png'
-import Beam from '../../assets/LandingPageAssets/Beam.png'
-import Beam2 from '../../assets/LandingPageAssets/Beam2.png'
-import Wave from '../../assets/LandingPageAssets/Waves.png'
-import Button from '../common/Button'
+import AI_Model from '@/assets/LandingPageAssets/ai_model.png'
+import Beam from '@/assets/LandingPageAssets/Beam.png'
+import Beam2 from '@/assets/LandingPageAssets/Beam2.png'
+import Wave from '@/assets/LandingPageAssets/Waves.png'
+import Button from '@/components/common/Button'
 
 const HeroSection = () => {
   return (

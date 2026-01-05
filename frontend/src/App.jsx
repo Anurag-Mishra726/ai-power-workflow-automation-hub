@@ -7,8 +7,6 @@ import Test from './pages/Test'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from './utils/ProtectedRoute';
 import { GuestRoute } from './utils/GeustRoute';
-import Test2 from './pages/Test2';
-import Test3 from './pages/Test3';
 
 function App() {
 
@@ -35,8 +33,6 @@ function App() {
  
           <Route path= "/workflow" element={<Workflow/>} />
           <Route path="/test" element={<Test/>} />
-          <Route path='/test2' element={<Test2/>}/>
-          <Route path='/test3' element={<Test3/>}/>
         </Routes>
       </Router>
     </>

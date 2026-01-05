@@ -3,9 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHouse, faMicrochip, faTableCellsLarge, faCirclePlay, faBook, faCircleNodes, faRobot, faList, faGear } from '@fortawesome/free-solid-svg-icons'
 import { FaRegUser } from "react-icons/fa";
 import { LuLogIn, LuLogOut} from "react-icons/lu";
-import "./SideBar.css"
-import useAuthStore from '../../stores/authStore'
-import Logo from "../../assets/logo.png"
+import useAuthStore from '@/stores/authStore'
+import Logo from "@/assets/logo.png"
 
 
 const Sidebar = () => {

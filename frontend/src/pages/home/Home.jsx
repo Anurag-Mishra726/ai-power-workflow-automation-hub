@@ -1,15 +1,15 @@
 import "./Home.css"
-import Sidebar from '../../components/layout/SideBar'
-import Main from '../../components/layout/Main'
-const Home = () => {
+import AppLayout from "@/layouts/AppLayout";
+import Main from "@/components/home/Main";
+
+const Workflow = () => {
   return (
-    <>
-        <div className="home-page  w-screen h-screen flex">
-            <Sidebar/>
-            <Main/>
-        </div>
-    </>
-  )
-}
- 
-export default Home
+    <AppLayout>
+      <Main />
+    </AppLayout>
+  );
+};
+
+export default Workflow;
+
+

@@ -1,11 +1,11 @@
 import "./Main.css";
-import Header from "../common/Header";
+import Header from "@/components/common/Header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { MdOutlineAccountTree, MdErrorOutline } from "react-icons/md";
 import { FaArrowRight } from "react-icons/fa6";
 import { GoZap } from "react-icons/go";
 import {faBell, faMagnifyingGlass, faPlus} from "@fortawesome/free-solid-svg-icons";
-import useAuthStore from "../../stores/authStore";
+import useAuthStore from "@/stores/authStore";
 import { useNavigate } from "react-router-dom";
 
 const Main = () => {
@@ -16,8 +16,6 @@ const Main = () => {
 
   return (
     <>
-      <div className=" scrollbar text-white flex-1 flex flex-col relative bg-black ">
-        <Header/>
         <main className="flex-1 overflow-y-auto p-8">
           <div className="max-w-7xl mx-auto space-y-8">
             <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-zinc-900 via-black to-zinc-900 border border-zinc-800">
@@ -246,7 +244,6 @@ const Main = () => {
             </div>
           </div>
         </main>
-      </div>
     </>
   );
 };
