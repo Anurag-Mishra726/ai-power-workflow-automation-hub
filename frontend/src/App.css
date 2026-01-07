@@ -14,3 +14,22 @@
   scrollbar-width: thin;
   scrollbar-color: #2a2a2a transparent;
 }
+
+/* Target Controls directly */
+.react-flow__controls {
+  background: #111827 !important;
+  border: 1px solid #1f2937 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+}
+
+.react-flow__controls-button {
+  background: rgba(55, 65, 81, 0.7) !important;
+  border: 1px solid #374151 !important;
+  color: #f3f4f6 !important;
+}
+
+.react-flow__controls-button:hover {
+  background: #1d4ed8 !important;
+  transform: scale(1.05);
+}

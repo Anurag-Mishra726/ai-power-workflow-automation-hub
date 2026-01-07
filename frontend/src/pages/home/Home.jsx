@@ -1,8 +1,8 @@
-import "./Home.css"
+/* import "./Home.css"
 import AppLayout from "@/layouts/AppLayout";
 import Main from "@/components/home/Main";
 
-const Workflow = () => {
+const Home = () => {
   return (
     <AppLayout>
       <Main />
@@ -10,6 +10,7 @@ const Workflow = () => {
   );
 };
 
-export default Workflow;
+export default Home;
 
 
+ */
