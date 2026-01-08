@@ -65,7 +65,7 @@ const WorkflowCard = () => {
 
   return (
     <>
-       <div className="group relative rounded-xl border border-white/10 bg-gradient-to-br from-[#0b0b0b] to-[#111] p-4 transition-all hover:border-white/20 hover:shadow-[0_0_20px_rgba(0,255,255,0.05)]">
+       {/* <div className="group relative rounded-xl border border-white/10 bg-gradient-to-br from-[#0b0b0b] to-[#111] p-4 transition-all hover:border-white/20 hover:shadow-[0_0_20px_rgba(0,255,255,0.05)]">
 
         <div className="absolute right-3 top-3">
             <span
@@ -109,9 +109,9 @@ const WorkflowCard = () => {
             <button className="hover:text-red-400">🗑</button>
             </div>
         </div>
-        </div>
+        </div> */}
 
-      {/* <div className="group bg-[#0f0f0f] rounded-2xl border border-white/5 hover:border-blue-500 transition-all duration-300 overflow-hidden flex flex-col cursor-pointer">
+      <div className="group bg-[#0f0f0f] rounded-2xl border border-white/5 hover:border-blue-500 transition-all duration-300 overflow-hidden flex flex-col cursor-pointer">
         <div className="p-5 flex-1">
           <div className="flex items-start justify-between mb-5">
             <div className="flex items-center space-x-3">
@@ -179,7 +179,7 @@ const WorkflowCard = () => {
             <div className="text-[9px] text-gray-600 uppercase font-black">Last Run</div>
           </div>
         </div>
-      </div> */}
+      </div>
     </>
   );
 };

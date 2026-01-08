@@ -6,8 +6,8 @@ const WorkflowMain = () => {
   return (
     <>
       
-      <WorkflowList/>
-      {/* <WorkflowEmptyState/> */}
+      {/* <WorkflowList/> */}
+      <WorkflowEmptyState/>
       
     </>
   );

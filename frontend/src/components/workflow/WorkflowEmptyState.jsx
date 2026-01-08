@@ -8,7 +8,12 @@ import {
   Cpu,
   MessageSquare,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 const WorkflowEmptyState = () => {
+
+  const navigate = useNavigate();
+
   return (
     <>
       <div className="flex flex-col items-center justify-center text-center mt-0 pt-16 overflow-hidden min-h-[40vh]">
@@ -40,7 +45,7 @@ const WorkflowEmptyState = () => {
           Your automation hub is currently empty. Connect your favorite apps and
           let AI handle the repetitive tasks.
         </p>
-        <button className="group relative bg-blue-600 hover:bg-blue-700 text-white px-6 py-5 rounded-full font-black transition-all active:scale-95 flex items-center gap-2 shadow-[0_20px_40px_-10px_rgba(37,99,235,0.6)] overflow-hidden">
+        <button className="group relative bg-blue-600 hover:bg-blue-700 text-white px-6 py-5 rounded-full font-black transition-all active:scale-95 flex items-center gap-2 shadow-[0_20px_40px_-10px_rgba(37,99,235,0.6)] overflow-hidden" onClick={() => navigate("/workflow/new")}>
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
           <Plus size={20} strokeWidth={4} />
           <span className="uppercase tracking-[0.1em] text-sm">
