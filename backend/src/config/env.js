@@ -2,7 +2,15 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const requiredEnvVars = ["MONGODB_URI", "JWT_SECRET_KEY", "PORT"];
+const requiredEnvVars = ["JWT_SECRET_KEY",
+    "PORT","NODE_ENV", 
+    "SENTRY_DNS",
+    "DB_HOST",
+    "DB_USER",
+    "DB_PORT",
+    "DB_PASSWORD",
+    "DB_DATABASE"
+];
 
 requiredEnvVars.forEach((varName) => {
     if (!process.env[varName]) {

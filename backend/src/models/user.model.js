@@ -1,30 +1,45 @@
-import mongoose from "mongoose";
+import pool from "../config/db.js";
 
-const userSchema = new mongoose.Schema(
-  {
-    username: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+const query = async (sql, params = []) => {
+  try {
+    const [rows] = await pool.execute(sql, params);
+    return rows;
+  } catch (err) {
+    console.error("❌ DB Error:", err.message);
+    throw err;
+  }
+};
 
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-    },
+export const User = {
 
-    password: {
-      type: String,
-      required: true,
-      minlength: 6,
-      select: false, 
-    },
+  createUser: async({username, email, password_hash, signup_ip}) => {
+    const result = await query(
+      "INSERT INTO users (username, email, password_hash, signup_ip) VALUES (?, ?, ?, ?)",
+      [username, email, password_hash, signup_ip]
+    );
 
+    const rows = await query(
+      "SELECT id, username, email FROM users WHERE id = ?",
+      [result.insertId]
+    )
+
+    return rows[0];
   },
-  { timestamps: true }
-);
 
-const User = mongoose.model("User", userSchema);
-export default User;
+  findByEmail: async (email) => {
+    const rows = await query(
+      "SELECT id, username, email, password_hash FROM users WHERE email = ? LIMIT 1",
+      [email]
+    );
+    return rows[0] || null;
+  },
+
+  findById: async (id) => {
+    const rows = await query(
+      "SELECT id, username, email FROM users WHERE id = ?",
+      [id]
+    );
+    return rows[0] || null;
+  }
+
+}
