@@ -103,11 +103,7 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
     console.log("Server is running on http://localhost:" + PORT);
 })
-
-/* 
-    Refactor database connection to use MySQL; update user model and authentication services to support new structure
-    Refactor database from MongoDB to MySQL; update database connection, user model, and authentication services to support new structure
-*/
