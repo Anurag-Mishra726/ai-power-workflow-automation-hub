@@ -9,21 +9,28 @@ import {
   Panel,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useState } from "react";
-import {PlaceholderNode, AddNodeBtn} from "./nodes/PlaceholderNode";
+import { useCallback, useState, useEffect, useMemo } from "react";
+import toast, { ToastBar } from "react-hot-toast";
+
+import {PlaceholderNode, AddNodeBtn} from "./workflow-components/PlaceholderNode";
+import WorkflowSidebar from "./workflow-components/WorkflowSidebar";
+import { TriggerNode, ActionNode } from "./workflow-components/TriggerNode";
+
+const nodeTypes = {
+  placeholder: PlaceholderNode,
+  trigger: TriggerNode,
+  action: ActionNode,
+};
 
 const initialNodes = [
   {
-    id: "n1",
+    id: "placeholder",
     position: { x: 0, y: 0 },
     data: {},
-    type: "triggerPlaceholder",
+    type: "placeholder",
   },
 ];
 
-const nodeTypes = {
-  triggerPlaceholder: PlaceholderNode,
-};
 
 const initialEdges = [];
 
@@ -31,6 +38,9 @@ const WorkflowEditor = () => {
 
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [hasTrigger, setHasTrigger] = useState(false);
 
   const onNodesChange = useCallback(
     (changes) =>
@@ -47,13 +57,70 @@ const WorkflowEditor = () => {
     []
   );
 
+
+
+  const openSidebar = () => {
+    if (hasTrigger) return;
+    setIsSidebarOpen(true);
+  };
+
+
+  const createTriggerNode = (triggerType) => {
+    if (hasTrigger){
+      toast.error("Only one Trigger Node is allowed.")
+      return;
+    };
+
+    setNodes((nds) => [
+      ...nds,
+      {
+        id: crypto.randomUUID(),
+        type: "trigger",
+        position: { x: -100, y: 0 },
+        data: { triggerType },
+      },
+    ]);
+
+    setHasTrigger(true);
+    setIsSidebarOpen(false);
+  };
+
+  const addNode = (label) => {
+    setNodes((nds) => [
+      ...nds,
+      {
+        id: crypto.randomUUID(),
+        type: "action",
+        position: {
+          x: (Math.random() - 0.5 )*100 ,
+          y: (Math.random() - 0.5 )*100 ,
+        },
+        data: {
+          label,
+        },
+      },
+    ]);
+  };
+
+  const nodesWithHandlers = useMemo(
+    () =>
+      nodes.map((n) =>
+        n.type === "placeholder"
+          ? { ...n, data: { onAddClick: openSidebar } }
+          : n
+      ),
+    [nodes]
+  );
+
+
   return (
     <>
     
-      <div className="w-full h-full relative ">  
-                
+      <div className="w-full h-full relative">  
+        
+        <div className={`flex-1 h-full w-full`}>
         <ReactFlow
-          nodes={nodes}
+          nodes={nodesWithHandlers}
           edges={edges}
           nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}
@@ -65,7 +132,7 @@ const WorkflowEditor = () => {
         >
 
           <Panel position="top-right">
-            <AddNodeBtn/>
+            <AddNodeBtn onClose= {() => setIsSidebarOpen(true)} />
           </Panel>
           
           <Controls
@@ -86,6 +153,14 @@ const WorkflowEditor = () => {
 
           <Background variant="dots" gap={10} size={1} />
         </ReactFlow>
+        </div>
+         {isSidebarOpen && (
+        <WorkflowSidebar
+          onSelect={createTriggerNode}
+          onClose={() => setIsSidebarOpen(false)}
+          onCreate={addNode}
+        />
+      )}
       </div>
     </>
   );

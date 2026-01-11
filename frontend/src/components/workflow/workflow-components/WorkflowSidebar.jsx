@@ -1,0 +1,104 @@
+import {MousePointer, Globe,X} from "lucide-react"
+
+
+const WorkflowSidebar = ({ onSelect, onClose, onCreate }) => {
+
+  return (
+    <aside
+      className="absolute top-0 right-0 h-full w-1/3  m-1  bg-[#000000] border border-zinc-700 rounded-lg text-white z-50 flex flex-col "
+    >
+      <div className="flex px-4 py-3 border-b-2 border-zinc-700 relative">
+        <div>
+            <h2 className="text-3xl font-semibold  text-zinc-100 font-mono">
+                Choose How to Start?
+            </h2>
+            <p className="text-sm text-[#E5E5E5] mt-2 font-normal">Decide how you want this automation to be kicked off.</p>
+        </div>
+        <div className="flex justify-center items-center absolute top-0 right-0 mt-2 mr-2 p-1 rounded-full text-white bg-zinc-500
+         hover:bg-red-500 ">
+            <button onClick={onClose}>
+                <X size={17} />
+            </button>
+        </div>
+        
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-3 py-5 ">
+            
+        <div className="flex justify-center items-center gap-4 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
+         hover:bg-zinc-800 cursor-pointer"
+         onClick={() => onSelect("manual")}
+         >
+            <MousePointer />
+            <div>
+                <h2 className="text-xl">Manual Trigger</h2>
+                <p className="text-zinc-400">Start this flow by clicking a button.</p>
+            </div>
+        </div>
+
+        <div className="flex justify-center items-center gap-4 mt-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
+         hover:bg-zinc-800 cursor-pointer"
+         onClick={() => onCreate("http")}
+         >
+            <Globe />
+            <div>
+                <h2 className="text-xl">HTTP Request</h2>
+                <p className="text-zinc-400">Start this flow by clicking a button.</p>
+            </div>
+        </div>
+        
+      </div>
+    </aside>
+  );
+};
+
+const SidebarItem = ({ title, subtitle }) => (
+  <div
+    className="
+      p-3 rounded-lg
+      bg-zinc-900 hover:bg-zinc-800
+      border border-zinc-800
+      cursor-pointer
+      transition
+    "
+  >
+    <div className="text-sm font-medium">{title}</div>
+    <div className="text-xs text-zinc-400">{subtitle}</div>
+  </div>
+);
+
+export default WorkflowSidebar;
+
+
+// import { MousePointer, Globe, X } from "lucide-react";
+
+// const WorkflowSidebar = ({ onSelect, onClose }) => {
+//   return (
+//     <aside className="absolute right-0 top-0 h-full w-80 bg-black border-l border-zinc-700 text-white p-4">
+//       <div className="flex justify-between items-center mb-6">
+//         <h2 className="text-xl font-semibold">Choose Trigger</h2>
+//         <button onClick={onClose}>
+//           <X />
+//         </button>
+//       </div>
+
+//       <div
+//         className="flex gap-3 items-center p-3 border border-zinc-700 rounded-lg cursor-pointer hover:bg-zinc-800"
+//         onClick={() => onSelect("manual")}
+//       >
+//         <MousePointer />
+//         Manual Trigger
+//       </div>
+
+//       <div
+//         className="flex gap-3 items-center p-3 border border-zinc-700 rounded-lg mt-4 cursor-pointer hover:bg-zinc-800"
+//         onClick={() => onSelect("http")}
+//       >
+//         <Globe />
+//         HTTP Trigger
+//       </div>
+//     </aside>
+//   );
+// };
+
+// export default WorkflowSidebar;
