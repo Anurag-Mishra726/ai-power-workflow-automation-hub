@@ -1,7 +1,7 @@
 import {MousePointer, Globe,X} from "lucide-react"
 
 
-const WorkflowSidebar = ({ onSelect, onClose, onCreate }) => {
+const WorkflowSidebar = ({ onClose }) => {
 
   return (
     <aside
@@ -27,7 +27,6 @@ const WorkflowSidebar = ({ onSelect, onClose, onCreate }) => {
             
         <div className="flex justify-center items-center gap-4 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
-         onClick={() => onSelect("manual")}
          >
             <MousePointer />
             <div>
@@ -38,7 +37,6 @@ const WorkflowSidebar = ({ onSelect, onClose, onCreate }) => {
 
         <div className="flex justify-center items-center gap-4 mt-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
-         onClick={() => onCreate("http")}
          >
             <Globe />
             <div>

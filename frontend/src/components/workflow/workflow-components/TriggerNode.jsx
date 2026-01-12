@@ -1,43 +1,37 @@
 import { Handle, Position } from "@xyflow/react";
-import { MousePointer, Globe, EllipsisVertical } from "lucide-react";
-
-const icons = {
-  manual: MousePointer,
-  http: Globe,
-};
+import { TiFlowChildren } from "react-icons/ti";
+import { EllipsisVertical } from "lucide-react";
 
 export const TriggerNode = ({ data }) => {
-  const Icon = icons[data.triggerType];
 
   return (
-    <div className="px-2 py-3 w-20 bg-zinc-900 relative border border-l border-zinc-700 rounded-l-3xl text-white flex flex-col gap-2 justify-center items-center">
-      <div><Icon size={15} /></div>
-      <span className="absolute top-0 right-0">
-        <EllipsisVertical strokeWidth={2} size={15} className="mt-1 mr-1" />
-      </span>
-      <div className="text-[8px]">Execute workflow</div>
-      {/* <span className="text-sm font-medium">
-        {data.triggerType === "manual" ? "Manual Trigger" : "HTTP Trigger"}
-      </span> */}
+    <div className="pointer-events-auto p-2 w-40 bg-zinc-900 relative border  border-zinc-700 rounded-lg text-white flex flex-col gap-2 ">
+      <div className="flex items-center justify-between ">
 
-      {/* Left & Right connectors */}
+        <div className="text-white bg-white/10 text-xs border border-zinc-500 rounded-md p-1 flex items-center gap-1"
+          onClick={(e) => {
+            e.stopPropagation(); // 🔥 THIS IS THE KEY
+            console.log("Trigger clicked..");
+          }}
+        >
+         <span className="text-[12px] text-white"><TiFlowChildren /></span> Trigger
+        </div>
+        <div className="text-white/70 text-sm cursor-pointer absolute top-0 right-0 mr-2 mt-1 py-[3px]  hover:text-white"
+          onClick={(e) => {
+            e.stopPropagation(); // 🔥 THIS IS THE KEY
+            console.log("Trigger clicked..");
+          }}
+        >
+          <EllipsisVertical size={18} />
+        </div>
+      </div>
+
+      <div className=" text-sm text-white/50">
+        <p>Select an event to Trigger the Flow.</p>
+      </div>    
+
       <Handle type="source" position={Position.Right} />
-      
     </div>
   );
 };
 
-export const ActionNode = ({ data }) => {
-  return (
-    <div className="px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white flex gap-2 items-center">
-        <Globe/>
-      {/* <span className="text-sm font-medium">
-        {data.lable || "hello"}
-      </span> */}
-
-      {/* Left & Right connectors */}
-      <Handle type="source" position={Position.Right} />
-      <Handle type="target" position={Position.Left} />
-    </div>
-  );
-};
