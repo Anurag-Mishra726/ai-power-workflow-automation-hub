@@ -11,7 +11,7 @@ import {
 import '@xyflow/react/dist/style.css';
 
 // 1. Import your custom AddNode (the "+" button)
-import { AddNode } from '@/components/workflow/AddNode';
+import { AddNode } from '@/components/workflow/node/AddNode';
 
 
 export default function ZapierCanvas() {

@@ -66,37 +66,3 @@ const SidebarItem = ({ title, subtitle }) => (
 );
 
 export default WorkflowSidebar;
-
-
-// import { MousePointer, Globe, X } from "lucide-react";
-
-// const WorkflowSidebar = ({ onSelect, onClose }) => {
-//   return (
-//     <aside className="absolute right-0 top-0 h-full w-80 bg-black border-l border-zinc-700 text-white p-4">
-//       <div className="flex justify-between items-center mb-6">
-//         <h2 className="text-xl font-semibold">Choose Trigger</h2>
-//         <button onClick={onClose}>
-//           <X />
-//         </button>
-//       </div>
-
-//       <div
-//         className="flex gap-3 items-center p-3 border border-zinc-700 rounded-lg cursor-pointer hover:bg-zinc-800"
-//         onClick={() => onSelect("manual")}
-//       >
-//         <MousePointer />
-//         Manual Trigger
-//       </div>
-
-//       <div
-//         className="flex gap-3 items-center p-3 border border-zinc-700 rounded-lg mt-4 cursor-pointer hover:bg-zinc-800"
-//         onClick={() => onSelect("http")}
-//       >
-//         <Globe />
-//         HTTP Trigger
-//       </div>
-//     </aside>
-//   );
-// };
-
-// export default WorkflowSidebar;

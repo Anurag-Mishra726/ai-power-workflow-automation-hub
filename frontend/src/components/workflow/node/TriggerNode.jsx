@@ -10,7 +10,7 @@ export const TriggerNode = ({ data }) => {
 
         <div className="text-white bg-white/10 text-xs border border-zinc-500 rounded-md p-1 flex items-center gap-1"
           onClick={(e) => {
-            e.stopPropagation(); // 🔥 THIS IS THE KEY
+            e.stopPropagation(); 
             console.log("Trigger clicked..");
           }}
         >
@@ -18,7 +18,7 @@ export const TriggerNode = ({ data }) => {
         </div>
         <div className="text-white/70 text-sm cursor-pointer absolute top-0 right-0 mr-2 mt-1 py-[3px]  hover:text-white"
           onClick={(e) => {
-            e.stopPropagation(); // 🔥 THIS IS THE KEY
+            e.stopPropagation(); 
             console.log("Trigger clicked..");
           }}
         >
