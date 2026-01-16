@@ -2,7 +2,7 @@ import { useCallback, useState, useMemo } from "react";
 import { initialNodes } from "../config/initialNodes";
 import { initialEdges } from "../config/initialEdges";
 import { nodeTypes } from "../config/nodeType";
-import { nodeClickActions, nodeMenuClickAction } from "../utils/nodeAction";
+import { nodeClickActions } from "../utils/nodeAction";
 import {addEdge, applyEdgeChanges, applyNodeChanges,} from '@xyflow/react'
 
 export const useWorkflow = () => {
@@ -10,7 +10,6 @@ export const useWorkflow = () => {
     const [edges, setEdges] = useState(initialEdges);
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [selectedNode, setSelectedNode] = useState(null);
 
     const onNodesChange = useCallback(
         (changes) =>
@@ -82,39 +81,12 @@ export const useWorkflow = () => {
     }, [setNodes, setEdges]
     );
 
-    const deleteNode = (nodeId) => {
-        console.log("hii delete node");
-        setNodes((nds) => nds.filter((n) => n.id !== nodeId));
-
-        setEdges((eds) =>
-            eds.filter(
-                (e) => e.source !== nodeId && e.target !== nodeId
-            )
-        );
-    };
-
-//     const deleteNode = useCallback((nodeId) => {
-//   setNodes((nds) =>
-//     applyNodeChanges(
-//       [{ id: nodeId, type: "remove" }],
-//       nds
-//     )
-//   );
-
-//   setEdges((eds) => {
-//     const edgeRemovals = eds
-//       .filter(e => e.source === nodeId || e.target === nodeId)
-//       .map(e => ({ id: e.id, type: "remove" }));
-
-//     return applyEdgeChanges(edgeRemovals, eds);
-//   });
-// }, []);
+   
 
     const ctx = useMemo(() => ({
         addNode,
         openSidebar,
-        deleteNode,
-    }), [addNode, openSidebar, deleteNode]);
+    }), [addNode, openSidebar]);
 
     const onNodeClick = useCallback((_, node) => {
         const role = node.data?.nodeRole ?? "DEFAULT";
@@ -146,11 +118,8 @@ export const useWorkflow = () => {
         onEdgesChange,
         onConnect,
         isSidebarOpen,
-        selectedNode,
         onNodeClick,
-        onNodeMenuClick,
         addNode,
-        deleteNode,
         closeSideBar,
     }
 

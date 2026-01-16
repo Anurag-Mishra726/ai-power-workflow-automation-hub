@@ -3,13 +3,11 @@ import { Handle, Position } from "@xyflow/react";
 import { EllipsisVertical, Zap } from "lucide-react";
 import NodeMenu from "./NodeMenu";
 import useEditorUIStore from "@/stores/workflowEditorStore";
-import { set } from "zod/v3";
 
+export const ActionNode = ({ id, data, type }) => {
 
-export const ActionNode = ({ id, data }) => {
-
-  const [open, setOpen] = useState(false);
   const setActiveNode = useEditorUIStore(s => s.setActiveNode);
+  const {isNodeMenuOpen, activeNodeId} = useEditorUIStore();
 
   const actions = [
     { key: "EDIT_NODE", label: "Edit" },
@@ -28,16 +26,18 @@ export const ActionNode = ({ id, data }) => {
           onClick={(e) => {
             e.stopPropagation();
             console.log("Action Menu clicked...");
-            setActiveNode(id);
-            setOpen(v => !v);
+            setActiveNode(id, type);
+            
           }}
         >
           <EllipsisVertical size={18} />
         </button>
         {
-          open && (
+          isNodeMenuOpen && activeNodeId === id && (
             <NodeMenu
               actions={actions} 
+              nodeId={id}
+              type={type}
             />
           )
         }

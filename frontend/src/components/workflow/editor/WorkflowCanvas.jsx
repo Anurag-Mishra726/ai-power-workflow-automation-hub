@@ -1,5 +1,5 @@
 import { ReactFlow, Background, Controls, MiniMap } from "@xyflow/react";
-
+import useEditorUIStore from "@/stores/workflowEditorStore";
 const WorkflowCanvas = ({
   nodes,
   edges,
@@ -9,6 +9,9 @@ const WorkflowCanvas = ({
   onConnect,
   onNodeClick,
 }) => {
+
+  const closeNodeMenu = useEditorUIStore(s => s.closeNodeMenu);
+
   return (
     <>
       <ReactFlow
@@ -19,6 +22,7 @@ const WorkflowCanvas = ({
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeClick={onNodeClick}
+        onPaneClick={() => {closeNodeMenu()}}
         fitView
         fitViewOptions={{ padding: 0.5 }}
         minZoom={0.5}

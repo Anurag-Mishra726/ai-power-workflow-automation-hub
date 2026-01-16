@@ -1,22 +1,69 @@
-import { useWorkflow } from "../hooks/useWorkflow";
+import { useEffect, useRef } from "react";
 import useEditorUIStore from "@/stores/workflowEditorStore";
+import { useReactFlow } from "@xyflow/react";
 
-const NodeMenu = ({ actions, onSelect }) => {
+const NodeMenu = ({ actions, nodeId, type }) => {
 
-    const {activeNodeId, isNodeMenuOpen, closeNodeMenu} = useEditorUIStore();
-    const {deletNode, onNodeMenuClick} = useWorkflow();
+    const {closeNodeMenu} = useEditorUIStore();
 
-    if (!isNodeMenuOpen || !activeNodeId) return null;
+    const menuRef = useRef(null);
+    const { deleteElements } = useReactFlow()
+
+    // useEffect(() => {
+    //     const handleClickOutside = (e) => {
+    //         if (menuRef.current && !menuRef.current.contains(e.target)) {
+    //             closeNodeMenu();
+    //         }
+    //     };
+
+    //     document.addEventListener("mousedown", handleClickOutside);
+
+    //     return () => {
+    //         document.removeEventListener("mousedown", handleClickOutside);
+    //     };
+    // }, [closeNodeMenu]);
+
+    const onNodeMenuClickAction = {
+        EDIT_NODE: (nodeId) => {
+            console.log(nodeId);
+            closeNodeMenu();
+        },
+        DUPLICATE_NODE: (nodeId) => {
+            console.log(nodeId + "hola");
+            closeNodeMenu();
+        },
+        DELETE_NODE: (nodeId) => {
+            handleDelete();
+            closeNodeMenu();
+        },
+    }
+
+    const onNodeMenuClick = (key, nodeId) => {
+        const handler = onNodeMenuClickAction[key];
+        if (!handler) return;
+        handler(nodeId);
+    }
+
+    const handleDelete = () => {
+        if (type === "trigger") {
+            return;
+        }
+
+        deleteElements({
+        nodes: [{ id: nodeId }],
+        edges: [],
+        });
+    }
 
     return (
-        <div className="absolute right-0 top-6 bg-zinc-900 border rounded-md shadow-md">
+        <div className="absolute right-0 top-6 bg-zinc-900 border rounded-md shadow-md" ref={menuRef}>
         {actions.map(action => (
             <button
                 key={action.key}
                 disabled={action.disabled}
                 onClick={(e) => {
                     e.stopPropagation()
-                    onNodeMenuClick(action.key, activeNodeId)
+                    onNodeMenuClick(action.key, nodeId)
                 }}
                 className={`block w-full px-3 py-2 text-left text-sm
                     ${action.danger ? "text-red-500" : "text-white"}

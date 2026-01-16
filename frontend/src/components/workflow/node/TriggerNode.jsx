@@ -5,11 +5,10 @@ import { EllipsisVertical } from "lucide-react";
 import NodeMenu from "./NodeMenu";
 import useEditorUIStore from "@/stores/workflowEditorStore";
 
-export const TriggerNode = ({ id ,data }) => {
+export const TriggerNode = ({ id ,data, type }) => {
 
   const setActiveNode = useEditorUIStore(s => s.setActiveNode);
-
-  const [open, setOpen] = useState(false);
+  const {isNodeMenuOpen, activeNodeId} = useEditorUIStore();
 
   const actions = [
     { key: "EDIT_NODE", label: "Edit" },
@@ -27,17 +26,18 @@ export const TriggerNode = ({ id ,data }) => {
         <button className="text-white/70 text-sm cursor-pointer absolute top-0 right-0 mr-2 mt-1 py-[3px]  hover:text-white"
           onClick={(e) => {
             e.stopPropagation(); 
-            setActiveNode(id);
+            setActiveNode(id, type);
             console.log("Trigger Menu clicked..");
-            setOpen(v => !v);
           }}
         >
           <EllipsisVertical size={18} />
         </button>
         {
-          open && (
+          isNodeMenuOpen && activeNodeId === id && (
             <NodeMenu
               actions={actions} 
+              nodeId={id}
+              type={type}
             />
           )
         }

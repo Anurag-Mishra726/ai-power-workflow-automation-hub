@@ -7,9 +7,3 @@ export const nodeClickActions = {
     ctx.openSidebar(node);
   },
 };
-
-export const nodeMenuClickAction = {
-  DELETE_NODE: (node, ctx) => {
-    ctx.deleteNode(node);
-  },
-};
