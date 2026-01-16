@@ -2,7 +2,7 @@ import { useCallback, useState, useMemo } from "react";
 import { initialNodes } from "../config/initialNodes";
 import { initialEdges } from "../config/initialEdges";
 import { nodeTypes } from "../config/nodeType";
-import { nodeClickActions } from "../utils/nodeAction";
+import { nodeClickActions, nodeMenuClickAction } from "../utils/nodeAction";
 import {addEdge, applyEdgeChanges, applyNodeChanges,} from '@xyflow/react'
 
 export const useWorkflow = () => {
@@ -27,6 +27,11 @@ export const useWorkflow = () => {
         []
     );
 
+    const openSidebar = useCallback( (node) => {
+        console.log(node);
+        setIsSidebarOpen(true);
+    }, [setIsSidebarOpen]);
+
     const addNode = useCallback((placeholderId) => {
 
         const actionNodeId = crypto.randomUUID();
@@ -38,7 +43,6 @@ export const useWorkflow = () => {
             const { x, y } = placeholderNode.position;
 
             const filteredNodes = nds.filter((n) => n.id !== placeholderId);
-
             return [
                 ...filteredNodes,
                 {
@@ -79,6 +83,7 @@ export const useWorkflow = () => {
     );
 
     const deleteNode = (nodeId) => {
+        console.log("hii delete node");
         setNodes((nds) => nds.filter((n) => n.id !== nodeId));
 
         setEdges((eds) =>
@@ -88,24 +93,45 @@ export const useWorkflow = () => {
         );
     };
 
+//     const deleteNode = useCallback((nodeId) => {
+//   setNodes((nds) =>
+//     applyNodeChanges(
+//       [{ id: nodeId, type: "remove" }],
+//       nds
+//     )
+//   );
 
-    const ctx ={
+//   setEdges((eds) => {
+//     const edgeRemovals = eds
+//       .filter(e => e.source === nodeId || e.target === nodeId)
+//       .map(e => ({ id: e.id, type: "remove" }));
+
+//     return applyEdgeChanges(edgeRemovals, eds);
+//   });
+// }, []);
+
+    const ctx = useMemo(() => ({
         addNode,
-        isSidebarOpen
-    }
+        openSidebar,
+        deleteNode,
+    }), [addNode, openSidebar, deleteNode]);
 
     const onNodeClick = useCallback((_, node) => {
         const role = node.data?.nodeRole ?? "DEFAULT";
-        const handler = nodeClickActions[role] ?? nodeClickActions.DEFAULT;
+        const nodeClickHandler = nodeClickActions[role] ?? nodeClickActions.DEFAULT;
 
         console.log(node)
 
-        handler(node, {
-            addNode,
-            setIsSidebarOpen,
-        });
-    }, [addNode, setIsSidebarOpen]
-    );
+        nodeClickHandler(node, ctx);
+    }, [ctx]);
+
+    const onNodeMenuClick = useCallback((key, nodeId) => {
+        console.log(nodeId);
+        const nodeMenuClickHandler = nodeMenuClickAction[key];
+        if (!nodeMenuClickHandler) return;
+
+        nodeMenuClickHandler(nodeId, ctx);
+    }, [ctx]);
 
 
     const closeSideBar = () => {
@@ -122,7 +148,9 @@ export const useWorkflow = () => {
         isSidebarOpen,
         selectedNode,
         onNodeClick,
+        onNodeMenuClick,
         addNode,
+        deleteNode,
         closeSideBar,
     }
 

@@ -4,6 +4,12 @@ export const nodeClickActions = {
   },
 
   DEFAULT: (node, ctx) => {
-    ctx.setIsSidebarOpen(true);
+    ctx.openSidebar(node);
+  },
+};
+
+export const nodeMenuClickAction = {
+  DELETE_NODE: (node, ctx) => {
+    ctx.deleteNode(node);
   },
 };
