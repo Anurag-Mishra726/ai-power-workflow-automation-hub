@@ -7,12 +7,19 @@ const useEditorUIStore = create(
 
             activeNodeId: null,
             isNodeMenuOpen: false,
+             warningMessage: null,
 
             setActiveNode: (id) =>
-                set({ activeNodeId: id, isNodeMenuOpen: true }),
+                set({ activeNodeId: id }),
+
+            setOpenNodeMenu: () => 
+                set({isNodeMenuOpen: true}),
 
             closeNodeMenu: () =>
                 set({ isNodeMenuOpen: false }),
+
+            setWarning: (msg) => set({ warningMessage: msg }),
+            clearWarning: () => set({ warningMessage: null }),
         })
     )
 );

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import useEditorUIStore from "@/stores/workflowEditorStore";
 import { useReactFlow } from "@xyflow/react";
 
@@ -8,20 +8,6 @@ const NodeMenu = ({ actions, nodeId, type }) => {
 
     const menuRef = useRef(null);
     const { deleteElements } = useReactFlow()
-
-    // useEffect(() => {
-    //     const handleClickOutside = (e) => {
-    //         if (menuRef.current && !menuRef.current.contains(e.target)) {
-    //             closeNodeMenu();
-    //         }
-    //     };
-
-    //     document.addEventListener("mousedown", handleClickOutside);
-
-    //     return () => {
-    //         document.removeEventListener("mousedown", handleClickOutside);
-    //     };
-    // }, [closeNodeMenu]);
 
     const onNodeMenuClickAction = {
         EDIT_NODE: (nodeId) => {

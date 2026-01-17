@@ -9,7 +9,6 @@ export const AddNode = memo(({ data }) => {
     >
       <div className=" flex justify-center items-center font-bold "> <span><Plus size={15}/></span> Add</div>
       <Handle type="target" position={Position.Left} className="opacity-1" />
-      <Handle type="source" position={Position.Right} className="opacity-0" />
     </div>
   );
 });

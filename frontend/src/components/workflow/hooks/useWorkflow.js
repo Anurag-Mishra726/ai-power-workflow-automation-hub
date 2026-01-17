@@ -4,6 +4,7 @@ import { initialEdges } from "../config/initialEdges";
 import { nodeTypes } from "../config/nodeType";
 import { nodeClickActions } from "../utils/nodeAction";
 import {addEdge, applyEdgeChanges, applyNodeChanges,} from '@xyflow/react'
+import useEditorUIStore from "@/stores/workflowEditorStore";
 
 export const useWorkflow = () => {
     const [nodes, setNodes] = useState(initialNodes);
@@ -30,6 +31,10 @@ export const useWorkflow = () => {
         console.log(node);
         setIsSidebarOpen(true);
     }, [setIsSidebarOpen]);
+
+    const closeSideBar = () => {
+        setIsSidebarOpen(false)
+    }
 
     const addNode = useCallback((placeholderId) => {
 
@@ -81,7 +86,41 @@ export const useWorkflow = () => {
     }, [setNodes, setEdges]
     );
 
-   
+    const activeNodeId = useEditorUIStore((s) => s.activeNodeId);
+
+    const isFirstNode = (nodeId, edges) => {
+        return !edges.some((e) => e.target === nodeId);
+    };
+
+    const setTriggerType = (label, icon, triggerType, showWarning) => {
+        //const setWarning = useEditorUIStore.getState().setWarning;
+        setNodes((nds) => {
+            const activeNode = nds.find((n) => n.id === activeNodeId);
+            if (!activeNode) return nds;
+
+            if ( triggerType === "manual" && !isFirstNode(activeNodeId, edges)) {
+                console.warn("Manual trigger must be the first node");
+                //setWarning("Manual Trigger can only be set on the first node.");
+                return nds;
+            }
+
+            return nds.map((node) =>
+                node.id === activeNodeId
+                    ? {
+                        ...node,
+                        data: {
+                            ...node.data,
+                            label,
+                            icon,
+                            isTrigger: true,
+                            triggerType,
+                        },
+                        } : 
+                node
+            );
+        });
+    };
+
 
     const ctx = useMemo(() => ({
         addNode,
@@ -96,22 +135,11 @@ export const useWorkflow = () => {
 
         nodeClickHandler(node, ctx);
     }, [ctx]);
-
-    const onNodeMenuClick = useCallback((key, nodeId) => {
-        console.log(nodeId);
-        const nodeMenuClickHandler = nodeMenuClickAction[key];
-        if (!nodeMenuClickHandler) return;
-
-        nodeMenuClickHandler(nodeId, ctx);
-    }, [ctx]);
-
-
-    const closeSideBar = () => {
-        setIsSidebarOpen(false)
-    }
+    
 
     return {
         nodes,
+        setNodes,
         edges,
         nodeTypes,
         onNodesChange,
@@ -119,8 +147,8 @@ export const useWorkflow = () => {
         onConnect,
         isSidebarOpen,
         onNodeClick,
-        addNode,
         closeSideBar,
+        setTriggerType,
     }
 
 };

@@ -23,7 +23,13 @@ const WorkflowEditor = () => {
 
         </div>
 
-        {workflow.isSidebarOpen && <WorkflowSidebar onClose={workflow.closeSideBar} />}
+        {workflow.isSidebarOpen && 
+        <WorkflowSidebar 
+          onClose={workflow.closeSideBar} 
+          nodes={workflow.nodes} 
+          setNodes={workflow.setNodes} 
+          setTriggerType={workflow.setTriggerType}
+        />}
 
       </div>
     </>

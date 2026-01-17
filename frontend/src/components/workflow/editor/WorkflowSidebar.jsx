@@ -1,7 +1,16 @@
+import { useEffect } from "react";
 import {MousePointer, Globe,X} from "lucide-react"
+import useEditorUIStore from "@/stores/workflowEditorStore";
+import { toast } from "react-hot-toast"; 
 
+const WorkflowSidebar = ({ onClose, setNodes, setTriggerType }) => {
 
-const WorkflowSidebar = ({ onClose }) => {
+//   const warning = useEditorUIStore(s => s.warningMessage);
+
+// useEffect(() => {
+//   if (warning) toast.error(warning);
+// }, [warning]);
+
 
   return (
     <aside
@@ -27,6 +36,9 @@ const WorkflowSidebar = ({ onClose }) => {
             
         <div className="flex justify-center items-center gap-4 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
+         onClick={(e)=> {
+          setTriggerType( "Mannual Trigger", MousePointer, "manual" )
+         }}
          >
             <MousePointer />
             <div>
@@ -37,6 +49,9 @@ const WorkflowSidebar = ({ onClose }) => {
 
         <div className="flex justify-center items-center gap-4 mt-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
+         onClick={(e)=> {
+          setTriggerType("HTTP Request", Globe, "http")
+         }}
          >
             <Globe />
             <div>
@@ -49,20 +64,5 @@ const WorkflowSidebar = ({ onClose }) => {
     </aside>
   );
 };
-
-const SidebarItem = ({ title, subtitle }) => (
-  <div
-    className="
-      p-3 rounded-lg
-      bg-zinc-900 hover:bg-zinc-800
-      border border-zinc-800
-      cursor-pointer
-      transition
-    "
-  >
-    <div className="text-sm font-medium">{title}</div>
-    <div className="text-xs text-zinc-400">{subtitle}</div>
-  </div>
-);
 
 export default WorkflowSidebar;
