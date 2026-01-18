@@ -1,16 +1,6 @@
-import { useEffect } from "react";
 import {MousePointer, Globe,X} from "lucide-react"
-import useEditorUIStore from "@/stores/workflowEditorStore";
-import { toast } from "react-hot-toast"; 
 
-const WorkflowSidebar = ({ onClose, setNodes, setTriggerType }) => {
-
-//   const warning = useEditorUIStore(s => s.warningMessage);
-
-// useEffect(() => {
-//   if (warning) toast.error(warning);
-// }, [warning]);
-
+const WorkflowSidebar = ({ onClose, setTriggerType }) => {
 
   return (
     <aside
@@ -37,7 +27,8 @@ const WorkflowSidebar = ({ onClose, setNodes, setTriggerType }) => {
         <div className="flex justify-center items-center gap-4 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
          onClick={(e)=> {
-          setTriggerType( "Mannual Trigger", MousePointer, "manual" )
+          setTriggerType( "Mannual Trigger", MousePointer, "manual" );
+          onClose();
          }}
          >
             <MousePointer />
@@ -50,7 +41,8 @@ const WorkflowSidebar = ({ onClose, setNodes, setTriggerType }) => {
         <div className="flex justify-center items-center gap-4 mt-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
          onClick={(e)=> {
-          setTriggerType("HTTP Request", Globe, "http")
+          setTriggerType("HTTP Request", Globe, "http");
+          onClose();
          }}
          >
             <Globe />

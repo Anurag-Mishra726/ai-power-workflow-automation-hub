@@ -1,10 +1,11 @@
 import { useWorkflow } from "../hooks/useWorkflow";
 import WorkflowCanvas from "./WorkflowCanvas";
 import WorkflowSidebar from "./WorkflowSidebar";
+import useEditorUIStore from "@/stores/workflowEditorStore";
 
 const WorkflowEditor = () => {
   const workflow = useWorkflow();
-
+  const {isSidebarOpen} = useEditorUIStore();
   return (
     <>
       <div className="w-full h-full relative">
@@ -23,7 +24,7 @@ const WorkflowEditor = () => {
 
         </div>
 
-        {workflow.isSidebarOpen && 
+        {isSidebarOpen && 
         <WorkflowSidebar 
           onClose={workflow.closeSideBar} 
           nodes={workflow.nodes} 

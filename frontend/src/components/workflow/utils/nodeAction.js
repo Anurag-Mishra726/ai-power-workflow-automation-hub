@@ -4,6 +4,11 @@ export const nodeClickActions = {
   },
 
   DEFAULT: (node, ctx) => {
+    console.log(node)
+    if (node.data.isTrigger) {
+      console.log("agdam bagdam");
+      return;
+    }
     ctx.openSidebar(node);
   },
 };

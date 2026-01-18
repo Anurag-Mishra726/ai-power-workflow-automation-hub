@@ -2,26 +2,28 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 const useEditorUIStore = create(
-    persist(
-        (set) => ({
+    (set) => ({
 
-            activeNodeId: null,
-            isNodeMenuOpen: false,
-             warningMessage: null,
+        activeNodeId: null,
+        isNodeMenuOpen: false,
+        isSidebarOpen: false,
 
-            setActiveNode: (id) =>
-                set({ activeNodeId: id }),
+        setIsSidebarOpen: () =>
+            set({ isSidebarOpen: true }),
 
-            setOpenNodeMenu: () => 
-                set({isNodeMenuOpen: true}),
+        setIsSidebarClose: () => {
+            set({isSidebarOpen: false});
+        },
 
-            closeNodeMenu: () =>
-                set({ isNodeMenuOpen: false }),
+        setActiveNode: (id) =>
+            set({ activeNodeId: id }),
 
-            setWarning: (msg) => set({ warningMessage: msg }),
-            clearWarning: () => set({ warningMessage: null }),
-        })
-    )
+        setOpenNodeMenu: () => 
+            set({isNodeMenuOpen: true}),
+
+        closeNodeMenu: () =>
+            set({ isNodeMenuOpen: false }),
+    })
 );
 
 export default useEditorUIStore;

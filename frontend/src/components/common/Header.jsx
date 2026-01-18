@@ -1,59 +1,53 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FiSidebar } from "react-icons/fi";
 import { Save, ChevronRight, Trash2 } from "lucide-react";
 import { FaGreaterThan } from "react-icons/fa";
+import { toast } from "react-hot-toast";
 
-const routeMap = {
-  "/home": "Home",
-  "/workflow": "Workflow",
-  "/workflow/new": "Workflows",
-  "/integration": "Integration",
-};
 
 const Header = () => {
+
   const location = useLocation();
-  const currentPage = routeMap[location.pathname];
+  const { id } = useParams();  
 
-  const pathname = location.pathname;
-  const isEditor = pathname == "/workflow/new" ? true : false;
+  const isEditor = location.pathname === "/workflow/new" || Boolean(id);
+  const defaultWorkflowName = `Untitled-Workflow-${id}`;
+  const [localName, setLocalName] = useState(defaultWorkflowName);
 
-  const [isEditing, setIsEditing] = useState(false);
-  const workflowName = "Untitled Workflow";
-  const [localName, setLocalName] = useState(workflowName);
-
+  const [isWorkflowNameEditing, setIsWorkflowNameEditing] = useState(false);
+  
   const handleBlur = () => {
+    if(localName.trim() === ""){
+      toast.error("Workflow name cannot be empty");
+      setLocalName(workflowName);
+      return;
+    }
     console.log(localName);
-    setIsEditing(false);
+    setIsWorkflowNameEditing(false);
   };
 
   const inputSize = Math.max(
     8,
     Math.min(25, localName.length || workflowName.length)
-  ); // Min 8ch, max 25ch
+  ); 
 
   return (
     <>
       <header className="h-20 border-b border-zinc-700 flex items-center justify-between sticky top-0 z-30 px-8 font-semibold">
-        {/* <h1 className="flex items-center justify-center gap-2 font-mono text-3xl">
-              <span className="leading-tight">{currentPage}</span>
-              <ChevronRight size={16} className="text-zinc-300 mt-[3px]" /> 
-            </h1> */}
-        {/* <div className="flex justify-center items-center">
-            <FiSidebar className="mr-2" />
-          </div> */}
+        
         {isEditor ? (
           <>
             <h1 className="flex items-center justify-center gap-2 font-mono text-3xl">
-              <span className="leading-tight">{currentPage}</span>
+              <span className="leading-tight">Workflow</span>
               <ChevronRight size={16} className="text-zinc-300 mt-[3px]" />
-              {isEditing ? (
+              {isWorkflowNameEditing ? (
                 <input
                   type="text"
                   value={localName}
-                  size={inputSize} // Dynamic size based on content
+                  size={inputSize} 
                   onChange={(e) => setLocalName(e.target.value)}
                   onBlur={handleBlur}
                   onKeyDown={(e) => e.key === "Enter" && handleBlur()}
@@ -66,8 +60,8 @@ const Header = () => {
               ) : (
                 <div
                   className="group cursor-text px-3 py-1.5 text-lg font-semibold text-white bg-gray-800/50 backdrop-blur-sm rounded-md border border-gray-600/50 hover:border-blue-500/70 hover:bg-blue-500/5 hover:shadow-md hover:shadow-blue-500/10 transition-all duration-200 min-w-[8ch] max-w-[25ch] truncate select-none"
-                  onClick={() => setIsEditing(true)}
-                  title={workflowName}
+                  onClick={() => setIsWorkflowNameEditing(true)}
+                  title={defaultWorkflowName}
                 >
                   {localName}
                 </div>
@@ -88,7 +82,7 @@ const Header = () => {
         ) : (
           <>
             <h1 className="flex items-center justify-center gap-2 font-mono text-3xl">
-              <span className="leading-tight">{currentPage}</span>
+              <span className="leading-tight">Workflow</span>
             </h1>
             <div className="flex items-center gap-6">
               <div className=" flex items-center relative ">

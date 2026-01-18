@@ -23,6 +23,11 @@ const WorkflowCanvas = ({
         onConnect={onConnect}
         onNodeClick={onNodeClick}
         onPaneClick={() => {closeNodeMenu()}}
+        // snapGrid={[10, 10]}
+        // snapToGrid
+        // panOnScroll
+        // panOnDrag={false}
+        // selectionOnDrag
         fitView
         fitViewOptions={{ padding: 0.5 }}
         minZoom={0.5}

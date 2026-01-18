@@ -1,11 +1,13 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useParams } from "react-router-dom";
 import Sidebar from "@/components/common/SideBar";
 import Header from "@/components/common/Header";
 
 const AppLayout = () => {
 
-  const { pathname } = useLocation();
-  const isEditor = pathname == "/workflow/new" ? true : false;
+   const location = useLocation();
+  const { id } = useParams();
+
+  const isEditor = location.pathname === "/workflow/new" || Boolean(id);
 
   return (
     <div className="home-page w-screen h-screen flex">

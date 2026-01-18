@@ -9,7 +9,7 @@ export const TriggerNode = ({ id ,data, type }) => {
 
   const setActiveNode = useEditorUIStore(s => s.setActiveNode);
   const setOpenNodeMenu = useEditorUIStore(s => s.setOpenNodeMenu);
-  const {isNodeMenuOpen, activeNodeId} = useEditorUIStore();
+  const {isNodeMenuOpen, activeNodeId, setIsSidebarOpen} = useEditorUIStore();
 
   const actions = [
     { key: "EDIT_NODE", label: "Edit" },
@@ -25,18 +25,24 @@ export const TriggerNode = ({ id ,data, type }) => {
     >
       <div className="flex items-center justify-between ">
 
-        <div className="text-white bg-white/10 text-xs border border-zinc-500 rounded-md p-1 flex items-center gap-1">
+        <div className="text-white bg-white/10 text-xs border border-zinc-500 rounded-md p-1 flex items-center gap-1 cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            setActiveNode(id);
+            setIsSidebarOpen();
+          }}
+        >
          {
           data.label && data.icon ? (
             <>
-              <span className="text-[12px] text-white">
+              <span className="text-[12px] ">
                 <data.icon size={12} />
               </span>
               <p>{data.label}</p>
             </>
           ) : (
             <>
-              <span className="text-[12px] text-white">
+              <span className="text-[12px]">
                 <TiFlowChildren size={12} />
               </span> 
               <p>Trigger</p>

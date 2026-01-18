@@ -1,16 +1,17 @@
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo, use } from "react";
 import { initialNodes } from "../config/initialNodes";
 import { initialEdges } from "../config/initialEdges";
 import { nodeTypes } from "../config/nodeType";
 import { nodeClickActions } from "../utils/nodeAction";
 import {addEdge, applyEdgeChanges, applyNodeChanges,} from '@xyflow/react'
 import useEditorUIStore from "@/stores/workflowEditorStore";
+import { toast } from "react-hot-toast"; 
 
 export const useWorkflow = () => {
     const [nodes, setNodes] = useState(initialNodes);
     const [edges, setEdges] = useState(initialEdges);
 
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    //const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const onNodesChange = useCallback(
         (changes) =>
@@ -26,14 +27,14 @@ export const useWorkflow = () => {
         (params) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
         []
     );
+    const {isSidebarOpen, setIsSidebarOpen, setIsSidebarClose} = useEditorUIStore();
 
-    const openSidebar = useCallback( (node) => {
-        console.log(node);
-        setIsSidebarOpen(true);
-    }, [setIsSidebarOpen]);
+    const openSidebar = () => {
+        setIsSidebarOpen()
+    }
 
     const closeSideBar = () => {
-        setIsSidebarOpen(false)
+        setIsSidebarClose()
     }
 
     const addNode = useCallback((placeholderId) => {
@@ -86,21 +87,26 @@ export const useWorkflow = () => {
     }, [setNodes, setEdges]
     );
 
+   
+
     const activeNodeId = useEditorUIStore((s) => s.activeNodeId);
 
     const isFirstNode = (nodeId, edges) => {
         return !edges.some((e) => e.target === nodeId);
     };
 
-    const setTriggerType = (label, icon, triggerType, showWarning) => {
-        //const setWarning = useEditorUIStore.getState().setWarning;
+    const setTriggerType = (label, icon, triggerType) => {
         setNodes((nds) => {
             const activeNode = nds.find((n) => n.id === activeNodeId);
+
             if (!activeNode) return nds;
 
             if ( triggerType === "manual" && !isFirstNode(activeNodeId, edges)) {
-                console.warn("Manual trigger must be the first node");
-                //setWarning("Manual Trigger can only be set on the first node.");
+                queueMicrotask(() => toast.error("Manual only allowed on first node!" ,{
+                    style: {
+                        color: "black"
+                    },
+                }));
                 return nds;
             }
 
@@ -130,12 +136,8 @@ export const useWorkflow = () => {
     const onNodeClick = useCallback((_, node) => {
         const role = node.data?.nodeRole ?? "DEFAULT";
         const nodeClickHandler = nodeClickActions[role] ?? nodeClickActions.DEFAULT;
-
-        console.log(node)
-
         nodeClickHandler(node, ctx);
     }, [ctx]);
-    
 
     return {
         nodes,
@@ -148,7 +150,7 @@ export const useWorkflow = () => {
         isSidebarOpen,
         onNodeClick,
         closeSideBar,
-        setTriggerType,
+        setTriggerType
     }
 
 };
