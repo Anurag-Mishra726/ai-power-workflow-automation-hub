@@ -6,6 +6,7 @@ export const nodeClickActions = {
   DEFAULT: (node, ctx) => {
     console.log(node)
     if (node.data.isTrigger) {
+      ctx.openConfigSidebar();
       console.log("agdam bagdam");
       return;
     }

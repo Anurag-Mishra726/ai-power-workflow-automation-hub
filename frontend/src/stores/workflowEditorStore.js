@@ -7,22 +7,35 @@ const useEditorUIStore = create(
         activeNodeId: null,
         isNodeMenuOpen: false,
         isSidebarOpen: false,
+        isConfigSidebarOpen: false,
+
+        setActiveNode: (id) =>{
+            set({ activeNodeId: id });
+        },
+
+        setOpenNodeMenu: () => {
+            set({isNodeMenuOpen: true});
+        },
+
+        closeNodeMenu: () =>{
+            set({ isNodeMenuOpen: false });
+        },
 
         setIsSidebarOpen: () =>
-            set({ isSidebarOpen: true }),
+            set({ isSidebarOpen: true, isConfigSidebarOpen: false }),
 
         setIsSidebarClose: () => {
             set({isSidebarOpen: false});
         },
 
-        setActiveNode: (id) =>
-            set({ activeNodeId: id }),
+        setIsConfigSidebarOpen: () => {
+            set({isConfigSidebarOpen: true , isSidebarOpen: false});
+        },
 
-        setOpenNodeMenu: () => 
-            set({isNodeMenuOpen: true}),
+        setIsConfigSidebarClose: () => {
+            set({isConfigSidebarOpen: false});
+        }
 
-        closeNodeMenu: () =>
-            set({ isNodeMenuOpen: false }),
     })
 );
 

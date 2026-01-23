@@ -11,8 +11,6 @@ export const useWorkflow = () => {
     const [nodes, setNodes] = useState(initialNodes);
     const [edges, setEdges] = useState(initialEdges);
 
-    //const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
     const onNodesChange = useCallback(
         (changes) =>
             setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
@@ -35,6 +33,17 @@ export const useWorkflow = () => {
 
     const closeSideBar = () => {
         setIsSidebarClose()
+    }
+
+    const {isConfigSidebarOpen, setIsConfigSidebarOpen, setIsConfigSidebarClose} = useEditorUIStore();
+
+    const openConfigSidebar = () => {
+        console.log("Opening Config Sidebar");
+        setIsConfigSidebarOpen();
+    }
+
+    const closeConfigSidebar = () => {
+        setIsConfigSidebarClose();
     }
 
     const addNode = useCallback((placeholderId) => {
@@ -131,7 +140,8 @@ export const useWorkflow = () => {
     const ctx = useMemo(() => ({
         addNode,
         openSidebar,
-    }), [addNode, openSidebar]);
+        openConfigSidebar,
+    }), [addNode, openSidebar, openConfigSidebar]);
 
     const onNodeClick = useCallback((_, node) => {
         const role = node.data?.nodeRole ?? "DEFAULT";
@@ -149,8 +159,9 @@ export const useWorkflow = () => {
         onConnect,
         isSidebarOpen,
         onNodeClick,
+        setTriggerType,
         closeSideBar,
-        setTriggerType
+        closeConfigSidebar,
     }
 
 };

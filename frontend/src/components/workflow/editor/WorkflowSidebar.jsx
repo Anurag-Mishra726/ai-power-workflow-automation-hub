@@ -31,7 +31,7 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
           onClose();
          }}
          >
-            <MousePointer />
+            <MousePointer size={28} />
             <div>
                 <h2 className="text-xl">Manual Trigger</h2>
                 <p className="text-zinc-400">Start this flow by clicking a button.</p>
@@ -45,7 +45,7 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
           onClose();
          }}
          >
-            <Globe />
+            <Globe size={28} />
             <div>
                 <h2 className="text-xl">HTTP Request</h2>
                 <p className="text-zinc-400">Start this flow by clicking a button.</p>
