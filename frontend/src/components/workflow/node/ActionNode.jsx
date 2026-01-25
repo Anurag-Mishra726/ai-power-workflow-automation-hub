@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Handle, Position } from "@xyflow/react";
-import { EllipsisVertical, Zap, Globe, MousePointer } from "lucide-react";
+import { EllipsisVertical, Zap, Globe, MousePointer, CircleDot, CheckCircle, CheckCircle2 } from "lucide-react";
 import NodeMenu from "./NodeMenu";
 import useEditorUIStore from "@/stores/workflowEditorStore";
 
@@ -15,9 +15,15 @@ export const ActionNode = ({ id, data, type }) => {
     { key: "DUPLICATE_NODE", label: "Duplicate" },
     { key: "DELETE_NODE", label: "Delete", disabled: false, danger: true }
   ];
+
+  const iconMap = {
+    globe: Globe,
+  };
+
+  const Icon = iconMap[data.icon] || Zap;
   
   return (
-    <div className="pointer-events-auto p-2 w-40 bg-zinc-900 relative border  border-zinc-700 rounded-lg text-white flex flex-col gap-2 "
+    <div className="pointer-events-auto p-2 w-44 bg-zinc-900 relative border  border-zinc-700 rounded-lg text-white flex flex-col gap-2 "
       onClick={()=> {
         setActiveNode(id);
       }}
@@ -35,7 +41,7 @@ export const ActionNode = ({ id, data, type }) => {
           data.label && data.icon ? (
             <>
               <span className="text-[12px] text-white">
-                <data.icon size={12} />
+                 <Icon size={12} />
               </span>
               <p>{data.label}</p>
             </>
@@ -70,16 +76,24 @@ export const ActionNode = ({ id, data, type }) => {
         }
       </div>
 
-      <div className="text-sm text-white flex justify-center items-center gap-2">
-        {data.label ? (
+      <div className="text-sm text-white/50 flex items-center gap-2">
+        {data.config ? (
           <>
-            <data.icon className="text-white/50" size={16} />
-            <span className="text-white/50" >{data.label}</span>
+            <span className="flex items-center gap-2">
+              <CheckCircle size={12} className="self-center translate-y-0.5" />
+              {data.config.triggerName}
+            </span>
           </>
-        ) : (
-          <p>Select an event to run the Flow.</p>
+          ) : (
+          <>
+            <CircleDot 
+              size={12} 
+              className="self-center -translate-y-0.5 flex-shrink-0" 
+            />
+            <p>Select an event to trigger the Flow.</p>
+          </>
         )}
-      </div>   
+      </div> 
 
       <Handle type="source" position={Position.Right} />
       <Handle type="target" position={Position.Left}/>

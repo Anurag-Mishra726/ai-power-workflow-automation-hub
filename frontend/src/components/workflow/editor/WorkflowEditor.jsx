@@ -32,7 +32,7 @@ const WorkflowEditor = () => {
         />}
 
         {isConfigSidebarOpen && 
-          <ConfigSidebar nodes={workflow.nodes} onClose={workflow.closeConfigSidebar} />
+          <ConfigSidebar nodes={workflow.nodes} onClose={workflow.closeConfigSidebar} setNodeConfig={workflow.setNodeConfig} />
         }
 
 

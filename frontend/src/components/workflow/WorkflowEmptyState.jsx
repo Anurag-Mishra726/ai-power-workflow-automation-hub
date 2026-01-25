@@ -9,6 +9,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import useWorkflowData from "@/stores/workflowDataStore";
 
 const WorkflowEmptyState = () => {
 
@@ -16,7 +17,9 @@ const WorkflowEmptyState = () => {
 
   const handleCreateWorkflow = () => {
     const id = crypto.randomUUID();
-    navigate(`/workflow/new/${id.slice(0,16)}`);
+    useWorkflowData.getState().setWorkflowId(id);
+
+    navigate(`/workflow/new/${id}`);
   };
 
   return (

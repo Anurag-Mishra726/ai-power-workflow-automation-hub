@@ -1,6 +1,11 @@
 import {MousePointer, Globe,X} from "lucide-react"
+import useEditorUIStore from "@/stores/workflowEditorStore";
+import toast from "react-hot-toast";
+import CloseBtn from "@/components/common/CloseBtn";
 
 const WorkflowSidebar = ({ onClose, setTriggerType }) => {
+
+  const {setIsConfigSidebarOpen} = useEditorUIStore();
 
   return (
     <aside
@@ -13,12 +18,7 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
             </h2>
             <p className="text-sm text-[#E5E5E5] mt-2 font-normal">Decide how you want this automation to be kicked off.</p>
         </div>
-        <div className="flex justify-center items-center absolute top-0 right-0 mt-2 mr-2 p-1 rounded-full text-white bg-zinc-500
-         hover:bg-red-500 ">
-            <button onClick={onClose}>
-                <X size={17} />
-            </button>
-        </div>
+        <CloseBtn onClose={onClose} />
         
       </div>
 
@@ -27,8 +27,9 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
         <div className="flex justify-center items-center gap-4 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
          onClick={(e)=> {
-          setTriggerType( "Mannual Trigger", MousePointer, "manual" );
+          setTriggerType( "Mannual Trigger", "mouse", "manual" );
           onClose();
+          setIsConfigSidebarOpen();
          }}
          >
             <MousePointer size={28} />
@@ -41,8 +42,9 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
         <div className="flex justify-center items-center gap-4 mt-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
          onClick={(e)=> {
-          setTriggerType("HTTP Request", Globe, "http");
+          setTriggerType("HTTP Request", "globe", "http");
           onClose();
+          setIsConfigSidebarOpen();
          }}
          >
             <Globe size={28} />

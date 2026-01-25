@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
@@ -6,33 +6,64 @@ import { FiSidebar } from "react-icons/fi";
 import { Save, ChevronRight, Trash2 } from "lucide-react";
 import { FaGreaterThan } from "react-icons/fa";
 import { toast } from "react-hot-toast";
+import useWorkflowData from "@/stores/workflowDataStore";
+import { useWorkflowSave } from "@/hooks/useWorkflowApi ";
 
 
 const Header = () => {
 
+  const {mutate: saveWorkflow, isPending} = useWorkflowSave();
+
+  let pageTitle;
+  const { id } = useParams();
   const location = useLocation();
-  const { id } = useParams();  
+  const path = location.pathname;
 
+  if(path.startsWith("/home")){
+    pageTitle = "Home";
+  }else if(path.startsWith("/workflow")){
+    pageTitle = "Workflow";
+  }else{
+    pageTitle = "FlowAI";
+  }
+
+  const { workflowId, workflowName, setWorkflowName } = useWorkflowData();
   const isEditor = location.pathname === "/workflow/new" || Boolean(id);
-  const defaultWorkflowName = `Untitled-Workflow-${id}`;
-  const [localName, setLocalName] = useState(defaultWorkflowName);
 
+  const [localName, setLocalName] = useState("");
   const [isWorkflowNameEditing, setIsWorkflowNameEditing] = useState(false);
-  
+
+  useEffect(() => {
+    if (!workflowId) return;
+
+    if (!workflowName) {
+      const defaultName = `Untitled-Workflow-${workflowId}`;
+      setWorkflowName(defaultName);
+      setLocalName(defaultName);
+    } else {
+      setLocalName(workflowName);
+    }
+  }, [workflowId, workflowName]);
+    
   const handleBlur = () => {
-    if(localName.trim() === ""){
+    if (!localName.trim()) {
       toast.error("Workflow name cannot be empty");
       setLocalName(workflowName);
       return;
     }
-    console.log(localName);
+    setWorkflowName(localName.trim());
+    toast.success("Workflow name updated");
     setIsWorkflowNameEditing(false);
   };
 
   const inputSize = Math.max(
     8,
-    Math.min(25, localName.length || workflowName.length)
+    Math.min(25, localName.length || localName.length)
   ); 
+
+  const deleteWorkflow = () => {
+    console.log("Deleting Workflow...");
+  }
 
   return (
     <>
@@ -61,19 +92,24 @@ const Header = () => {
                 <div
                   className="group cursor-text px-3 py-1.5 text-lg font-semibold text-white bg-gray-800/50 backdrop-blur-sm rounded-md border border-gray-600/50 hover:border-blue-500/70 hover:bg-blue-500/5 hover:shadow-md hover:shadow-blue-500/10 transition-all duration-200 min-w-[8ch] max-w-[25ch] truncate select-none"
                   onClick={() => setIsWorkflowNameEditing(true)}
-                  title={defaultWorkflowName}
+                  title={localName}
                 >
-                  {localName}
+                  {workflowName}
                 </div>
               )}
             </h1>
             <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-4 py-2 rounded-md border border-blue-500/50 hover:bg-blue-500 text-blue-400 hover:text-white text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-black">
+              <button className="flex items-center gap-2 px-4 py-2 rounded-md border border-blue-500/50 hover:bg-blue-500 text-blue-400 hover:text-white text-sm font-medium transition-colors duration-200 focus:outline-none "
+                onClick={() => saveWorkflow()}
+              >
                 <Save size={18} />
                 <span>Save</span>
               </button>
 
-              <button className=" flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white transition">
+              <button className=" flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white font-medium transition-colors duration-200 focus:outline-none  "
+                onClick={() => deleteWorkflow()}
+              >
+
                 <Trash2 size={18} />
                 <span>Delete</span>
               </button>
@@ -82,7 +118,7 @@ const Header = () => {
         ) : (
           <>
             <h1 className="flex items-center justify-center gap-2 font-mono text-3xl">
-              <span className="leading-tight">Workflow</span>
+              <span className="leading-tight">{pageTitle}</span>
             </h1>
             <div className="flex items-center gap-6">
               <div className=" flex items-center relative ">

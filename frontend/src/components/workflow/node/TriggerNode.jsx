@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Handle, Position } from "@xyflow/react";
 import { TiFlowChildren } from "react-icons/ti";
-import { EllipsisVertical, Globe, MousePointer ,CircleDot  } from "lucide-react";
+import { EllipsisVertical, Globe, MousePointer ,CircleDot, CheckCircle, AlertCircle } from "lucide-react";
 import NodeMenu from "./NodeMenu";
 import useEditorUIStore from "@/stores/workflowEditorStore";
 
@@ -17,8 +17,15 @@ export const TriggerNode = ({ id ,data, type }) => {
     { key: "DELETE_NODE", label: "Delete", disabled: true, danger: true }
   ];
 
+  const iconMap = {
+    globe: Globe,
+    mouse: MousePointer
+  }
+
+  const Icon = iconMap[data.icon] || TiFlowChildren;
+
   return (
-    <div className="pointer-events-auto p-2 w-40 bg-zinc-900 relative border  border-zinc-700 rounded-lg text-white flex flex-col gap-2 "
+    <div className="pointer-events-auto p-2 w-44 bg-zinc-900 relative border  border-zinc-700 rounded-lg text-white flex flex-col gap-2 "
       onClick={()=> {
         setActiveNode(id);
       }}
@@ -36,7 +43,7 @@ export const TriggerNode = ({ id ,data, type }) => {
           data.label && data.icon ? (
             <>
               <span className="text-[12px] ">
-                <data.icon size={12} />
+                <Icon size={12} />
               </span>
               <p>{data.label}</p>
             </>
@@ -71,8 +78,24 @@ export const TriggerNode = ({ id ,data, type }) => {
       </div>
 
       <div className="text-sm text-white/50 flex items-center gap-2">
-        <span><CircleDot size={12} /></span>  <p>Select an event to trigger the Flow.</p>
-      </div>  
+        {data.config ? (
+          <>
+            <span className="flex items-center gap-2">
+              <CheckCircle size={12} className="self-center translate-y-0.5" />
+              {data.config.triggerName}
+            </span>
+          </>
+          ) : (
+          <>
+            <CircleDot 
+              size={12} 
+              className="self-center -translate-y-0.5 flex-shrink-0" 
+            />
+            <p>Select an event to trigger the Flow.</p>
+          </>
+        )}
+      </div>
+
 
       <Handle type="source" position={Position.Right} />
     </div>

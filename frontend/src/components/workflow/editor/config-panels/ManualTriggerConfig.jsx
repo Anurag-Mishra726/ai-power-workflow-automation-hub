@@ -1,15 +1,19 @@
 import { useForm } from 'react-hook-form';
-import { MousePointer, Play, Circle, X } from 'lucide-react';
+import { MousePointer, X } from 'lucide-react';
 import CloseBtn from '@/components/common/CloseBtn';
 import { toast } from 'react-hot-toast';
+import useEditorUIStore from "@/stores/workflowEditorStore";
 
-const ManualTriggerConfig = ({nodeId, onClose}) => {
+const ManualTriggerConfig = ({selectedNode, onClose, setNodeConfig}) => {
 
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const {setIsConfigSidebarClose} = useEditorUIStore();
 
-  const onSubmit = (data) => {
-    console.log('HTTP Request Form Data:', data);
-    // handle backend submission here
+  const onSubmit = async (data) => {
+    const status = await setNodeConfig(data);
+    if(status.success) toast.success("Manual Trigger Node Configured Successfully");
+    else toast.error("Something went Wrong!");
+    setIsConfigSidebarClose();
   };
 
   return (

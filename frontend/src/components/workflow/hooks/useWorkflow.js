@@ -2,9 +2,11 @@ import { useCallback, useState, useMemo, use } from "react";
 import { initialNodes } from "../config/initialNodes";
 import { initialEdges } from "../config/initialEdges";
 import { nodeTypes } from "../config/nodeType";
+import { nodeConfigMap } from "../utils/nodeConfigMap";
 import { nodeClickActions } from "../utils/nodeAction";
 import {addEdge, applyEdgeChanges, applyNodeChanges,} from '@xyflow/react'
 import useEditorUIStore from "@/stores/workflowEditorStore";
+import useWorkflowData from "@/stores/workflowDataStore";
 import { toast } from "react-hot-toast"; 
 
 export const useWorkflow = () => {
@@ -22,9 +24,14 @@ export const useWorkflow = () => {
         []
     );
     const onConnect = useCallback(
-        (params) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
+        (params) => setEdges((edgesSnapshot) => {
+            const updatedEdges = addEdge(params, edgesSnapshot);
+            queueMicrotask(() => useWorkflowData.getState().setEdgesInStore(updatedEdges));
+            return updatedEdges;
+        }),
         []
     );
+
     const {isSidebarOpen, setIsSidebarOpen, setIsSidebarClose} = useEditorUIStore();
 
     const openSidebar = () => {
@@ -50,19 +57,22 @@ export const useWorkflow = () => {
 
         const actionNodeId = crypto.randomUUID();
         const nextPlaceholderId = crypto.randomUUID();
+        let updatedNodes = null;
+        let updatedEdges = null;
 
         setNodes((nds) => {
             const placeholderNode = nds.find((n) => n.id === placeholderId);
 
             const { x, y } = placeholderNode.position;
 
-            const filteredNodes = nds.filter((n) => n.id !== placeholderId);
-            return [
-                ...filteredNodes,
+            updatedNodes = [
+                ...nds.filter((n) => n.id !== placeholderId),
                 {
                     id: actionNodeId,
                     type: "action",
-                    data: {},
+                    data: {
+                        isConfigured: false,
+                    },
                     position: { x: x, y: y },
                 },
                 {
@@ -74,17 +84,20 @@ export const useWorkflow = () => {
                     position: { x: x + 200, y: y },
                 },
             ];
+
+            queueMicrotask(() => useWorkflowData.getState().setNodesInStore(updatedNodes));
+            
+            return updatedNodes
         });
+        
 
         setEdges((eds) => {
-            const updatedEdges = eds.map((e) =>
+            updatedEdges =  [
+                ...eds.map((e) =>
                 e.target === placeholderId
                     ? { ...e, target: actionNodeId, animated: false }
                     : e
-            );
-
-            return [
-                ...updatedEdges,
+            ),
                 {
                     id: `e-${actionNodeId}-${nextPlaceholderId}`,
                     source: actionNodeId,
@@ -92,7 +105,14 @@ export const useWorkflow = () => {
                     animated: true,
                 },
             ];
+            queueMicrotask(() => useWorkflowData.getState().setEdgesInStore(updatedEdges));
+            return updatedEdges;
         });
+
+        // if (updatedEdges) {
+        //     useWorkflowData.getState().setEdgesInStore(updatedEdges);
+        // }
+
     }, [setNodes, setEdges]
     );
 
@@ -105,36 +125,94 @@ export const useWorkflow = () => {
     };
 
     const setTriggerType = (label, icon, triggerType) => {
-        setNodes((nds) => {
-            const activeNode = nds.find((n) => n.id === activeNodeId);
 
-            if (!activeNode) return nds;
+       try {
+            let updatedNodes;
+            setNodes((nds) => {
+                const activeNode = nds.find((n) => n.id === activeNodeId);
 
-            if ( triggerType === "manual" && !isFirstNode(activeNodeId, edges)) {
-                queueMicrotask(() => toast.error("Manual only allowed on first node!" ,{
-                    style: {
-                        color: "black"
-                    },
-                }));
-                return nds;
+                if (!activeNode) return nds;
+
+                if ( triggerType === "manual" && !isFirstNode(activeNodeId, edges)) {
+                    queueMicrotask(() => toast.error("Manual only allowed on first node!" ,{
+                        style: {
+                            color: "black"
+                        },
+                    }));
+                    return nds;
+                }
+                
+                updatedNodes = nds.map((node) =>
+                    node.id === activeNodeId
+                        ? {
+                            ...node,
+                            data: {
+                                ...node.data,
+                                label,
+                                icon,
+                                isTrigger: true,
+                                triggerType,
+                            },
+                            } : 
+                    node
+                )
+                return updatedNodes;
+                
+            }); 
+            if (updatedNodes) {
+                useWorkflowData.getState().setNodesInStore(updatedNodes);
             }
+            
+       } catch (error) {
+            console.error("Error setting trigger type:", error);
+            return ;
+       }
+    };
 
-            return nds.map((node) =>
-                node.id === activeNodeId
-                    ? {
+    const setNodeConfig = ( data ) => {
+
+        try {
+            let updatedNodes = null;
+
+            setNodes((nds) => {
+                updatedNodes = nds.map((node) => {
+                    if(node.id !== activeNodeId) return node;
+
+                    const configHandler = nodeConfigMap[node.data.triggerType];
+                    if (!configHandler) return node;
+
+                    const mergedConfig = {
+                        ...configHandler.defaultConfig,
+                        ...node.data.config,
+                        ...data
+                    }
+
+                    return {
                         ...node,
                         data: {
                             ...node.data,
-                            label,
-                            icon,
-                            isTrigger: true,
-                            triggerType,
-                        },
-                        } : 
-                node
-            );
-        });
-    };
+                            config: mergedConfig,
+                            summary: configHandler.buildSummary(mergedConfig),
+                            isConfigured: configHandler.isComplete(mergedConfig),
+                        }
+                    }
+                }); 
+
+                return updatedNodes;
+
+            });
+
+            if (updatedNodes) {
+                useWorkflowData.getState().setNodesInStore(updatedNodes);
+            }
+
+            return {success: true};
+
+        } catch (error) {
+            console.error("Error setting node config:", error);
+            return {success: false, error: error};
+        }
+    }
 
 
     const ctx = useMemo(() => ({
@@ -160,6 +238,7 @@ export const useWorkflow = () => {
         isSidebarOpen,
         onNodeClick,
         setTriggerType,
+        setNodeConfig,
         closeSideBar,
         closeConfigSidebar,
     }

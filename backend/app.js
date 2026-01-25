@@ -12,6 +12,7 @@ import {gemini, perplexity} from "./src/ai/generateText.js";
 
 import authRoutes from "./src/routes/auth.routes.js";
 import profileRoutes from "./src/routes/profile.routes.js";
+import workflowRoutes from "./src/routes/workflows.routes.js";
 
 const app = express();
 await connectDB();
@@ -37,6 +38,8 @@ app.get("/", (req, res) => {
      res.send("Welcome to the AI Power Workflow Automation Hub!");
     
 });
+
+// TODOs : validate the data of workflow comming form frontend make DB than make proper service and store.
 
 app.post("/api/test", async (req, res) => {
 
@@ -88,9 +91,7 @@ app.get("/api/test-ai", async (req, res) => {
 
 
 app.use("/api/auth", authRoutes);
-app.get("/api/profile", (req, res) => {
-    res.send("Profile route is working");
-});
+app.use("/api/workflows", workflowRoutes);
 app.use("/api/user", profileRoutes);
 
 app.use((err, req, res, next) => {

@@ -3,7 +3,7 @@ export const initialNodes = [
     id: "firstNode",
     position: { x: 0, y: 0 },
     data: {
-      nodeRole: "TRIGGER"
+      isConfigured: false,
     },
     type: "trigger",
   },

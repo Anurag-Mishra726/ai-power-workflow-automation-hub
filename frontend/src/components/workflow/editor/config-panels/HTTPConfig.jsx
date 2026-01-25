@@ -1,28 +1,31 @@
 import { useForm } from 'react-hook-form';
 import { Globe } from "lucide-react";
 import CloseBtn from "@/components/common/CloseBtn";
+import useEditorUIStore from "@/stores/workflowEditorStore";
+import toast from 'react-hot-toast';
 
 //TO DO :  make a setting only when the type is trigger disable the URL, header and body fields.
 
-const HTTPConfig = ({nodeId, onClose, nodeType }) => {
+const HTTPConfig = ({selectedNode, onClose, nodeType, setNodeConfig }) => {
 
-    const { register, handleSubmit, formState: { errors } } = useForm({
-        defaultValues: {
-        triggerName: 'Incoming Webhook',
-        method: 'POST',
-        url: 'https://api.flowai.com/webhook',
-        headers: `{
-    "Content-Type": "application/json"
- }`,
-        body: `{
-    "id": 123
-}`
-        }
-    });
-  const onSubmit = (data) => {
-    console.log('HTTP Request Form Data:', data);
-    console.log(nodeId);
-    // handle backend submission here
+  const {setIsConfigSidebarClose} = useEditorUIStore();
+
+  const { register, handleSubmit, formState: { errors } } = useForm({
+      defaultValues: {
+      triggerName: '',
+      method: 'POST',
+      url: 'https://api.flowai.com/webhook',
+      headers: "",
+      body: ""
+      }
+  });
+
+  const onSubmit = async (data) => {
+    const status = await setNodeConfig(data);
+    console.log("status" , status)
+    if(status.success) toast.success("HTTP Node Configured Successfully");
+    else toast.error("Something went Wrong!");
+    setIsConfigSidebarClose();
   };
 
   return (
@@ -95,6 +98,7 @@ const HTTPConfig = ({nodeId, onClose, nodeType }) => {
 
                 <input 
                   disabled={nodeType === 'trigger'}
+                  readOnly={nodeType === 'trigger'}
                   {...register('url', { required: 'URL is required' })}
                   placeholder="https://api.flowai.com/webhook"
                   className="flex rounded-md w-full bg-zinc-900 border border-zinc-700 px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
