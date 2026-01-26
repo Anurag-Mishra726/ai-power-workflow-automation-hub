@@ -38,6 +38,6 @@ const useWorkflowData = create(
             })
         }
     )
-)
+);
 
 export default useWorkflowData;

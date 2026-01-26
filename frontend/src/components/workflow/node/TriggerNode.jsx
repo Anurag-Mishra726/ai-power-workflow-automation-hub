@@ -18,11 +18,11 @@ export const TriggerNode = ({ id ,data, type }) => {
   ];
 
   const iconMap = {
-    globe: Globe,
-    mouse: MousePointer
+    http: Globe,
+    manual: MousePointer
   }
 
-  const Icon = iconMap[data.icon] || TiFlowChildren;
+  const Icon = iconMap[data.triggerType] || TiFlowChildren;
 
   return (
     <div className="pointer-events-auto p-2 w-44 bg-zinc-900 relative border  border-zinc-700 rounded-lg text-white flex flex-col gap-2 "
@@ -40,7 +40,7 @@ export const TriggerNode = ({ id ,data, type }) => {
           }}
         >
          {
-          data.label && data.icon ? (
+          data.label && data.triggerType ? (
             <>
               <span className="text-[12px] ">
                 <Icon size={12} />

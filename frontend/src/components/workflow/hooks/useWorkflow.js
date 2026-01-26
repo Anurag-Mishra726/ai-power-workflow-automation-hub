@@ -42,7 +42,7 @@ export const useWorkflow = () => {
         setIsSidebarClose()
     }
 
-    const {isConfigSidebarOpen, setIsConfigSidebarOpen, setIsConfigSidebarClose} = useEditorUIStore();
+    const { setIsConfigSidebarOpen, setIsConfigSidebarClose } = useEditorUIStore();
 
     const openConfigSidebar = () => {
         console.log("Opening Config Sidebar");
@@ -116,15 +116,31 @@ export const useWorkflow = () => {
     }, [setNodes, setEdges]
     );
 
-   
-
     const activeNodeId = useEditorUIStore((s) => s.activeNodeId);
+   
+    const deleteNode = (deleteNodeId) => {
+        console.log("deleteing.................", deleteNodeId);
+
+        setNodes((nds) => {
+            const updatedNodes = nds.filter((n) => n.id !== deleteNodeId)
+            queueMicrotask(() => useWorkflowData.getState().setNodesInStore(updatedNodes));
+            return updatedNodes;
+        });
+
+        setEdges((eds) => {
+            const updatedEdges = eds.filter((e) => e.source !== deleteNodeId && e.target !== deleteNodeId)
+            queueMicrotask(() => useWorkflowData.getState().setEdgesInStore(updatedEdges));
+            return updatedEdges;
+        }           
+        );
+    }
+
 
     const isFirstNode = (nodeId, edges) => {
         return !edges.some((e) => e.target === nodeId);
     };
 
-    const setTriggerType = (label, icon, triggerType) => {
+    const setTriggerType = (label, triggerType) => {
 
        try {
             let updatedNodes;
@@ -149,9 +165,9 @@ export const useWorkflow = () => {
                             data: {
                                 ...node.data,
                                 label,
-                                icon,
                                 isTrigger: true,
                                 triggerType,
+                                summary: "",
                             },
                             } : 
                     node
@@ -229,9 +245,9 @@ export const useWorkflow = () => {
 
     return {
         nodes,
-        setNodes,
         edges,
         nodeTypes,
+        //setNodes,
         onNodesChange,
         onEdgesChange,
         onConnect,
@@ -241,6 +257,7 @@ export const useWorkflow = () => {
         setNodeConfig,
         closeSideBar,
         closeConfigSidebar,
+        deleteNode,
     }
 
 };

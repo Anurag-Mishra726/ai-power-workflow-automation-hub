@@ -1,4 +1,5 @@
-import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { Globe } from "lucide-react";
 import CloseBtn from "@/components/common/CloseBtn";
 import useEditorUIStore from "@/stores/workflowEditorStore";
@@ -6,23 +7,35 @@ import toast from 'react-hot-toast';
 
 //TO DO :  make a setting only when the type is trigger disable the URL, header and body fields.
 
-const HTTPConfig = ({selectedNode, onClose, nodeType, setNodeConfig }) => {
+const HTTPConfig = ({ nodeType, onClose, setNodeConfig }) => {
 
   const {setIsConfigSidebarClose} = useEditorUIStore();
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, setValue, control, formState: { errors } } = useForm({
       defaultValues: {
       triggerName: '',
-      method: 'POST',
+      method: 'GET',
       url: 'https://api.flowai.com/webhook',
       headers: "",
       body: ""
       }
   });
 
+  const method = useWatch({ control, name: 'method' });
+
+  useEffect(() => {
+    if (method === "GET") {
+      setValue("body", "");
+      setValue("headers", "");
+    }
+  
+  }, [method, setValue]);
+
+  const isGetMethod = method === 'GET';
+  const isDeleteMethod = method === 'DELETE'
+
   const onSubmit = async (data) => {
     const status = await setNodeConfig(data);
-    console.log("status" , status)
     if(status.success) toast.success("HTTP Node Configured Successfully");
     else toast.error("Something went Wrong!");
     setIsConfigSidebarClose();
@@ -62,7 +75,7 @@ const HTTPConfig = ({selectedNode, onClose, nodeType, setNodeConfig }) => {
                   Trigger Name
                 </label>
                 <input
-                  {...register('triggerName', { required: 'Trigger name is required' })}
+                  {...register('triggerName')}
                   placeholder="Incoming Webhook"
                   className="w-full rounded-md bg-zinc-900 border border-zinc-700 px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
@@ -87,6 +100,7 @@ const HTTPConfig = ({selectedNode, onClose, nodeType, setNodeConfig }) => {
                   <option value="GET">GET</option>
                   <option value="POST">POST</option>
                   <option value="PUT">PUT</option>
+                  <option value="PATCH">PATCH</option>
                   <option value="DELETE">DELETE</option>
                 </select>
 
@@ -97,11 +111,10 @@ const HTTPConfig = ({selectedNode, onClose, nodeType, setNodeConfig }) => {
                 </h3>
 
                 <input 
-                  disabled={nodeType === 'trigger'}
-                  readOnly={nodeType === 'trigger'}
                   {...register('url', { required: 'URL is required' })}
+                  disabled={nodeType === 'trigger'}
                   placeholder="https://api.flowai.com/webhook"
-                  className="flex rounded-md w-full bg-zinc-900 border border-zinc-700 px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className={`flex rounded-md w-full bg-zinc-900 border border-zinc-700 px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500 ${ nodeType === 'trigger' && 'cursor-not-allowed' } `}
                 />
 
               <p className="text-xs text-zinc-500">
@@ -121,12 +134,12 @@ const HTTPConfig = ({selectedNode, onClose, nodeType, setNodeConfig }) => {
             </h3>
 
             <textarea
-                disabled={nodeType === 'trigger'}
                 {...register('headers')}
+                disabled={isGetMethod}
                 rows={4}
-                placeholder={`{
+                placeholder={`${isGetMethod ? "No Headers Required" : `{
   "Content-Type": "application/json"
-}`}
+}` }`}
               className="w-full rounded-md bg-zinc-900 border border-zinc-700 px-3 py-2 font-mono text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </section>
@@ -135,12 +148,12 @@ const HTTPConfig = ({selectedNode, onClose, nodeType, setNodeConfig }) => {
             <h3 className="text-sm font-semibold text-zinc-200 mb-3">Body</h3>
 
             <textarea
-                disabled={nodeType === 'trigger'}
                 {...register('body')}
+                disabled={isGetMethod}
                 rows={6}
-                placeholder={`{
+                placeholder={`${isGetMethod || isDeleteMethod ? "No Body Required" : `{
   "id": 123
-}`}
+}` }`}
               className="w-full rounded-md bg-zinc-900 border border-zinc-700 px-3 py-2 font-mono text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </section>

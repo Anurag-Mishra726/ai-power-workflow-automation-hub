@@ -1,44 +1,38 @@
 import { useRef } from "react";
 import useEditorUIStore from "@/stores/workflowEditorStore";
-import { useReactFlow } from "@xyflow/react";
 
 const NodeMenu = ({ actions, nodeId, type }) => {
 
-    const {closeNodeMenu} = useEditorUIStore();
+    const {closeNodeMenu, requestDeleteNode } = useEditorUIStore();
 
     const menuRef = useRef(null);
-    const { deleteElements } = useReactFlow()
 
     const onNodeMenuClickAction = {
-        EDIT_NODE: (nodeId) => {
-            console.log(nodeId);
+        EDIT_NODE: () => {
+            console.log("Editing");
             closeNodeMenu();
         },
-        DUPLICATE_NODE: (nodeId) => {
-            console.log(nodeId + "hola");
+        DUPLICATE_NODE: () => {
+            console.log("Duptlicating");
             closeNodeMenu();
         },
-        DELETE_NODE: (nodeId) => {
+        DELETE_NODE: () => {
             handleDelete();
             closeNodeMenu();
         },
     }
 
-    const onNodeMenuClick = (key, nodeId) => {
+    const onNodeMenuClick = (key) => {
         const handler = onNodeMenuClickAction[key];
         if (!handler) return;
-        handler(nodeId);
+        handler();
     }
 
     const handleDelete = () => {
         if (type === "trigger") {
             return;
         }
-
-        deleteElements({
-        nodes: [{ id: nodeId }],
-        edges: [],
-        });
+        requestDeleteNode(nodeId);
     }
 
     return (
@@ -49,7 +43,7 @@ const NodeMenu = ({ actions, nodeId, type }) => {
                 disabled={action.disabled}
                 onClick={(e) => {
                     e.stopPropagation()
-                    onNodeMenuClick(action.key, nodeId)
+                    onNodeMenuClick(action.key)
                 }}
                 className={`block w-full px-3 py-2 text-left text-sm
                     ${action.danger ? "text-red-500" : "text-white"}

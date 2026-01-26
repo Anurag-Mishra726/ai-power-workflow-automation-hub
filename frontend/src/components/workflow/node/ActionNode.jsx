@@ -17,10 +17,10 @@ export const ActionNode = ({ id, data, type }) => {
   ];
 
   const iconMap = {
-    globe: Globe,
+    http: Globe,
   };
 
-  const Icon = iconMap[data.icon] || Zap;
+  const Icon = iconMap[data.triggerType] || Zap;
   
   return (
     <div className="pointer-events-auto p-2 w-44 bg-zinc-900 relative border  border-zinc-700 rounded-lg text-white flex flex-col gap-2 "
@@ -38,7 +38,7 @@ export const ActionNode = ({ id, data, type }) => {
           }}
         >
         {
-          data.label && data.icon ? (
+          data.label && data.triggerType ? (
             <>
               <span className="text-[12px] text-white">
                  <Icon size={12} />

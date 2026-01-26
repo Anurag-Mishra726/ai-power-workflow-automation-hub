@@ -6,6 +6,5 @@ export const initialEdges = [
       source: 'firstNode', 
       target: 'addNode',
       animated: true, 
-      markerEnd: { type: MarkerType.ArrowClosed } 
     }
 ];

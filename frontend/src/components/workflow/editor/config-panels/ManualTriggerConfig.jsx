@@ -48,7 +48,7 @@ const ManualTriggerConfig = ({selectedNode, onClose, setNodeConfig}) => {
                   Trigger Name
                 </label>
                 <input
-                  {...register('triggerName', { required: 'Trigger name is required' })}
+                  {...register('triggerName')}
                   placeholder="Incoming Webhook"
                   className="w-full rounded-md bg-zinc-900 border border-zinc-700 px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
