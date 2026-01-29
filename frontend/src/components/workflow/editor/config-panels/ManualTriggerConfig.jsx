@@ -11,8 +11,8 @@ const ManualTriggerConfig = ({selectedNode, onClose, setNodeConfig}) => {
 
   const onSubmit = async (data) => {
     const status = await setNodeConfig(data);
-    if(status.success) toast.success("Manual Trigger Node Configured Successfully");
-    else toast.error("Something went Wrong!");
+    // if(status.success) toast.success("Manual Trigger Node Configured Successfully");
+    // else toast.error("Something went Wrong!");
     setIsConfigSidebarClose();
   };
 

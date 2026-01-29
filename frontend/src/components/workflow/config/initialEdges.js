@@ -1,4 +1,3 @@
-import { MarkerType } from "@xyflow/react";
 
 export const initialEdges = [
   { 

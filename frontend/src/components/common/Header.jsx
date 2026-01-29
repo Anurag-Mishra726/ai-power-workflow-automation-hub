@@ -47,7 +47,11 @@ const Header = () => {
     
   const handleBlur = () => {
     if (!localName.trim()) {
-      toast.error("Workflow name cannot be empty");
+      toast.error("Workflow name cannot be empty.");
+      setLocalName(workflowName);
+      return;
+    } else if(localName.length < 3){
+      toast.error("Workflow name is too small.")
       setLocalName(workflowName);
       return;
     }
@@ -86,7 +90,7 @@ const Header = () => {
                           rounded-md shadow-sm transition-all duration-200 min-w-[8ch] max-w-[25ch] w-auto "
                   placeholder="Untitled Workflow"
                   autoFocus
-                  maxLength={50}
+                  maxLength={60}
                 />
               ) : (
                 <div

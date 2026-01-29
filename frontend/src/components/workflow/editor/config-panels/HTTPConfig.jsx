@@ -36,8 +36,8 @@ const HTTPConfig = ({ nodeType, onClose, setNodeConfig }) => {
 
   const onSubmit = async (data) => {
     const status = await setNodeConfig(data);
-    if(status.success) toast.success("HTTP Node Configured Successfully");
-    else toast.error("Something went Wrong!");
+    // if(status.success) toast.success("HTTP Node Configured Successfully");
+    // else toast.error("Something went Wrong!");
     setIsConfigSidebarClose();
   };
 

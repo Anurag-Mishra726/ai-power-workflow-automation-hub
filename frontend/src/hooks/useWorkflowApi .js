@@ -4,19 +4,13 @@ import { saveWorkflow } from '@/service/workflowSave.service';
 import { toast } from "react-hot-toast";
 
 export const useWorkflowSave = () => {
-    // return useMutation({
-    //     mutationFn: saveWorkflowApi,
-    //     onSuccess: (data) =>{
-    //         console.log("Workflow saved successfully:", data);
-    //     }
-    // });
 
     return useMutation({
-        mutationFn: async () =>{
+        mutationFn: async  () =>{
             
-            const payload = await saveWorkflow();
+            const payload = saveWorkflow();
             console.log("Payload to be saved:", payload);
-            return saveWorkflowApi(payload);
+            return await saveWorkflowApi(payload);
         },
         onSuccess: (data) => {
             toast.success("Workflow saved successfully!");

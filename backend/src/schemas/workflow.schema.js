@@ -1,13 +1,5 @@
 import {z} from "zod";
 
-export const WorkflowName = z.string().min(3, "Workflow name is too small").max(60, "Name should be max 60 charater long.").regex(
-      /^[a-zA-Z0-9- ]+$/, 
-      "Special characters are not allowed. Please use only letters, numbers, and spaces."
-    )
-
-
-export const WorkflowId = z.string();
-
 const AddNode = z.object({
     id: z.string(),
     type: z.literal("addNode"),
@@ -64,7 +56,7 @@ const HttpConfig = z.object({
 });
 
 
-const NodeSchema = BaseNodeSchema.superRefine((node, ctx) => {
+const workflowNodeSchema = BaseNodeSchema.superRefine((node, ctx) => {
     if (!node.data.isConfigured) {
         return;
     }
@@ -96,8 +88,7 @@ const NodeSchema = BaseNodeSchema.superRefine((node, ctx) => {
     }
 });
 
-const AnyNodeSchema = z.discriminatedUnion("type", [NodeSchema, AddNode]);
-export const WorkflowNodeSchema = z.array(AnyNodeSchema);
+const AnyNodeSchema = z.discriminatedUnion("type", [workflowNodeSchema, AddNode]);
 
 const EdgeSchema = z.object({
     id: z.string({message: "Invalid Configuration!"}),
@@ -106,78 +97,11 @@ const EdgeSchema = z.object({
     animated: z.boolean({message: "Invalid Configuration!"}).default(false),
 });
 
-export const WorkflowEdgeSchema = z.array(EdgeSchema);
 
-
-const obj = [
-    {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "type": "trigger",
-    "position": { "x": 100, "y": 200 },
-    "data": {
-        "label": "Webhook Listener",
-        "isConfigured": true,
-        "isTrigger": true,
-        "triggerType": "http",
-        "summary": "Listens for incoming POST requests",
-        "config": {
-            "method": "POST",
-            "url": "https://api.myapp.com/webhook",
-            "triggerName": "External Webhook",
-            "headers": "Content-Type: application/json",
-            "body": "{ \"status\": \"active\" }"
-        }
-    }
-},
-{
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "type": "trigger",
-    "position": { "x": 100, "y": 200 },
-    "data": {
-        "label": "Webhook Listener",
-        "isConfigured": true,
-        "isTrigger": true,
-        "triggerType": "http",
-        "summary": "Listens for incoming POST requests",
-        "config": {
-            "method": "GET",
-            "url": "https://api.myapp.com/webhook",
-            "triggerName": "External Webhook",
-            "headers": "Content-Type: application/json",
-            "body": "{ \"status\": \"active\" }"
-        }
-    }
-},
-{
-    "id": "alsdkjfhaskdjfh",
-    "type": "addNode",
-    "position": { "x": 100, "y": 200 },
-    "data":  {"nodeRole": "ADD_NODE"},
-}
-]
-
-// const anynodeSchemas = z.discriminatedUnion("type", [WorkflowNodeSchema, AddNode])
-// const nodeSchemas = z.array(anynodeSchemas);
-
-// const result = nodeSchemas.safeParse(obj)
-
-// console.log(result);
-
-const dummyEdges = [
-  {
-    id: "e1-2",
-    source: "trigger-node-1",
-    target: "action-node-1",
-    animated: true, 
-  },
-  {
-    id: "e2-3",
-    source: "action-node-1",
-    target: "action-node-2",
-    animated: '', 
-  }
-];
-
-// const result = EdgeSchema.safeParse(dummyEdges);
-
-// console.log(result)
+export const SaveWorkflowSchema = z.object({
+    workflowId: z.uuid({message: "Workflow ID is system genereted it can not be modified!"}),
+    workflowName: z.string().min(3, "Workflow name is too small").max(60, "Name should be max 60 charater long.").regex(
+      /^[a-zA-Z0-9- ]+$/, "Special characters are not allowed. Please use only letters, numbers, and spaces."),
+    nodes: z.array(AnyNodeSchema, {message: "Workflow node is not configured!."}),
+    edges: z.array(EdgeSchema),
+})

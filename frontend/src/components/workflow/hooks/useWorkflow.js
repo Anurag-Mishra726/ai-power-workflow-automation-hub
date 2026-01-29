@@ -71,6 +71,7 @@ export const useWorkflow = () => {
                     id: actionNodeId,
                     type: "action",
                     data: {
+                        isTrigger: false,
                         isConfigured: false,
                     },
                     position: { x: x, y: y },
@@ -167,7 +168,6 @@ export const useWorkflow = () => {
                                 label,
                                 isTrigger: true,
                                 triggerType,
-                                summary: "",
                             },
                             } : 
                     node
@@ -177,6 +177,11 @@ export const useWorkflow = () => {
             }); 
             if (updatedNodes) {
                 useWorkflowData.getState().setNodesInStore(updatedNodes);
+            }
+            const {edges} = useWorkflowData.getState();
+            if (!edges || !edges.length )  {
+                console.log("EEEDDDGGGEEESSS",edges);
+                queueMicrotask(() => useWorkflowData.getState().setEdgesInStore(initialEdges));
             }
             
        } catch (error) {
@@ -221,7 +226,7 @@ export const useWorkflow = () => {
             if (updatedNodes) {
                 useWorkflowData.getState().setNodesInStore(updatedNodes);
             }
-
+            
             return {success: true};
 
         } catch (error) {
@@ -247,7 +252,6 @@ export const useWorkflow = () => {
         nodes,
         edges,
         nodeTypes,
-        //setNodes,
         onNodesChange,
         onEdgesChange,
         onConnect,
