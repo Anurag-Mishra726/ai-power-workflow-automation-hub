@@ -6,13 +6,13 @@ import {
 import WorkflowCard from './WorkflowCard';
 import { useNavigate } from 'react-router-dom';
 
-const WorkflowList = () => {
+const WorkflowList = ({data}) => {
 
   const navigate = useNavigate();
 
   return (
     <>
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-6 bg-gradient-to-br from-white/[0.05] to-transparent p-8 rounded-3xl border border-white/15">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-10 bg-gradient-to-br from-white/[0.05] to-transparent p-8 rounded-3xl border border-white/15">
         <div>
           <div className="flex items-center space-x-2 text-blue-500 text-xs font-black uppercase tracking-widest mb-2">
             <Activity size={14} />
@@ -21,9 +21,9 @@ const WorkflowList = () => {
           <h2 className="text-4xl font-black text-white tracking-tight mb-2">
             My Workflows
           </h2>
-          <p className="text-gray-500 max-w-md font-medium">
-            Your automation hub is currently empty. Connect your favorite apps
-            and let AI handle the repetitive tasks for you.
+          <p className="text-gray-500 max-w-lg font-medium ">
+             You've created <span className='text-gray-300 hover:underline'>{data.length} workflows</span>. 
+             Your automation hub is ready — Let <span className='text-gray-300'>FlowAI</span> streamline the work ahead.
           </p>
         </div>
 
@@ -35,11 +35,14 @@ const WorkflowList = () => {
           </span>
         </button>
       </div>
-      <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 gap-6'>
+      <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6 mb-6 '>
 
-        <WorkflowCard/>
-        <WorkflowCard/>
-        <WorkflowCard/>
+        {
+          data.map((data) => (
+            <WorkflowCard key={data.id} data={data} />
+          ))
+        }
+
       </div>
         
     </>

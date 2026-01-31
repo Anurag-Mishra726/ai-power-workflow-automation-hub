@@ -1,9 +1,9 @@
 import pool from "../config/db.js";
 import { AppError } from "../utils/AppErrors.js";
 
-const query = async (sql, params = []) => {
+const query = async (sql, params = [], client = pool) => {
   try {
-    const [rows] = await pool.execute(sql, params);
+    const [rows] = await client.execute(sql, params);
     return rows;
   } catch (err) {
     console.error("❌ DB Error:", err.message);
@@ -36,49 +36,91 @@ const genericQueryGenerator = ( updatableFields, idFilters) => {
 }
 
 export const Workflow = {
-    insertWorkflowsData: async ({workflowId, userId, workflowName, triggerType}) => {
+
+    exists: async({workflowId, userId}, client = pool) => {
+        const rows = await query(
+            "SELECT EXISTS (SELECT 1 FROM workflows WHERE id = ? AND user_id = ?) AS workflowExists",
+            [workflowId, userId],
+            client
+        );
+        return Boolean(rows[0].workflowExists) || null;
+    },
+
+    getWorkflowMetadata: async ({userId}, client = pool) => {
+        const rows = await query(
+            "SELECT * FROM workflows WHERE user_id = ?",
+            [userId],
+            client
+        );
+
+        return rows || null;
+    },
+
+    getWorkflowGraph: async ({workflowId}, client = pool) => {
+        const rows = await query(
+            "SELECT * FROM workflow_graphs WHERE id =?",
+            [workflowId],
+            client
+        );
+
+        return rows[0] || null;
+    },
+
+    getFullWorkflow: async ({workflowId, userId}, client = pool) => {
+        const rows = await query(
+            `SELECT
+                w.id, w.name, w.status, w.trigger_type, w.created_at, 
+                wg.nodes, wg.edges,
+                GREATEST(w.updated_at, wg.updated_at) AS updated_at
+            FROM workflows w
+            INNER JOIN workflow_graphs wg ON w.id = wg.workflow_id
+            WHERE w.id = ? AND user_id = ?`,
+            [workflowId, userId],
+            client
+        );
+
+        return rows[0] || null;
+    },
+
+    insertWorkflowsData: async ({workflowId, userId, workflowName, triggerType}, client = pool) => {
         const rows = await query(
             "INSERT INTO workflows (id, user_id, name, trigger_type) VALUES (?, ?, ?, ?)",
-            [workflowId, userId, workflowName, triggerType]
+            [workflowId, userId, workflowName, triggerType],
+            client
         );
     },
 
-    updateWorkflowsData: async ({workflowId, userId, ...updatableFields}) => {
+    updateWorkflowsData: async ({workflowId, userId, ...updatableFields}, client = pool) => {
         
         const { setClause, values } = genericQueryGenerator(updatableFields, { workflowId, userId });
 
         const result = await query(
             `UPDATE workflows SET ${setClause} WHERE id = ? AND user_id = ?`,
-            values
+            values,
+            client
         );
 
         return result;
     },
 
-    insertWorkflowGraphData: async ({workflowId, nodes, edges}) => {
+    insertWorkflowGraphData: async ({workflowId, nodes, edges}, client = pool) => {
         const rows = await query(
             "INSERT INTO workflow_graphs (workflow_id, nodes, edges) VALUES (?, ?, ?)",
-            [workflowId, nodes, edges]
+            [workflowId, nodes, edges],
+            client
         )
     },
 
-    updateWorkflowGraphData: async ({workflowId, ...updatableFields}) => {
+    updateWorkflowGraphData: async ({workflowId, ...updatableFields}, client = pool) => {
 
         const { setClause, values } = genericQueryGenerator(updatableFields, { workflowId });
 
         const result = await query(
             `UPDATE workflow_graphs SET ${setClause} WHERE workflow_id = ? `,
-            values
+            values,
+            client
         );
 
         return result;
-    },
-
-    findById: async({workflowId, userId}) => {
-        const rows = await query(
-            "SELECT id, user_id, name, status, trigger_type FROM workflows WHERE id = ? AND user_id = ?",
-            [workflowId, userId]
-        );
-        return rows[0] || null;
     },
 }

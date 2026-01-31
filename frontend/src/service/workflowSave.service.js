@@ -74,7 +74,7 @@ export const saveWorkflow = () => {
 
         const payload =  validateWorkflow(nodes, edges, workflowId, workflowName)
 
-        console.log(payload);
+        //console.log(payload);
        
         return payload;
 
@@ -83,10 +83,3 @@ export const saveWorkflow = () => {
         throw new Error(err.message || "Failed to save workflow");
     }
 }
-
-// function validateWorkflow(nodes) {
-//   const hasTrigger = nodes.some(n => n.data?.isTrigger);
-//   if (!hasTrigger) {
-//     throw new Error("Workflow must have a trigger");
-//   }
-// }

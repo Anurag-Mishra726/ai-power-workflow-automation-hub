@@ -6,7 +6,11 @@ const useWorkflowData = create(
         (set) => ({
             workflowName: "",
             workflowId: null,
-            node: [],
+            workflowStatus: null,
+            workflowTriggerType: null,
+            workflowCreatedAt: null,
+            workflowUpdatedAt: null,
+            nodes: [],
             edges: [],
 
             setWorkflowName: (name) => {
@@ -15,6 +19,22 @@ const useWorkflowData = create(
 
             setWorkflowId: (id) => {
                 set({workflowId: id})
+            },
+
+            setWorkflowStatus: (status) => {
+                set({workflowStatus: status});
+            },
+
+            setWorkflowTriggerType: (triggerType) => {
+                set({workflowTriggerType: triggerType});
+            },
+
+            setWorkflowCreatedAt: (createdAt) => {
+                set({workflowCreatedAt: createdAt});
+            },
+
+            setWorkflowUpdatedAt: (updatedAt) => {
+                set({workflowUpdatedAt: updatedAt});
             },
 
             setNodesInStore: (updater) =>
@@ -34,7 +54,11 @@ const useWorkflowData = create(
                 workflowName: state.workflowName,
                 workflowId: state.workflowId,
                 nodes: state.nodes,
-                edges: state.edges
+                edges: state.edges,
+                workflowCreatedAt: state.workflowCreatedAt,
+                workflowUpdatedAt: state.workflowUpdatedAt,
+                workflowTriggerType: state.workflowTriggerType,
+                workflowStatus: state.workflowStatus,
             })
         }
     )
