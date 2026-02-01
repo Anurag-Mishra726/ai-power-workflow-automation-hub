@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FiSidebar } from "react-icons/fi";
@@ -7,16 +7,18 @@ import { Save, ChevronRight, Trash2 } from "lucide-react";
 import { FaGreaterThan } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import useWorkflowData from "@/stores/workflowDataStore";
-import { useWorkflowSave } from "@/hooks/useWorkflowApi ";
+import { useDeleteWorkflow, useWorkflowSave } from "@/hooks/useWorkflowApi ";
 import { WorkflowName } from "@/schemas/workflowSchema";
 
 const Header = () => {
 
+  const navigate = useNavigate();
   const {mutate: saveWorkflow, isPending} = useWorkflowSave();
+  const {mutateAsync} = useDeleteWorkflow();
 
   let pageTitle;
   const { id } = useParams();
-  //console.log(id, " sdfasdfasdf")
+  //console.log(isPending, " sdfasdfasdf")
   const location = useLocation();
   const path = location.pathname;
 
@@ -63,8 +65,10 @@ const Header = () => {
     Math.min(25, localName.length || localName.length)
   ); 
 
-  const deleteWorkflow = () => {
-    console.log("Deleting Workflow...");
+  const handleDelete =() => {
+    //deleteWorkflow(workflowId);
+    mutateAsync(workflowId);
+    console.log(workflowId);
   }
 
   return (
@@ -74,7 +78,7 @@ const Header = () => {
         {isEditor ? (
           <>
             <h1 className="flex items-center justify-center gap-2 font-mono text-3xl">
-              <span className="leading-tight">Workflow</span>
+              <span className="leading-tight cursor-pointer " onClick={() => navigate('/workflow')}>Workflow</span>
               <ChevronRight size={16} className="text-zinc-300 mt-[3px]" />
               {isWorkflowNameEditing ? (
                 <input
@@ -103,13 +107,14 @@ const Header = () => {
             <div className="flex items-center gap-3">
               <button className="flex items-center gap-2 px-4 py-2 rounded-md border border-blue-500/50 hover:bg-blue-500 text-blue-400 hover:text-white text-sm font-medium transition-colors duration-200 focus:outline-none "
                 onClick={() => saveWorkflow()}
+                disabled={isPending}
               >
                 <Save size={18} />
                 <span>Save</span>
               </button>
 
               <button className=" flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white font-medium transition-colors duration-200 focus:outline-none  "
-                onClick={() => deleteWorkflow()}
+                onClick={() => handleDelete()}
               >
 
                 <Trash2 size={18} />

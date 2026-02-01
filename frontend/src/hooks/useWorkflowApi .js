@@ -1,5 +1,5 @@
 import {useMutation, useQuery} from '@tanstack/react-query';
-import { saveWorkflowApi, getWorkflowMetadata, getWorkflowGraph, generateWorkflowId } from '@/api/workflow.api';
+import { saveWorkflowApi, getWorkflowMetadata, getWorkflowGraph, generateWorkflowId, deleteWorkflow } from '@/api/workflow.api';
 import { saveWorkflow } from '@/service/workflowSave.service';
 import { toast } from "react-hot-toast";
 import useWorkflowData from '@/stores/workflowDataStore';
@@ -49,7 +49,7 @@ export const useGetWorkflowMetadata = () => {
     return useQuery({
         queryKey: ["workflows", "graph" ],
         queryFn: getWorkflowMetadata,
-        staleTime: 30 * 1000,
+        staleTime: 3 * 1000,
     });
 }
 
@@ -94,3 +94,22 @@ export const useGenerateWorkflowId = () => {
         },
     });
 };
+
+export const useDeleteWorkflow = () => {
+    const {clearData} = useWorkflowData();
+    const navigate = useNavigate();
+    return useMutation({
+        mutationFn: async(workflowId) => await deleteWorkflow(workflowId),
+        onSuccess: () => {
+            navigate('/workflow');
+            clearData();
+            toast.success("Workflow deleted successfully.");
+        },
+        onError: (error) => {
+            console.log(error);
+            navigate('/workflow');
+            clearData();
+            //toast.error(error || "Failed to delete workflow");
+        }
+    })
+}

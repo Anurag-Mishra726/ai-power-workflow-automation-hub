@@ -21,3 +21,9 @@ export const generateWorkflowId = async () => {
     const res = await api.get('workflows/get-id');
     return res.data;
 }
+
+export const deleteWorkflow = async (workflowId) => {
+    const res = await api.delete('/workflows/delete-workflow', {
+        params: {workflowId}
+    });
+}

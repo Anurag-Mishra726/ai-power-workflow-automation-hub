@@ -14,7 +14,7 @@ export const saveWorkflowData = async (userData, saveWorkflowData) => {
         await connection.beginTransaction();
 
         const existingWorkflow = await Workflow.exists({workflowId, userId}, connection);
-
+        console.log("*******%%%%%%: ", existingWorkflow)
         if (!existingWorkflow) {
 
             await Workflow.insertWorkflowsData({
@@ -47,13 +47,12 @@ export const saveWorkflowData = async (userData, saveWorkflowData) => {
 
         const workflowData = await Workflow.getFullWorkflow({workflowId, userId}, connection);
 
-        console.log(workflowData);
+        //console.log(workflowData);
 
         await connection.commit();
 
         return { 
             message: "Workflow saved successfully.", 
-            status: 200,
             workflowId: workflowData.id,
             workflowName: workflowData.name,
             workflowStatus: workflowData.status,
@@ -85,7 +84,6 @@ export const getWorkflowMetadata = async (userData) => {
 
     return {
         message: "All Workflow are fetched",
-        status: 200,
         workflowMetadata: result,
     }
 }
@@ -104,7 +102,6 @@ export const getWorkflowGraph = async ( userData, workflowId ) => {
 
     return{
         message: "Workflow Graph is fetched.",
-        status: 200,
         workflowId: workflowGraph.id,
         workflowName: workflowGraph.name,
         workflowStatus: workflowGraph.status,
@@ -114,6 +111,22 @@ export const getWorkflowGraph = async ( userData, workflowId ) => {
         workflowEdges: workflowGraph.edges,
         workflowUpdatedAt: workflowGraph.updated_at
     }
+}
+
+export const deleteWorkflow = async (userData, workflowId) => {
+
+    const userId = userData.userId;
+    console.log("user and workflow id : ", userId, workflowId);
+
+    const workflowExists = await Workflow.exists({workflowId, userId});
+    console.log(workflowExists);
+    if (!workflowExists) {
+        throw new AppError("Workflow Not Found!", 404);
+    }
+
+    await Workflow.deleteWorkflow({ userId, workflowId });
+    return { message: "Workflow deleted successfully" };
+
 }
 
 export const generateWorkflowId = () => {

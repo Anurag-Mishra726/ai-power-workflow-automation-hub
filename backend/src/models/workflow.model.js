@@ -43,7 +43,7 @@ export const Workflow = {
             [workflowId, userId],
             client
         );
-        return Boolean(rows[0].workflowExists) || null;
+        return Number(rows[0].workflowExists) === 1;
     },
 
     getWorkflowMetadata: async ({userId}, client = pool) => {
@@ -123,4 +123,14 @@ export const Workflow = {
 
         return result;
     },
+
+    deleteWorkflow: async ({ userId, workflowId }, client = pool) => {
+
+        await query(
+            "DELETE FROM workflows WHERE id = ? AND user_id = ?",
+            [workflowId, userId],
+            client
+        );
+        return;
+    }
 }

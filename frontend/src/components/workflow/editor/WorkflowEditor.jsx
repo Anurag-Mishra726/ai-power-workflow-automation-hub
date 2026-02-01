@@ -16,7 +16,6 @@ const WorkflowEditor = () => {
   const hasUnsavedChanges = workflow.nodes.length > 0 || isSidebarOpen || isConfigSidebarOpen;
 
   useEffect(() => {
-    // 1. Browser refresh/close/back button
     const handleBeforeUnload = (e) => {
       if (hasUnsavedChanges) {
         e.preventDefault();
