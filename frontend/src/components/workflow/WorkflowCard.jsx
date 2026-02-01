@@ -5,7 +5,7 @@ import {
   EllipsisVertical,
 } from "lucide-react";
 
-const WorkflowCard = ({data}) => {
+const WorkflowCard = ({data, onClick}) => {
 
   const iconMap = {
     http: Globe,
@@ -53,7 +53,9 @@ const WorkflowCard = ({data}) => {
 
   return (
     <>
-      <div className="group bg-[#0f0f0f] rounded-2xl border border-white/5 hover:border-blue-500 transition-all duration-300 overflow-hidden flex flex-col cursor-pointer">
+      <div className="group bg-[#0f0f0f] rounded-2xl border border-white/5 hover:border-blue-500 transition-all duration-300 overflow-hidden flex flex-col cursor-pointer"
+        onClick={onClick}
+      >
         <div className="px-5 pt-5 pb-2 flex-1">
           <div className="flex items-start justify-between mb-5">
             <div className="flex items-center space-x-3">

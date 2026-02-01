@@ -10,8 +10,8 @@ const useWorkflowData = create(
             workflowTriggerType: null,
             workflowCreatedAt: null,
             workflowUpdatedAt: null,
-            nodes: [],
-            edges: [],
+            workflowNodes: [],
+            workflowEdges: [],
 
             setWorkflowName: (name) => {
                 set({workflowName: name})
@@ -39,13 +39,24 @@ const useWorkflowData = create(
 
             setNodesInStore: (updater) =>
                 set((state) => ({
-                    nodes: typeof updater === "function" ? updater(state.nodes) : updater,
+                    workflowNodes: typeof updater === "function" ? updater(state.workflowNodes) : updater,
                 })),
 
             setEdgesInStore: (updater) => 
                 set((state) => ({
-                    edges: typeof updater === "function" ? updater(state.edges) : updater,
-                }))
+                    workflowEdges: typeof updater === "function" ? updater(state.workflowEdges) : updater,
+                })),
+
+            clearData: () => set({
+                workflowName: "",
+                workflowId: null,
+                workflowStatus: null,
+                workflowTriggerType: null,
+                workflowCreatedAt: null,
+                workflowUpdatedAt: null,
+                workflowNodes: [],
+                workflowEdges: [],
+            })
         }),
         {
             name: "workflowEditor-state",
@@ -53,8 +64,8 @@ const useWorkflowData = create(
             partialize: (state) => ({
                 workflowName: state.workflowName,
                 workflowId: state.workflowId,
-                nodes: state.nodes,
-                edges: state.edges,
+                workflowNodes: state.workflowNodes,
+                workflowEdges: state.workflowEdges,
                 workflowCreatedAt: state.workflowCreatedAt,
                 workflowUpdatedAt: state.workflowUpdatedAt,
                 workflowTriggerType: state.workflowTriggerType,

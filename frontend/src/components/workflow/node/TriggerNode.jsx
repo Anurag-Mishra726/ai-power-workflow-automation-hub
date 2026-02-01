@@ -78,11 +78,11 @@ export const TriggerNode = ({ id ,data, type }) => {
       </div>
 
       <div className="text-sm text-white/50 flex items-center gap-2">
-        {data.config ? (
+        { data.summary ? (
           <>
             <span className="flex items-center gap-2">
               <CheckCircle size={12} className="self-center translate-y-0.5" />
-              {data.config.triggerName}
+              {data.summary}
             </span>
           </>
           ) : (

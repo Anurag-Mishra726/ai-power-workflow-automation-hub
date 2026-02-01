@@ -8,7 +8,7 @@ import { FaGreaterThan } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import useWorkflowData from "@/stores/workflowDataStore";
 import { useWorkflowSave } from "@/hooks/useWorkflowApi ";
-
+import { WorkflowName } from "@/schemas/workflowSchema";
 
 const Header = () => {
 
@@ -16,6 +16,7 @@ const Header = () => {
 
   let pageTitle;
   const { id } = useParams();
+  //console.log(id, " sdfasdfasdf")
   const location = useLocation();
   const path = location.pathname;
 
@@ -37,7 +38,7 @@ const Header = () => {
     if (!workflowId) return;
 
     if (!workflowName) {
-      const defaultName = `Untitled-Workflow-${workflowId}`;
+      const defaultName = "Untitled-Workflow";
       setWorkflowName(defaultName);
       setLocalName(defaultName);
     } else {
@@ -46,16 +47,13 @@ const Header = () => {
   }, [workflowId, workflowName]);
     
   const handleBlur = () => {
-    if (!localName.trim()) {
-      toast.error("Workflow name cannot be empty.");
+    const workflowNameResult = WorkflowName.safeParse(localName);
+    if (!workflowNameResult.success) {
+      toast.error( workflowNameResult.error.issues[0].message || "Workflow name is not configured properly");
       setLocalName(workflowName);
-      return;
-    } else if(localName.length < 3){
-      toast.error("Workflow name is too small.")
-      setLocalName(workflowName);
-      return;
+      return
     }
-    setWorkflowName(localName.trim());
+    setWorkflowName(workflowNameResult.data);
     toast.success("Workflow name updated");
     setIsWorkflowNameEditing(false);
   };

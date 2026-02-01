@@ -1,14 +1,44 @@
 import React from 'react'
-import {
-  Plus,
-  Activity,
-} from "lucide-react";
+import { Plus, Activity } from "lucide-react";
 import WorkflowCard from './WorkflowCard';
 import { useNavigate } from 'react-router-dom';
+import { useGetWorkflowGraph } from '@/hooks/useWorkflowApi ';
+import LoadingState from "../common/LoadingState";
+import ErrorState from "../common/ErrorState";
+import { useGenerateWorkflowId } from "@/hooks/useWorkflowApi ";
 
 const WorkflowList = ({data}) => {
 
   const navigate = useNavigate();
+  const {mutateAsync, isLoading, error} = useGetWorkflowGraph()
+ const { mutate, isPending } = useGenerateWorkflowId();
+
+  const onCardClick = async (id) => {
+    const workflowGraph = await mutateAsync(id);
+    if(isLoading){
+      return (
+        <div className="flex justify-center items-center mt-40">
+          <LoadingState
+              text="LOADING*WORKFLOWS*"
+              onHover="speedUp"
+              spinDuration={20}
+              className="custom-class"
+          />
+        </div>
+      )
+    }
+
+    if (error) {
+      return (
+        <div className="flex justify-center items-center mt-40">
+          <ErrorState/>
+        </div>
+      )
+    }
+    navigate(`/workflow/${id}`)
+    console.log("Card Cicked... ", workflowGraph);
+
+  }  
 
   return (
     <>
@@ -27,7 +57,7 @@ const WorkflowList = ({data}) => {
           </p>
         </div>
 
-        <button className="group relative bg-white text-black hover:bg-blue-500 hover:text-white px-8 py-4 rounded-full font-black shadow-2xl transition-all active:scale-95 flex items-center justify-center space-x-3 overflow-hidden" onClick={() => navigate("/workflow/new")}>
+        <button className="group relative bg-white text-black hover:bg-blue-500 hover:text-white px-8 py-4 rounded-full font-black shadow-2xl transition-all active:scale-95 flex items-center justify-center space-x-3 overflow-hidden" onClick={() => mutate()}>
           <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
           <Plus className="relative z-10" size={22} strokeWidth={3} />
           <span className="relative z-10 text-lg uppercase tracking-tight">
@@ -39,7 +69,7 @@ const WorkflowList = ({data}) => {
 
         {
           data.map((data) => (
-            <WorkflowCard key={data.id} data={data} />
+            <WorkflowCard key={data.id} data={data} onClick={() => onCardClick(data.id)} />
           ))
         }
 

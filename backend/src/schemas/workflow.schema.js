@@ -30,13 +30,13 @@ const BaseNodeSchema = z.object({
 });
 
 const ManualTriggerConfig = z.object({
-    triggerName: z.string().optional(),
+    isConfigured: z.boolean().default(true),
 });
 
 const HttpConfig = z.object({
     method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
     url: z.string(),
-    triggerName: z.string().optional(),
+    //triggerName: z.string().optional(),
     headers: z.string().optional(),
     body: z.string().optional(),
     }).superRefine((val, ctx) => {
@@ -62,7 +62,7 @@ const workflowNodeSchema = BaseNodeSchema.superRefine((node, ctx) => {
     }
 
     if (node.data.triggerType === "manual") {
-        const result = ManualTriggerConfig.safeParse(node.data.config);
+        const result = ManualTriggerConfig.safeParse(node.data);
         if (!result.success) {
             result.error.issues.forEach(issue => {
                 ctx.addIssue({

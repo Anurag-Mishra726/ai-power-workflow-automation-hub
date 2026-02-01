@@ -3,7 +3,7 @@ export const nodeConfigMap = {
     manual: {
         defaultConfig: {},
 
-        buildSummary: (config) => config?.triggerName ? `${config.triggerName}` :  "Triggered manually",
+        buildSummary: () => "Triggered manually",
 
         isComplete: () => true,
     },

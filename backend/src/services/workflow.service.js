@@ -45,7 +45,7 @@ export const saveWorkflowData = async (userData, saveWorkflowData) => {
             }, connection );
         }
 
-        const workflowData = await Workflow.getFullWorkflow({workflowId, userId}, connection)
+        const workflowData = await Workflow.getFullWorkflow({workflowId, userId}, connection);
 
         console.log(workflowData);
 
@@ -83,8 +83,6 @@ export const getWorkflowMetadata = async (userData) => {
         }
     }
 
-    console.log(result);
-
     return {
         message: "All Workflow are fetched",
         status: 200,
@@ -92,4 +90,33 @@ export const getWorkflowMetadata = async (userData) => {
     }
 }
 
-// create a workflowId on backend send to frontend for user also.
+export const getWorkflowGraph = async ( userData, workflowId ) => {
+    const userId = userData.userId;
+
+    const workflowGraph = await Workflow.getFullWorkflow({workflowId, userId});
+
+    if (!workflowGraph) {
+        return{
+            message: "No workflow found.",
+            workflowGraph: null,
+        }
+    }
+
+    return{
+        message: "Workflow Graph is fetched.",
+        status: 200,
+        workflowId: workflowGraph.id,
+        workflowName: workflowGraph.name,
+        workflowStatus: workflowGraph.status,
+        workflowTriggerType: workflowGraph.trigger_type,
+        workflowCreatedAt: workflowGraph.created_at,
+        workflowNodes: workflowGraph.nodes,
+        workflowEdges: workflowGraph.edges,
+        workflowUpdatedAt: workflowGraph.updated_at
+    }
+}
+
+export const generateWorkflowId = () => {
+    const id = crypto.randomUUID();
+    return id;
+}

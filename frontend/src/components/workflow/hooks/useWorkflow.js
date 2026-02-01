@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo, use } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { initialNodes } from "../config/initialNodes";
 import { initialEdges } from "../config/initialEdges";
 import { nodeTypes } from "../config/nodeType";
@@ -10,8 +10,21 @@ import useWorkflowData from "@/stores/workflowDataStore";
 import { toast } from "react-hot-toast"; 
 
 export const useWorkflow = () => {
+    const { workflowNodes, workflowEdges } = useWorkflowData();
+
     const [nodes, setNodes] = useState(initialNodes);
     const [edges, setEdges] = useState(initialEdges);
+
+    useEffect(() => {
+        if (workflowNodes?.length) {
+            setNodes(workflowNodes);
+        }
+        if (workflowEdges?.length) {
+            setEdges(workflowEdges);
+        }
+        }, [workflowNodes, workflowEdges]);
+    
+
 
     const onNodesChange = useCallback(
         (changes) =>
@@ -159,17 +172,20 @@ export const useWorkflow = () => {
                     return nds;
                 }
                 
+                const configHandler = nodeConfigMap[triggerType];
+
                 updatedNodes = nds.map((node) =>
                     node.id === activeNodeId
                         ? {
                             ...node,
                             data: {
-                                ...node.data,
                                 label,
                                 isTrigger: true,
+                                isConfigured: configHandler.isComplete(),
                                 triggerType,
+                                summary: configHandler.buildSummary(),
                             },
-                            } : 
+                        } : 
                     node
                 )
                 return updatedNodes;
@@ -178,9 +194,8 @@ export const useWorkflow = () => {
             if (updatedNodes) {
                 useWorkflowData.getState().setNodesInStore(updatedNodes);
             }
-            const {edges} = useWorkflowData.getState();
-            if (!edges || !edges.length )  {
-                console.log("EEEDDDGGGEEESSS",edges);
+            const {workflowEdges} = useWorkflowData.getState();
+            if (!workflowEdges || !workflowEdges.length )  {
                 queueMicrotask(() => useWorkflowData.getState().setEdgesInStore(initialEdges));
             }
             
@@ -250,7 +265,9 @@ export const useWorkflow = () => {
 
     return {
         nodes,
+        setNodes,
         edges,
+        setEdges,
         nodeTypes,
         onNodesChange,
         onEdgesChange,

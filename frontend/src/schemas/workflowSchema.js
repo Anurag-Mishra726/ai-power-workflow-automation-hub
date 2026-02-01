@@ -3,7 +3,7 @@ import {z} from "zod";
 export const WorkflowName = z.string().min(3, "Workflow name is too small").max(60, "Name should be max 60 charater long.").regex(
       /^[a-zA-Z0-9- ]+$/, 
       "Special characters are not allowed. Please use only letters, numbers, and spaces."
-    )
+    );
 
 
 export const WorkflowId = z.string();
@@ -38,13 +38,12 @@ const BaseNodeSchema = z.object({
 });
 
 const ManualTriggerConfig = z.object({
-    triggerName: z.string().optional(),
+    isConfigured: z.boolean().default(true),
 });
 
-const HttpConfig = z.object({
+export const HttpConfig = z.object({
     method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
     url: z.string(),
-    triggerName: z.string().optional(),
     headers: z.string().optional(),
     body: z.string().optional(),
     }).superRefine((val, ctx) => {
@@ -54,11 +53,18 @@ const HttpConfig = z.object({
         message: "GET request cannot have a body",
         });
     }
+    
+    if (["POST", "PUT", "PATCH"].includes(val.method) && !val.headers) {
+            ctx.addIssue({
+            path: ["headers"],
+            message: "Body and Header is required for this HTTP method",
+        });
+    }
 
-    if (["POST", "PUT", "PATCH"].includes(val.method) && !val.body) {
-        ctx.addIssue({
-        path: ["body"],
-        message: "Body and Header is required for this HTTP method",
+    if (["POST", "PUT", "PATCH"].includes(val.method) && !val.body.trim()) {
+            ctx.addIssue({
+            path: ["body"],
+            message: "Body and Header is required for this HTTP method",
         });
     }
 });
@@ -70,7 +76,7 @@ const NodeSchema = BaseNodeSchema.superRefine((node, ctx) => {
     }
 
     if (node.data.triggerType === "manual") {
-        const result = ManualTriggerConfig.safeParse(node.data.config);
+        const result = ManualTriggerConfig.safeParse(node.data);
         if (!result.success) {
             result.error.issues.forEach(issue => {
                 ctx.addIssue({
@@ -107,77 +113,3 @@ const EdgeSchema = z.object({
 });
 
 export const WorkflowEdgeSchema = z.array(EdgeSchema);
-
-
-const obj = [
-    {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "type": "trigger",
-    "position": { "x": 100, "y": 200 },
-    "data": {
-        "label": "Webhook Listener",
-        "isConfigured": true,
-        "isTrigger": true,
-        "triggerType": "http",
-        "summary": "Listens for incoming POST requests",
-        "config": {
-            "method": "POST",
-            "url": "https://api.myapp.com/webhook",
-            "triggerName": "External Webhook",
-            "headers": "Content-Type: application/json",
-            "body": "{ \"status\": \"active\" }"
-        }
-    }
-},
-{
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "type": "trigger",
-    "position": { "x": 100, "y": 200 },
-    "data": {
-        "label": "Webhook Listener",
-        "isConfigured": true,
-        "isTrigger": true,
-        "triggerType": "http",
-        "summary": "Listens for incoming POST requests",
-        "config": {
-            "method": "GET",
-            "url": "https://api.myapp.com/webhook",
-            "triggerName": "External Webhook",
-            "headers": "Content-Type: application/json",
-            "body": "{ \"status\": \"active\" }"
-        }
-    }
-},
-{
-    "id": "alsdkjfhaskdjfh",
-    "type": "addNode",
-    "position": { "x": 100, "y": 200 },
-    "data":  {"nodeRole": "ADD_NODE"},
-}
-]
-
-// const anynodeSchemas = z.discriminatedUnion("type", [WorkflowNodeSchema, AddNode])
-// const nodeSchemas = z.array(anynodeSchemas);
-
-// const result = nodeSchemas.safeParse(obj)
-
-// console.log(result);
-
-const dummyEdges = [
-  {
-    id: "e1-2",
-    source: "trigger-node-1",
-    target: "action-node-1",
-    animated: true, 
-  },
-  {
-    id: "e2-3",
-    source: "action-node-1",
-    target: "action-node-2",
-    animated: '', 
-  }
-];
-
-// const result = EdgeSchema.safeParse(dummyEdges);
-
-// console.log(result)

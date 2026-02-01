@@ -4,17 +4,8 @@ import CloseBtn from '@/components/common/CloseBtn';
 import { toast } from 'react-hot-toast';
 import useEditorUIStore from "@/stores/workflowEditorStore";
 
-const ManualTriggerConfig = ({selectedNode, onClose, setNodeConfig}) => {
+const ManualTriggerConfig = ({onClose}) => {
 
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const {setIsConfigSidebarClose} = useEditorUIStore();
-
-  const onSubmit = async (data) => {
-    const status = await setNodeConfig(data);
-    // if(status.success) toast.success("Manual Trigger Node Configured Successfully");
-    // else toast.error("Something went Wrong!");
-    setIsConfigSidebarClose();
-  };
 
   return (
     <aside
@@ -30,43 +21,7 @@ const ManualTriggerConfig = ({selectedNode, onClose, setNodeConfig}) => {
             <CloseBtn onClose={onClose} />
         </div>  
         <div className="flex-1 flex flex-col overflow-hidden">
-          <form 
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSubmit(onSubmit)(e);
-            }}
-            className="flex-1 flex flex-col justify-between overflow-hidden"
-          >
-            <section className='p-4 mt-5'>
-            <h3 className="text-sm font-semibold text-zinc-200 mb-3">
-              General
-            </h3>
-
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs text-zinc-400 mb-1">
-                  Trigger Name
-                </label>
-                <input
-                  {...register('triggerName')}
-                  placeholder="Incoming Webhook"
-                  className="w-full rounded-md bg-zinc-900 border border-zinc-700 px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-                {errors.triggerName && (
-                  <p className="text-xs text-red-400 mt-1">{errors.triggerName.message}</p>
-                )}
-              </div>
-            </div>
-          </section>  
-          <div className="border-t border-zinc-800 px-4 py-3 flex justify-end bg-zinc-900/50">
-          <button
-            type="submit"
-            className="rounded-md bg-blue-600 px-4 py-2 text-xs font-semibold hover:bg-blue-500 active:bg-blue-700 transition-colors"
-          >
-            Save
-          </button>
-        </div>
-          </form>  
+          
         </div>      
     </aside>
   );

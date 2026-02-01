@@ -70,9 +70,9 @@ const validateWorkflow = (nodes, edges, workflowId, workflowName) => {
 
 export const saveWorkflow = () => {
     try {
-        const { nodes, edges, workflowId, workflowName } = useWorkflowData.getState();
+        const { workflowNodes, workflowEdges, workflowId, workflowName } = useWorkflowData.getState();
 
-        const payload =  validateWorkflow(nodes, edges, workflowId, workflowName)
+        const payload =  validateWorkflow(workflowNodes, workflowEdges, workflowId, workflowName)
 
         //console.log(payload);
        

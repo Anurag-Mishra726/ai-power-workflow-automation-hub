@@ -9,3 +9,15 @@ export const getWorkflowMetadata = async () => {
     const res = await api.get('/workflows/metadata');
     return res.data;
 }
+
+export const getWorkflowGraph = async (workflowId) => {
+    const res = await api.get('/workflows/graph', {
+        params: { workflowId }
+    });
+    return res.data;
+}
+
+export const generateWorkflowId = async () => {
+    const res = await api.get('workflows/get-id');
+    return res.data;
+}

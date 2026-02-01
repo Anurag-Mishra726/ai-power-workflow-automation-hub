@@ -30,7 +30,7 @@ const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
 
   switch (selectedNode.data.triggerType) {
     case "manual":
-        return <ManualTriggerConfig selectedNode={selectedNode.id} onClose={onClose} setNodeConfig={setNodeConfig} />;
+        return <ManualTriggerConfig  onClose={onClose}  />;
     
     case "http": 
         return <HTTPConfig selectedNode={selectedNode} onClose={onClose} nodeType={nodeType} setNodeConfig={setNodeConfig} />;
