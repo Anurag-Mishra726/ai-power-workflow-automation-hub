@@ -6,7 +6,7 @@ import cors from "cors";
 
 import {serve} from "inngest/express";
 import {inngest} from "./src/inngest/client.js";
-import { helloWorld, aiTest } from "./src/inngest/functions.js";
+import { executeWorkflow } from "./src/inngest/functions.js";
 
 import {gemini, perplexity} from "./src/ai/generateText.js";
 
@@ -31,7 +31,7 @@ app.use(cookieParser());
 
 app.use("/api/inngest", serve({
     client: inngest,
-    functions : [helloWorld, aiTest]
+    functions : [executeWorkflow]
 }));
 
 app.get("/", (req, res) => {
@@ -39,55 +39,53 @@ app.get("/", (req, res) => {
     
 });
 
-// TODOs : validate the data of workflow comming form frontend make DB than make proper service and store.
+// app.post("/api/test", async (req, res) => {
 
-app.post("/api/test", async (req, res) => {
+//     try {
+//         console.log("Starting Inngest................");
+//         const {ids} = await inngest.send({
+//             name: "test/hello",
+//             data: {
+//                 name: req.body.name || "Anurag",
+//                 timestamp: new Date().toISOString()
+//             }
+//         })
 
-    try {
-        console.log("Starting Inngest................");
-        const {ids} = await inngest.send({
-            name: "test/hello",
-            data: {
-                name: req.body.name || "Anurag",
-                timestamp: new Date().toISOString()
-            }
-        })
+//         console.log("IDS ------>   ", ids[0]);
 
-        console.log("IDS ------>   ", ids[0]);
+//         res.json({
+//             message: "Inngest event sent successfully",
+//             eventId: ids[0],
+//         })
+//     } catch (error) {
+//         console.log("Error : " , error);
+//     }
 
-        res.json({
-            message: "Inngest event sent successfully",
-            eventId: ids[0],
-        })
-    } catch (error) {
-        console.log("Error : " , error);
-    }
+// });
 
-});
+// app.post("/api/test-ai", async (req, res) => {
+//     try {
+//         const {ids} = await inngest.send({
+//             name: "test/ai", 
+//         })
+//         console.log(ids);
+//         return res.json({
+//             message: "AI Test event sent successfully",
+//             eventId: ids[0],
+//         })
+//     } catch (error) {
+//         console.log(error);
+//     }
+// })
 
-app.post("/api/test-ai", async (req, res) => {
-    try {
-        const {ids} = await inngest.send({
-            name: "test/ai", 
-        })
-        console.log(ids);
-        return res.json({
-            message: "AI Test event sent successfully",
-            eventId: ids[0],
-        })
-    } catch (error) {
-        console.log(error);
-    }
-})
-
-app.get("/api/test-ai", async (req, res) => {
-    const text = await perplexity("what is the capital of india?");
-    console.log(text);
-    res.json({
-        message: "Perplexity Test Successful",
-        response: text,
-    })
-})
+// app.get("/api/test-ai", async (req, res) => {
+//     const text = await perplexity("what is the capital of india?");
+//     console.log(text);
+//     res.json({
+//         message: "Perplexity Test Successful",
+//         response: text,
+//     })
+// })
 
 
 app.use("/api/auth", authRoutes);

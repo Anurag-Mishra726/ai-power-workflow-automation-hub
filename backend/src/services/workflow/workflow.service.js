@@ -1,6 +1,6 @@
-import pool from "../config/db.js";
-import { Workflow } from "../models/workflow.model.js";
-import { AppError } from "../utils/AppErrors.js";
+import pool from "../../config/db.js";
+import { Workflow } from "../../models/workflow.model.js";
+import { AppError } from "../../utils/AppErrors.js";
 
 export const saveWorkflowData = async (userData, saveWorkflowData) => {
 

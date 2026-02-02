@@ -20,8 +20,9 @@ const ManualTriggerConfig = ({onClose}) => {
         </div>
             <CloseBtn onClose={onClose} />
         </div>  
-        <div className="flex-1 flex flex-col overflow-hidden">
-          
+        <div className="flex flex-col items-center justify-center text-white/60 text-lg mt-24">
+         <p className="text-center ">No configuration required.</p>
+        <p className="text-center mt-5 text-2xl">Click to execute workflow</p>
         </div>      
     </aside>
   );
