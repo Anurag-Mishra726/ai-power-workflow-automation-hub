@@ -19,7 +19,7 @@ import Auth from './pages/auth/Auth';
 // import Workflow from './pages/workflow/Workflow';
 import WorkflowLayout from './layouts/WorkflowLayout';
 import WorkflowMain from './components/workflow/WorkflowMain';
-import WorkflowEditor from './components/workflow/WorkflowEditor'
+import WorkflowEditor from './components/workflow/editor/WorkflowEditor'
 // Test Route
 import Test from './pages/Test'
 
@@ -42,20 +42,20 @@ function App() {
               <Auth type='signup' />
             </GuestRoute>
           } />
+            
+              <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+              
+                <Route path="/home" element={<Home />}  />
 
-          <Route element={<AppLayout />}>
+                <Route path="/workflow" element={<WorkflowLayout />} >
+                  <Route index element={<WorkflowMain />}  />
+                  <Route path="new/:id" element={<WorkflowEditor />} />
+                  <Route path=":id" element={<WorkflowEditor />} />
+                </Route>
 
-            <Route path="/home" element={<Home />}  />
+                <Route path="/test" element={<Test />} />
 
-            <Route path="/workflow" element={<WorkflowLayout />} >
-              <Route index element={<WorkflowMain />}  />
-              <Route path="new" element={<WorkflowEditor />} />
-              <Route path=":id" element={<WorkflowEditor />} />
-            </Route>
-
-            <Route path="/test" element={<Test />} />
-
-          </Route>
+              </Route>
         </Routes>
       </Router>
     </>

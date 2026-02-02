@@ -5,6 +5,7 @@ import { FaRegUser } from "react-icons/fa";
 import { LuLogIn, LuLogOut} from "react-icons/lu";
 import useAuthStore from '@/stores/authStore'
 import Logo from "@/assets/logo.png"
+import useWorkflowData from '@/stores/workflowDataStore';
 
 
 const Sidebar = () => {
@@ -12,6 +13,13 @@ const Sidebar = () => {
   const username = useAuthStore( (state) => state.username ) || "Guest";
   const isAuthenticated  = useAuthStore( (state) => state.isAuthenticated ) || false;
   const logout = useAuthStore( (state) => state.logout );
+  const clearData = useWorkflowData( (state) => state.clearData );
+
+  const handleLogout = () => {
+    logout();
+    clearData();
+  };
+
 
   const basicStyle = " flex items-center px-3 py-2.5 rounded-lg text-sxl font-medium font-mono transition-all duration-200"
 
@@ -64,7 +72,7 @@ const Sidebar = () => {
 
           {
             isAuthenticated  ? (
-              <button onClick={logout} className="flex items-center px-3 py-2.5 rounded-lg text-sxl font-medium font-mono transition-all duration-200 text-zinc-400 hover:bg-zinc-900 hover:text-white"><LuLogOut className='mr-2 rotate-180' />Logout</button>
+              <button onClick={handleLogout} className="flex items-center px-3 py-2.5 rounded-lg text-sxl font-medium font-mono transition-all duration-200 text-zinc-400 hover:bg-zinc-900 hover:text-white"><LuLogOut className='mr-2 rotate-180' />Logout</button>
             ):(
               <NavLink to="/auth/login" className={({isActive}) => 
             ` ${basicStyle} ${isActive ? " text-white bg-zinc-800 shadow-lg ":  "text-zinc-400 hover:bg-zinc-900 hover:text-white" }

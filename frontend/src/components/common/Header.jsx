@@ -1,59 +1,90 @@
-import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FiSidebar } from "react-icons/fi";
 import { Save, ChevronRight, Trash2 } from "lucide-react";
 import { FaGreaterThan } from "react-icons/fa";
-
-const routeMap = {
-  "/home": "Home",
-  "/workflow": "Workflow",
-  "/workflow/new": "Workflows",
-  "/integration": "Integration",
-};
+import { toast } from "react-hot-toast";
+import useWorkflowData from "@/stores/workflowDataStore";
+import { useDeleteWorkflow, useWorkflowSave } from "@/hooks/useWorkflowApi ";
+import { WorkflowName } from "@/schemas/workflowSchema";
 
 const Header = () => {
+
+  const navigate = useNavigate();
+  const {mutate: saveWorkflow, isPending} = useWorkflowSave();
+  const {mutateAsync} = useDeleteWorkflow();
+
+  let pageTitle;
+  const { id } = useParams();
+  //console.log(isPending, " sdfasdfasdf")
   const location = useLocation();
-  const currentPage = routeMap[location.pathname];
+  const path = location.pathname;
 
-  const pathname = location.pathname;
-  const isEditor = pathname == "/workflow/new" ? true : false;
+  if(path.startsWith("/home")){
+    pageTitle = "Home";
+  }else if(path.startsWith("/workflow")){
+    pageTitle = "Workflow";
+  }else{
+    pageTitle = "FlowAI";
+  }
 
-  const [isEditing, setIsEditing] = useState(false);
-  const workflowName = "Untitled Workflow";
-  const [localName, setLocalName] = useState(workflowName);
+  const { workflowId, workflowName, setWorkflowName } = useWorkflowData();
+  const isEditor = location.pathname === "/workflow/new" || Boolean(id);
 
+  const [localName, setLocalName] = useState("");
+  const [isWorkflowNameEditing, setIsWorkflowNameEditing] = useState(false);
+
+  useEffect(() => {
+    if (!workflowId) return;
+
+    if (!workflowName) {
+      const defaultName = "Untitled-Workflow";
+      setWorkflowName(defaultName);
+      setLocalName(defaultName);
+    } else {
+      setLocalName(workflowName);
+    }
+  }, [workflowId, workflowName]);
+    
   const handleBlur = () => {
-    console.log(localName);
-    setIsEditing(false);
+    const workflowNameResult = WorkflowName.safeParse(localName);
+    if (!workflowNameResult.success) {
+      toast.error( workflowNameResult.error.issues[0].message || "Workflow name is not configured properly");
+      setLocalName(workflowName);
+      return
+    }
+    setWorkflowName(workflowNameResult.data);
+    toast.success("Workflow name updated");
+    setIsWorkflowNameEditing(false);
   };
 
   const inputSize = Math.max(
     8,
-    Math.min(25, localName.length || workflowName.length)
-  ); // Min 8ch, max 25ch
+    Math.min(25, localName.length || localName.length)
+  ); 
+
+  const handleDelete =() => {
+    //deleteWorkflow(workflowId);
+    mutateAsync(workflowId);
+    console.log(workflowId);
+  }
 
   return (
     <>
       <header className="h-20 border-b border-zinc-700 flex items-center justify-between sticky top-0 z-30 px-8 font-semibold">
-        {/* <h1 className="flex items-center justify-center gap-2 font-mono text-3xl">
-              <span className="leading-tight">{currentPage}</span>
-              <ChevronRight size={16} className="text-zinc-300 mt-[3px]" /> 
-            </h1> */}
-        {/* <div className="flex justify-center items-center">
-            <FiSidebar className="mr-2" />
-          </div> */}
+        
         {isEditor ? (
           <>
             <h1 className="flex items-center justify-center gap-2 font-mono text-3xl">
-              <span className="leading-tight">{currentPage}</span>
+              <span className="leading-tight cursor-pointer " onClick={() => navigate('/workflow')}>Workflow</span>
               <ChevronRight size={16} className="text-zinc-300 mt-[3px]" />
-              {isEditing ? (
+              {isWorkflowNameEditing ? (
                 <input
                   type="text"
                   value={localName}
-                  size={inputSize} // Dynamic size based on content
+                  size={inputSize} 
                   onChange={(e) => setLocalName(e.target.value)}
                   onBlur={handleBlur}
                   onKeyDown={(e) => e.key === "Enter" && handleBlur()}
@@ -61,25 +92,31 @@ const Header = () => {
                           rounded-md shadow-sm transition-all duration-200 min-w-[8ch] max-w-[25ch] w-auto "
                   placeholder="Untitled Workflow"
                   autoFocus
-                  maxLength={50}
+                  maxLength={60}
                 />
               ) : (
                 <div
                   className="group cursor-text px-3 py-1.5 text-lg font-semibold text-white bg-gray-800/50 backdrop-blur-sm rounded-md border border-gray-600/50 hover:border-blue-500/70 hover:bg-blue-500/5 hover:shadow-md hover:shadow-blue-500/10 transition-all duration-200 min-w-[8ch] max-w-[25ch] truncate select-none"
-                  onClick={() => setIsEditing(true)}
-                  title={workflowName}
+                  onClick={() => setIsWorkflowNameEditing(true)}
+                  title={localName}
                 >
-                  {localName}
+                  {workflowName}
                 </div>
               )}
             </h1>
             <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-4 py-2 rounded-md border border-blue-500/50 hover:bg-blue-500 text-blue-400 hover:text-white text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-black">
+              <button className="flex items-center gap-2 px-4 py-2 rounded-md border border-blue-500/50 hover:bg-blue-500 text-blue-400 hover:text-white text-sm font-medium transition-colors duration-200 focus:outline-none "
+                onClick={() => saveWorkflow()}
+                disabled={isPending}
+              >
                 <Save size={18} />
                 <span>Save</span>
               </button>
 
-              <button className=" flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white transition">
+              <button className=" flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white font-medium transition-colors duration-200 focus:outline-none  "
+                onClick={() => handleDelete()}
+              >
+
                 <Trash2 size={18} />
                 <span>Delete</span>
               </button>
@@ -88,7 +125,7 @@ const Header = () => {
         ) : (
           <>
             <h1 className="flex items-center justify-center gap-2 font-mono text-3xl">
-              <span className="leading-tight">{currentPage}</span>
+              <span className="leading-tight">{pageTitle}</span>
             </h1>
             <div className="flex items-center gap-6">
               <div className=" flex items-center relative ">

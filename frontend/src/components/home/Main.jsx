@@ -1,5 +1,4 @@
 import "./Main.css";
-import Header from "@/components/common/Header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { MdOutlineAccountTree, MdErrorOutline } from "react-icons/md";
 import { FaArrowRight } from "react-icons/fa6";
@@ -7,10 +6,13 @@ import { GoZap } from "react-icons/go";
 import {faBell, faMagnifyingGlass, faPlus} from "@fortawesome/free-solid-svg-icons";
 import useAuthStore from "@/stores/authStore";
 import { useNavigate } from "react-router-dom";
+import { useGenerateWorkflowId } from "@/hooks/useWorkflowApi ";
+import React from "react";
 
 const Main = () => {
 
   const navigate = useNavigate();
+  const { mutate, isPending } = useGenerateWorkflowId();
   const username = useAuthStore( (state) => state.username ) || "Effortlessly";
   const isAuthenticated  = useAuthStore( (state) => state.isAuthenticated ) || false;
 
@@ -19,8 +21,8 @@ const Main = () => {
         <main className="flex-1 overflow-y-auto p-8">
           <div className="max-w-7xl mx-auto space-y-8">
             <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-zinc-900 via-black to-zinc-900 border border-zinc-800">
-              <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-[#06b6d4]/10 blur-[100px] pointer-events-none"></div>
-              <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 rounded-full bg-purple-600/10 blur-[100px] pointer-events-none"></div>
+              <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-[#06b6d4]/10 blur-[100px] pointer-events-none"/>
+              <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 rounded-full bg-purple-600/10 blur-[100px] pointer-events-none"/>
               <div className="relative z-10 p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                 {isAuthenticated ? (
                   <>
@@ -36,7 +38,7 @@ const Main = () => {
                     </p>
                     </div>
                     <div className="flex-shrink-0">
-                      <button onClick={() => navigate("/workflow")} className="group inline-flex items-center justify-center px-6 py-3 border border-white/10 hover:border-[#06b6d4]/50 text-sm font-medium rounded-full shadow-[0_0_20px_-5px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_-5px_rgba(6,182,212,0.4)] text-white bg-white/5 hover:bg-[#06b6d4]/10 transition-all duration-300 backdrop-blur-sm">
+                      <button onClick={() => mutate()} className="group inline-flex items-center justify-center px-6 py-3 border border-white/10 hover:border-[#06b6d4]/50 text-sm font-medium rounded-full shadow-[0_0_20px_-5px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_-5px_rgba(6,182,212,0.4)] text-white bg-white/5 hover:bg-[#06b6d4]/10 transition-all duration-300 backdrop-blur-sm">
                         <span className="material-symbols-outlined mr-2 group-hover:text-[#06b6d4] transition-colors">
                           <FontAwesomeIcon icon={faPlus} />
                         </span>
