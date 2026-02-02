@@ -27,3 +27,8 @@ export const deleteWorkflow = async (workflowId) => {
         params: {workflowId}
     });
 }
+
+export const executeWorkflow = async (workflowId) => {
+  const res = await api.post(`/workflows/${workflowId}/execute`);
+  return res.data;
+};

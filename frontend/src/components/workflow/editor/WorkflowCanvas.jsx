@@ -1,5 +1,9 @@
-import { ReactFlow, Background, Controls, MiniMap } from "@xyflow/react";
+import { ReactFlow, Background, Controls, MiniMap, Panel } from "@xyflow/react";
 import useEditorUIStore from "@/stores/workflowEditorStore";
+import { FlaskConical } from "lucide-react";
+import useWorkflowData from "@/stores/workflowDataStore";
+import ExecuteWorkflowButton from "./ExecuteWorkflowButton";
+
 const WorkflowCanvas = ({
   nodes,
   edges,
@@ -11,6 +15,7 @@ const WorkflowCanvas = ({
 }) => {
 
   const closeNodeMenu = useEditorUIStore(s => s.closeNodeMenu);
+  const {workflowId, workflowNodes} = useWorkflowData();
 
   return (
     <>
@@ -45,6 +50,14 @@ const WorkflowCanvas = ({
             borderRadius: "6px",
           }}
         />
+
+       {
+        workflowNodes[0]?.data?.triggerType === "manual" && 
+         <Panel position="bottom-center">
+          <ExecuteWorkflowButton workflowId={workflowId} />
+          </Panel>
+       }
+
         <MiniMap
           nodeColor={() => "#e0e0e0"}
           maskColor="rgba(0,0,0,0)"

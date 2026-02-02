@@ -58,7 +58,7 @@ export const Workflow = {
 
     getWorkflowGraph: async ({workflowId}, client = pool) => {
         const rows = await query(
-            "SELECT * FROM workflow_graphs WHERE id =?",
+            "SELECT * FROM workflow_graphs WHERE workflow_id = ?",
             [workflowId],
             client
         );

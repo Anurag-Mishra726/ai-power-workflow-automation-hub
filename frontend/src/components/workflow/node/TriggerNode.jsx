@@ -25,7 +25,8 @@ export const TriggerNode = ({ id ,data, type }) => {
   const Icon = iconMap[data.triggerType] || TiFlowChildren;
 
   return (
-    <div className="pointer-events-auto p-2 w-44 bg-zinc-900 relative border  border-zinc-700 rounded-lg text-white flex flex-col gap-2 "
+    <div className="pointer-events-auto p-2 w-44 bg-zinc-900 relative border  border-zinc-700 rounded-lg text-white flex flex-col gap-2
+    hover:border-white "
       onClick={()=> {
         setActiveNode(id);
       }}
@@ -78,7 +79,7 @@ export const TriggerNode = ({ id ,data, type }) => {
       </div>
 
       <div className="text-sm text-white/50 flex items-center gap-2">
-        { data.summary ? (
+        { data.summary && data.isConfigured ? (
           <>
             <span className="flex items-center gap-2">
               <CheckCircle size={12} className="self-center translate-y-0.5" />

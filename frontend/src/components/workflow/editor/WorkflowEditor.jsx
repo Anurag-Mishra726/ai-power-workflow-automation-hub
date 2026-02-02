@@ -3,7 +3,6 @@ import { useWorkflow } from "../hooks/useWorkflow";
 import WorkflowCanvas from "./WorkflowCanvas";
 import WorkflowSidebar from "./WorkflowSidebar";
 import useEditorUIStore from "@/stores/workflowEditorStore";
-import useWorkflowData from "@/stores/workflowDataStore";
 import ConfigSidebar from "./sidebar/ConfigSidebar";
 
 const WorkflowEditor = () => {
@@ -15,17 +14,17 @@ const WorkflowEditor = () => {
 
   const hasUnsavedChanges = workflow.nodes.length > 0 || isSidebarOpen || isConfigSidebarOpen;
 
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (hasUnsavedChanges) {
-        e.preventDefault();
-        e.returnValue = "You have unsaved workflow changes!";
-      }
-    };
+  // useEffect(() => {
+  //   const handleBeforeUnload = (e) => {
+  //     if (hasUnsavedChanges) {
+  //       e.preventDefault();
+  //       e.returnValue = "You have unsaved workflow changes!";
+  //     }
+  //   };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [hasUnsavedChanges]);
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+  //   return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  // }, [hasUnsavedChanges]);
 
   useEffect(() => {
     if (!deleteNodeId) return;

@@ -1,9 +1,16 @@
 import {useMutation, useQuery} from '@tanstack/react-query';
-import { saveWorkflowApi, getWorkflowMetadata, getWorkflowGraph, generateWorkflowId, deleteWorkflow } from '@/api/workflow.api';
 import { saveWorkflow } from '@/service/workflowSave.service';
 import { toast } from "react-hot-toast";
 import useWorkflowData from '@/stores/workflowDataStore';
 import { useNavigate } from 'react-router-dom';
+import { 
+    saveWorkflowApi, 
+    getWorkflowMetadata, 
+    getWorkflowGraph, 
+    generateWorkflowId, 
+    deleteWorkflow,
+    executeWorkflow,
+ } from '@/api/workflow.api';
 
 export const useWorkflowSave = () => {
 
@@ -110,6 +117,20 @@ export const useDeleteWorkflow = () => {
             navigate('/workflow');
             clearData();
             //toast.error(error || "Failed to delete workflow");
+        }
+    })
+}
+
+export const useExecuteWorkflow = () => {
+    return useMutation({
+        mutationFn: executeWorkflow,
+        onSuccess: (data) => {
+            console.log(data);
+            toast.success("Workflow executed successfully.");
+        },
+        onError: (error) => {
+            console.log(error);
+            toast.error(error || "Failed to execute!");
         }
     })
 }

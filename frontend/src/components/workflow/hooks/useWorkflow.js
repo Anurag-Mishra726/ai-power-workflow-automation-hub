@@ -69,7 +69,7 @@ export const useWorkflow = () => {
     const addNode = useCallback((placeholderId) => {
 
         const actionNodeId = crypto.randomUUID();
-        const nextPlaceholderId = crypto.randomUUID();
+        const nextPlaceholderId = "lastNode";
         let updatedNodes = null;
         let updatedEdges = null;
 
