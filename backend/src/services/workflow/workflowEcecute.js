@@ -2,7 +2,6 @@ import pool from "../../config/db.js";
 import { inngest } from "../../inngest/client.js";
 import { Workflow } from "../../models/workflow.model.js";
 import { AppError } from "../../utils/AppErrors.js";
-import { sortWorkflow } from "../../utils/toposortNodes.js";
 
 export const executeWorkflowService = async (userData, workflowId) => {
    try {
@@ -16,14 +15,14 @@ export const executeWorkflowService = async (userData, workflowId) => {
         throw new AppError("Workflow Not Found! Save and try again.", 404);
     }
     const workflowGraph = await Workflow.getWorkflowGraph({workflowId});
-    //  await inngest.send({
-    //     name: "workflow/execute",
-    //     data: {
-    //         userId: userId,
-    //         workflowId: workflowId,
-    //     }
-    // });
-    sortWorkflow(workflowGraph)
+     await inngest.send({
+        name: "workflow/execute",
+        data: {
+            userId: userId,
+            workflowId: workflowId,
+        }
+    });
+    //sortWorkflow(workflowGraph)
     return ;
 
    } catch (error) {

@@ -1,16 +1,25 @@
 import toposort from "toposort";
+import { AppError } from "./AppErrors.js";
 
-export const sortWorkflow = (workflowGraph) => {
+export const sortWorkflowNodes = (workflowGraph) => {
 
     const { nodes, edges } = workflowGraph;
 
-    if (!edges || edges.length === 0) {
-        throw new Error("Workflow must have at least one connection");
-    }
-
     const executableNodes = nodes.filter((n) => n.type !== "addNode");
 
-    const nodeMap = new Map(nodes.map((n) => [n.id, n]));
+    if (executableNodes.length === 0) {
+        throw new AppError("No executable nodes found");
+    }
+
+    if (executableNodes.length === 1) {
+        return executableNodes; 
+    }
+
+    if (!edges || edges.length === 0) {
+        throw new AppError("Workflow must have at least one connection");
+    }
+
+    const nodeMap = new Map(executableNodes.map((n) => [n.id, n]));
 
     const executableEdges = edges
         .filter((e) => nodeMap.has(e.source) && nodeMap.has(e.target))
@@ -24,19 +33,17 @@ export const sortWorkflow = (workflowGraph) => {
         throw new Error("Workflow contains a cycle");
     }
 
-    const sortedSet = new Set(sortedIds);
+    const sortedNodesIds = sortedIds.filter((id) => id !== "addNode");
+
+    const sortedSet = new Set(sortedNodesIds);
 
     const disconnectedNodes = executableNodes.filter((n) => !sortedSet.has(n.id));
 
     if (disconnectedNodes.length > 0) {
-        throw new Error(
-        "Workflow has disconnected nodes.",
-        );
+        throw new AppError(`Workflow has ${disconnectedNodes.length} disconnected nodes.`);
     }
 
-    const sortedNodes = sortedIds.map((id) => nodeMap.get(id));
-        //console.log(sortedNodes);
-    return sortedNodes;
+    const sortedNodes = sortedNodesIds.map((id) => nodeMap.get(id)).filter(Boolean);
 
-    // Problem when there is single node (measn firstNode and placeholder node) placeholder is removed above than it throw error of no connection solve that problem.
+    return sortedNodes;
 };
