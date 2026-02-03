@@ -1,7 +1,14 @@
 import { createExecutionResult } from "../../../utils/executionResult.js";
+import { NonRetriableError } from "inngest";
+
 
 export const manualExecutor = async ({data, nodeId, context}) => {
-    console.log("Manual Trigger :--> ", data);
+    //console.log("Manual Trigger :--> ", data);
+
+    if (!data.isConfigured) {
+        //throw new AppError("Node is not configured");
+        throw new NonRetriableError("Node is not configured.")
+    }
 
     return createExecutionResult({
         output:{

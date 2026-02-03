@@ -16,6 +16,7 @@
     "@ai-sdk/google": "^3.0.2",
     "@ai-sdk/perplexity": "^3.0.2",
     "ai": "^6.0.5",
+    "axios": "^1.13.4",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

@@ -3,7 +3,7 @@ import { FlaskConical } from "lucide-react";
 import { useExecuteWorkflow } from '@/hooks/useWorkflowApi ';
 
 const ExecuteWorkflowButton = ({workflowId}) => {
-  const { mutate, isPending, isError } = useExecuteWorkflow();
+  const { mutate, isPending } = useExecuteWorkflow();
   return (
      <div>
         <button
@@ -11,6 +11,7 @@ const ExecuteWorkflowButton = ({workflowId}) => {
             mutate(workflowId)
             console.log("Workflow executed!", workflowId);
         }}
+        disabled={isPending}
         className="px-4 py-3 flex items-center gap-2 bg-black text-white font-bold text-[18px]  tracking-wider border-2 border-white 
         rounded-lg hover:bg-white hover:text-black transition-all duration-200 ease-in-out shadow-lg hover:shadow-xl active:scale-95">
         <FlaskConical size={20}  />{isPending ? "Executing..." : "Execute Workflow"}

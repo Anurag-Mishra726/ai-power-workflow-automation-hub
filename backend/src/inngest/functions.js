@@ -37,13 +37,7 @@ export const executeWorkflow = inngest.createFunction(
     };
 
     for (const node of sortedNodes) {
-      console.log("---------",node)
       const triggerType = node?.data?.triggerType;
-
-      // if (!triggerType || !node.data?.isConfigured) {
-      //   console.warn(`Skipping node ${node.id}: missing triggerType or not configured!`);
-      //   continue;
-      // }
 
       const nodeExecutor = getNodeExecutor(triggerType);
       const result = await step.run(`node-${node.id}`, async () => {
@@ -52,20 +46,22 @@ export const executeWorkflow = inngest.createFunction(
           nodeId: node.id,
           context,
         });
-      });
-
-      // if (!result || typeof result !== "object" || !("output" in result)) {
-      //   throw new NonRetriableError(
-      //     `Invalid execution result from node ${node.id}`
-      //   );
-      // }
-     //console.log("result ", result);
+      });          
+  
       context.nodes[node.id] = result;
     }
 
-    console.log(context);
-
-    //await step.sleep("test", "5s");
+    //console.log(context);
     return { workflowId, result: context };
   },
 );
+
+
+
+
+// if (!result || typeof result !== "object" || !("output" in result)) {
+//   throw new NonRetriableError(
+//     `Invalid execution result from node ${node.id}`
+//   );
+// }
+// console.log("result ", result);

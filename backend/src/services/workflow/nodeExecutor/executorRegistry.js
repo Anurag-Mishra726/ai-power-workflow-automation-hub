@@ -1,10 +1,10 @@
 import { AppError } from "../../../utils/AppErrors.js";
 import { manualExecutor } from "./manualExecutor.js";
+import { httpExecutor } from "./httpExecutor.js";
 
 export const executorRegistry =  {
     manual: manualExecutor,
-
-    http: manualExecutor, // using for now only
+    http: httpExecutor,
 }
 
 export const getNodeExecutor = (type) => {
