@@ -10,8 +10,9 @@ export const httpExecutor = async ({data, nodeId, context}) => {
     const method = data.config.method;
     
     if (["POST", "PUT", "PATCH"].includes(method) && !data.config.body && !data.config.headers) {
-        throw new NonRetriableError("Node is not configured.")
+        throw new NonRetriableError("Node is not configured.");
     }
+
     const startTime = Date.now();
 
     let result;
@@ -22,12 +23,20 @@ export const httpExecutor = async ({data, nodeId, context}) => {
         const config = {
             method: method,
             url: data.config.url,
-
         };
 
+        console.log(data.config);
+
+        if (["POST", "PUT", "PATCH"].includes(method) ) {
+            config.data = data.config.body;
+            config.headers = data.config.headers;
+        }else if (method == "DELETE"){
+            config.headers = data.config.headers;
+        }
+        console.log(config.data, config.headers);
         result = await axios(config);
-        console.log(result);
     } catch (err) {
+        //console.log(err);
         executionStatus = false;
         error = {
             message: err.message,
@@ -35,7 +44,7 @@ export const httpExecutor = async ({data, nodeId, context}) => {
             status: err.response?.status,
             stack: err.stack
         };
-        result = { data: null }; // Fallback
+        result = { data: null }; 
     }
 
     return createExecutionResult({

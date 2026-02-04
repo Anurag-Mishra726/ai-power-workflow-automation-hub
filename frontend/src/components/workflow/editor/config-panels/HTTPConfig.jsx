@@ -3,22 +3,19 @@ import { useForm, useWatch } from 'react-hook-form';
 import { Globe } from "lucide-react";
 import CloseBtn from "@/components/common/CloseBtn";
 import useEditorUIStore from "@/stores/workflowEditorStore";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { HttpConfig } from '@/schemas/workflowSchema';
 import toast from 'react-hot-toast';
 
 const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
 
   const {setIsConfigSidebarClose} = useEditorUIStore();
 
-  const { register, handleSubmit, setValue, control, formState: { errors } } = useForm({
+  const { register, handleSubmit, setValue, control, formState: { errors }, setError } = useForm({
       defaultValues: {
         method: selectedNode?.data?.config?.method || 'GET',
         url: selectedNode?.data?.config?.url || 'https://api.flowai.com/webhook',
-        headers: selectedNode?.data?.config?.headers || '',
-        body: selectedNode?.data?.config?.body || '',
+        headers: JSON.stringify(selectedNode?.data?.config?.headers) || null,
+        body: JSON.stringify(selectedNode?.data?.config?.body) || null,
       },
-      resolver: zodResolver(HttpConfig),
       mode: 'onChange'
   });
 
@@ -26,8 +23,8 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
 
   useEffect(() => {
   if (method === "GET") {
-    setValue("body", "", { shouldValidate: true });  
-    setValue("headers", "", { shouldValidate: true });
+    setValue("body", null, { shouldValidate: true });  
+    setValue("headers", null, { shouldValidate: true });
   }
 }, [method, setValue]);
 
@@ -35,10 +32,37 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
   const isDeleteMethod = method === 'DELETE'
 
   const onSubmit = async (data) => {
-    const status = await setNodeConfig(data);
-    if(status.success) toast.success("HTTP Node Configured Successfully");
-    else toast.error("Something went Wrong!");
-    setIsConfigSidebarClose();
+    try {
+
+      if(["POST", "PUT", "PATCH"].includes(data.method) && (!data.body || !data.headers)){
+         setError('root',{
+          type: 'manual',
+          message: 'Body and Haders is requeired for this method.'
+        });
+        return;
+      }
+
+      const configData = {
+        headers: data.headers ? JSON.parse(data.headers) : undefined ,
+        body: data.body ? JSON.parse(data.body) : undefined,
+        url: data.url,
+        method: data.method
+      }
+
+      const status = await setNodeConfig(configData);
+
+      if(status.success) toast.success("HTTP Node Configured Successfully");
+      else toast.error("Something went Wrong!");
+
+      setIsConfigSidebarClose();
+      
+    } catch (error) {
+      console.warn(error.message);
+      setError('root', { 
+        type: 'manual', 
+        message: 'Please check your JSON format in body/headers fields' 
+      });
+    }
   };
 
   return (
@@ -113,7 +137,7 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
               
             </div>
           </section>
-
+            {errors.root && <p className="text-[15px] text-red-400 mt-1">{errors.root.message}</p>}
           <section>
             <h3 className="text-sm font-semibold text-zinc-200 mb-3">
               Headers
@@ -129,7 +153,7 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
               className="w-full rounded-md bg-zinc-900 border border-zinc-700 px-3 py-2 font-mono text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
             {errors.headers && (
-              <p className="text-xs text-red-400 mt-1">{errors.body.message}</p>  // ✅ Add this!
+              <p className="text-xs text-red-400 mt-1">{errors.headers.message}</p>  // ✅ Add this!
             )}
           </section>
 
@@ -149,6 +173,7 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
               <p className="text-xs text-red-400 mt-1">{errors.body.message}</p>  // ✅ Add this!
             )}
           </section>
+        
         </div>
 
         <div className="border-t border-zinc-800 px-4 py-3 flex justify-end bg-zinc-900/50">

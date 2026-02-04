@@ -47,7 +47,7 @@ export const executeWorkflow = inngest.createFunction(
           context,
         });
       });          
-  
+      
       context.nodes[node.id] = result;
     }
 

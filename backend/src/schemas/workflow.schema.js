@@ -36,9 +36,8 @@ const ManualTriggerConfig = z.object({
 const HttpConfig = z.object({
     method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
     url: z.string(),
-    //triggerName: z.string().optional(),
-    headers: z.string().optional(),
-    body: z.string().optional(),
+    headers: z.object().optional(),
+    body: z.object().optional(),
     }).superRefine((val, ctx) => {
     if (val.method === "GET" && val.body) {
         ctx.addIssue({
@@ -50,7 +49,13 @@ const HttpConfig = z.object({
     if (["POST", "PUT", "PATCH"].includes(val.method) && !val.body) {
         ctx.addIssue({
         path: ["body"],
-        message: "Body and Header is required for this HTTP method",
+        message: "Body is required for this HTTP method",
+        });
+    }
+    if (["POST", "PUT", "PATCH"].includes(val.method) && !val.headers) {
+        ctx.addIssue({
+        path: ["headers"],
+        message: "Headers is required for this HTTP method",
         });
     }
 });
