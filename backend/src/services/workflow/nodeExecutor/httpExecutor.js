@@ -1,9 +1,11 @@
 import { NonRetriableError } from "inngest";
 import axios from "axios";
+import Handlebars from 'handlebars';
 import { createExecutionResult } from "../../../utils/executionResult.js";
 
 export const httpExecutor = async ({data, nodeId, context}) => {
-    if (!data.isConfigured || !["GET", "POST", "PUT", "PATCH", "DELETE"].includes(data?.config?.method)) {
+    console.log(data.config.variable);
+    if (!data.isConfigured || !["GET", "POST", "PUT", "PATCH", "DELETE"].includes(data?.config?.method) || !data.config.variable ) {
         throw new NonRetriableError("Node is not configured.")
     }
 
@@ -12,6 +14,9 @@ export const httpExecutor = async ({data, nodeId, context}) => {
     if (["POST", "PUT", "PATCH"].includes(method) && !data.config.body && !data.config.headers) {
         throw new NonRetriableError("Node is not configured.");
     }
+    console.log("URL", data.config.url);
+    const endpoint = Handlebars.compile(data.config.url)(context);
+    console.log("ENDPOINT", endpoint);
 
     const startTime = Date.now();
 
@@ -22,10 +27,8 @@ export const httpExecutor = async ({data, nodeId, context}) => {
     try {
         const config = {
             method: method,
-            url: data.config.url,
+            url: endpoint,
         };
-
-        console.log(data.config);
 
         if (["POST", "PUT", "PATCH"].includes(method) ) {
             config.data = data.config.body;
@@ -33,7 +36,7 @@ export const httpExecutor = async ({data, nodeId, context}) => {
         }else if (method == "DELETE"){
             config.headers = data.config.headers;
         }
-        console.log(config.data, config.headers);
+
         result = await axios(config);
     } catch (err) {
         //console.log(err);
@@ -56,9 +59,10 @@ export const httpExecutor = async ({data, nodeId, context}) => {
             data: result.data,
             statusCode: result.status || error?.status,
             status: executionStatus, 
-            headers: result.headers 
+            //headers: result.headers 
         },
         error: error
     });
 }
 
+// Accept the string in the body and parse in the inngest httpExecutor so that user can use the variable in body.

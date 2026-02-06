@@ -47,24 +47,24 @@ export const useWorkflow = () => {
 
     const {isSidebarOpen, setIsSidebarOpen, setIsSidebarClose} = useEditorUIStore();
 
-    const openSidebar = () => {
+    const openSidebar = useCallback(() => {
         setIsSidebarOpen()
-    }
+    }, [setIsSidebarOpen]);
 
-    const closeSideBar = () => {
+    const closeSideBar = useCallback(() => {
         setIsSidebarClose()
-    }
+    }, [setIsSidebarClose]);
 
     const { setIsConfigSidebarOpen, setIsConfigSidebarClose } = useEditorUIStore();
 
-    const openConfigSidebar = () => {
+    const openConfigSidebar = useCallback(() => {
         console.log("Opening Config Sidebar");
         setIsConfigSidebarOpen();
-    }
+    }, [setIsConfigSidebarOpen]);
 
-    const closeConfigSidebar = () => {
+    const closeConfigSidebar = useCallback(() => {
         setIsConfigSidebarClose();
-    }
+    }, [setIsConfigSidebarClose]);
 
     const addNode = useCallback((placeholderId) => {
 
@@ -206,7 +206,7 @@ export const useWorkflow = () => {
     };
 
     const setNodeConfig = ( data ) => {
-
+        //console.log(data.variable);
         try {
             let updatedNodes = null;
 
@@ -233,6 +233,8 @@ export const useWorkflow = () => {
                         }
                     }
                 }); 
+
+                console.log(updatedNodes);
 
                 return updatedNodes;
 
