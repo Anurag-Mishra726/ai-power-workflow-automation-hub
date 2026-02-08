@@ -17,14 +17,14 @@ export const nodeConfigMap = {
             body: "",
         },
 
-        buildSummary: (config) =>{
-            config?.url
-                ? `${config.method} ${new URL(config.url).pathname}`
-                : "HTTP Request";
-        },
+    buildSummary: (config) =>
+        config?.url
+            ? `${config.method} ${new URL(config.url).pathname}`
+            : "HTTP Request"
+    ,
             
 
-        isComplete: (config) =>
-            Boolean(config?.url && config?.method),
+    isComplete: (config) =>
+        Boolean(config?.url && config?.method),
     }
 }

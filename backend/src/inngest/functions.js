@@ -51,7 +51,7 @@ export const executeWorkflow = inngest.createFunction(
       context[node?.data?.config?.variable || node.id] = result;
     }
 
-    console.log(context);
+    //console.log(context);
     return { workflowId, result: context };
   },
 );

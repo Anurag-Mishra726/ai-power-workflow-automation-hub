@@ -14,7 +14,9 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
         method: selectedNode?.data?.config?.method || 'GET',
         variable: selectedNode?.data?.config?.variable || null,
         url: selectedNode?.data?.config?.url || 'https://api.flowai.com/webhook',
-        headers: JSON.stringify(selectedNode?.data?.config?.headers) || null,
+        headers: JSON.stringify(selectedNode?.data?.config?.headers) || {
+  "Content-Type": "application/json"
+},
         body: JSON.stringify(selectedNode?.data?.config?.body) || null,
       },
       mode: 'onChange'
