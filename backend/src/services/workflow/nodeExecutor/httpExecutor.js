@@ -1,9 +1,11 @@
 import { NonRetriableError } from "inngest";
 import axios from "axios";
+import Handlebars from 'handlebars';
 import { createExecutionResult } from "../../../utils/executionResult.js";
 
 export const httpExecutor = async ({data, nodeId, context}) => {
-    if (!data.isConfigured || !["GET", "POST", "PUT", "PATCH", "DELETE"].includes(data?.config?.method)) {
+
+    if (!data.isConfigured || !["GET", "POST", "PUT", "PATCH", "DELETE"].includes(data?.config?.method) || !data.config.variable ) {
         throw new NonRetriableError("Node is not configured.")
     }
 
@@ -12,6 +14,8 @@ export const httpExecutor = async ({data, nodeId, context}) => {
     if (["POST", "PUT", "PATCH"].includes(method) && !data.config.body && !data.config.headers) {
         throw new NonRetriableError("Node is not configured.");
     }
+    
+    const endpoint = Handlebars.compile(data.config.url)(context);    
 
     const startTime = Date.now();
 
@@ -22,21 +26,23 @@ export const httpExecutor = async ({data, nodeId, context}) => {
     try {
         const config = {
             method: method,
-            url: data.config.url,
+            url: endpoint,
         };
 
-        console.log(data.config);
-
         if (["POST", "PUT", "PATCH"].includes(method) ) {
-            config.data = data.config.body;
+            const body = JSON.parse(Handlebars.compile(JSON.stringify(data.config.body))(context));
+
+            config.data = body;
             config.headers = data.config.headers;
+
         }else if (method == "DELETE"){
             config.headers = data.config.headers;
         }
-        console.log(config.data, config.headers);
+
         result = await axios(config);
+        //console.log(result);
     } catch (err) {
-        //console.log(err);
+        console.log(err);
         executionStatus = false;
         error = {
             message: err.message,
@@ -56,9 +62,8 @@ export const httpExecutor = async ({data, nodeId, context}) => {
             data: result.data,
             statusCode: result.status || error?.status,
             status: executionStatus, 
-            headers: result.headers 
+            //headers: result.headers 
         },
         error: error
     });
 }
-

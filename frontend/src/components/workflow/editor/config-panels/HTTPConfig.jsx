@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { Globe } from "lucide-react";
+import { Globe, MoveLeft } from "lucide-react";
 import CloseBtn from "@/components/common/CloseBtn";
 import useEditorUIStore from "@/stores/workflowEditorStore";
 import toast from 'react-hot-toast';
@@ -12,19 +12,23 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
   const { register, handleSubmit, setValue, control, formState: { errors }, setError } = useForm({
       defaultValues: {
         method: selectedNode?.data?.config?.method || 'GET',
+        variable: selectedNode?.data?.config?.variable || null,
         url: selectedNode?.data?.config?.url || 'https://api.flowai.com/webhook',
-        headers: JSON.stringify(selectedNode?.data?.config?.headers) || null,
+        headers: JSON.stringify(selectedNode?.data?.config?.headers) || {
+  "Content-Type": "application/json"
+},
         body: JSON.stringify(selectedNode?.data?.config?.body) || null,
       },
       mode: 'onChange'
   });
 
   const method = useWatch({ control, name: 'method' });
+  const watchMyVariableName = useWatch({control, name: 'variable'}) || '' ;
 
   useEffect(() => {
   if (method === "GET") {
-    setValue("body", null, { shouldValidate: true });  
-    setValue("headers", null, { shouldValidate: true });
+    setValue("body", "", { shouldValidate: true });  
+    setValue("headers", "", { shouldValidate: true });
   }
 }, [method, setValue]);
 
@@ -32,6 +36,7 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
   const isDeleteMethod = method === 'DELETE'
 
   const onSubmit = async (data) => {
+    console.log(data.variable)
     try {
 
       if(["POST", "PUT", "PATCH"].includes(data.method) && (!data.body || !data.headers)){
@@ -43,10 +48,11 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
       }
 
       const configData = {
-        headers: data.headers ? JSON.parse(data.headers) : undefined ,
-        body: data.body ? JSON.parse(data.body) : undefined,
+        headers: isGetMethod ? undefined : (data.headers ? JSON.parse(data.headers) : undefined),
+        body: isGetMethod ? undefined : (data.body ? JSON.parse(data.body) : undefined),
         url: data.url,
-        method: data.method
+        method: data.method,
+        variable: data.variable
       }
 
       const status = await setNodeConfig(configData);
@@ -57,6 +63,7 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
       setIsConfigSidebarClose();
       
     } catch (error) {
+      console.log(error);
       console.warn(error.message);
       setError('root', { 
         type: 'manual', 
@@ -99,7 +106,7 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
               Method
             </h3>
 
-            <div className="space-y-5">
+            <div className="space-y-6">
               <div className="flex flex-col gap-2">
                 <select
                   {...register('method', { required: 'Method is required' })}
@@ -115,24 +122,44 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
                   <p className="text-xs text-red-400 mt-1">{errors.method.message}</p>
                 )}
               </div>
-                <div>
-                    <h3 className="text-sm font-semibold text-zinc-200 mb-3">
-                    URL
-                </h3>
-
+              
+              <div>
+                <h3 className='text-sm font font-semibold text-zinc-200 mb-3'>Variable</h3>
                 <input 
-                  {...register('url', { required: 'URL is required' })}
-                  disabled={nodeType === 'trigger'}
-                  placeholder="https://api.flowai.com/webhook"
-                  className={`flex rounded-md w-full bg-zinc-900 border border-zinc-700 px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500 ${ nodeType === 'trigger' && 'cursor-not-allowed' } `}
+                  {...register('variable', { required: 'Variable name is required.',
+                    minLength: {value: 3, message: "Min 3 chars."},
+                    maxLength: {value:15, message: "Max 15 chars"}
+                    })}
+                  placeholder="eg.  myApiCall"
+                  className={`flex rounded-md w-full bg-zinc-900 border border-zinc-700 px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500 `}
                 />
+                <p className="text-[12px] mt-1 text-zinc-400">Reference this node's output in other nodes: {" "}
+                  <span className='text-white text-[13px]'>{`{{${watchMyVariableName}.output.data}}`}</span>
+                  <span className="text-[12px] text-zinc-400"> {" "} ← Copy this syntax</span>  
+                </p>
+                {errors.variable && (
+                  <p className="text-xs text-red-400">{errors.variable.message}</p>
+                )}
+              </div>
+                
+                <div>
+                  <h3 className="text-sm font-semibold text-zinc-200 mb-3">
+                    URL
+                  </h3>
 
-              <p className="text-xs text-zinc-500">
-                This endpoint will trigger the workflow
-              </p>
-              {errors.url && (
-                <p className="text-xs text-red-400">{errors.url.message}</p>
-              )}
+                  <input 
+                    {...register('url', { required: 'URL is required' })}
+                    disabled={nodeType === 'trigger'}
+                    placeholder="https://api.flowai.com/webhook"
+                    className={`flex rounded-md w-full bg-zinc-900 border border-zinc-700 px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500 ${ nodeType === 'trigger' && 'cursor-not-allowed' } `}
+                  />
+
+                  <p className="text-[12px] mt-1 text-zinc-400">
+                    This endpoint will trigger the workflow.
+                  </p>
+                  {errors.url && (
+                    <p className="text-xs text-red-400">{errors.url.message}</p>
+                  )}
                 </div>
               
             </div>
@@ -153,24 +180,30 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
               className="w-full rounded-md bg-zinc-900 border border-zinc-700 px-3 py-2 font-mono text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
             {errors.headers && (
-              <p className="text-xs text-red-400 mt-1">{errors.headers.message}</p>  // ✅ Add this!
+              <p className="text-xs text-red-400 mt-1">{errors.headers.message}</p>  
             )}
           </section>
 
           <section>
-            <h3 className="text-sm font-semibold text-zinc-200 mb-3">Body</h3>
+            <h3 className="text-sm font-semibold text-zinc-200 mb-3">Request Body</h3>
 
             <textarea
                 {...register('body')}
                 disabled={isGetMethod}
                 rows={6}
                 placeholder={`${isGetMethod || isDeleteMethod ? "No Body Required" : `{
-  "id": 123
+  "id": 123,
+  "refId": "{{variable.output.data.refId}}"
 }` }`}
               className="w-full rounded-md bg-zinc-900 border border-zinc-700 px-3 py-2 font-mono text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
+            <p className="text-[12px] text-zinc-400 leading-relaxed">
+              JSON with Handlebars templates. Reference previous nodes using 
+              <span className="font-mono text-white bg-zinc-800 px-1 rounded">{`{{variable.output.data}}`}</span>.
+            </p>
+
             {errors.body && (
-              <p className="text-xs text-red-400 mt-1">{errors.body.message}</p>  // ✅ Add this!
+              <p className="text-xs text-red-400 mt-1">{errors.body.message}</p>  
             )}
           </section>
         

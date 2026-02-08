@@ -35,6 +35,10 @@ const ManualTriggerConfig = z.object({
 
 const HttpConfig = z.object({
     method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
+    variable: z.string().min(2, "Variable name is too small.").regex( 
+        /^[a-zA-Z0-9-_]+$/, 
+        "Special characters are not allowed. Please use only letters, numbers, hypen: (-) and underscore: (_)."
+    ),
     url: z.string(),
     headers: z.object().optional(),
     body: z.object().optional(),

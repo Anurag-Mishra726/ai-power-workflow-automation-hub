@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Handle, Position } from "@xyflow/react";
 import { EllipsisVertical, Zap, Globe, MousePointer, CircleDot, CheckCircle, CheckCircle2 } from "lucide-react";
 import NodeMenu from "./NodeMenu";
@@ -76,10 +75,10 @@ export const ActionNode = ({ id, data, type }) => {
         }
       </div>
 
-      <div className="text-sm text-white/50 flex items-center gap-2">
+      <div className="text-sm text-white/50 flex items-center gap-2 ">
         {data.summary && data.config ? (
           <>
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-2 truncate">
               <CheckCircle size={12} className="self-center translate-y-0.5" />
               {data.summary}
             </span>
