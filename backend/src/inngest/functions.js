@@ -3,6 +3,7 @@ import { NonRetriableError } from "inngest";
 import { Workflow } from "../models/workflow.model.js";
 import { sortWorkflowNodes } from "../utils/toposortNodes.js";
 import { getNodeExecutor } from "../services/workflow/nodeExecutor/executorRegistry.js";
+import { httpRequestChannel } from "./httpRequestChannel.js";
 
 // import {gemini, perplexity} from "../ai/generateText.js";
 // import { generateText } from "ai";
@@ -10,9 +11,11 @@ import { getNodeExecutor } from "../services/workflow/nodeExecutor/executorRegis
 
 export const executeWorkflow = inngest.createFunction(
   { id: "execute-workflow" },
-  { event: "workflow/execute" },
+  { event: "workflow/execute",
+    channel: [httpRequestChannel()],
+  },
 
-  async ({ event, step }) => {
+  async ({ event, step, publish }) => {
     const workflowId = event.data.workflowId;
     if (!workflowId) {
       throw new NonRetriableError("Workflow Id is missing!");
@@ -40,15 +43,17 @@ export const executeWorkflow = inngest.createFunction(
       const triggerType = node?.data?.triggerType;
 
       const nodeExecutor = getNodeExecutor(triggerType);
-      const result = await step.run(`node-${node.id}`, async () => {
+      const response = await step.run(`node-${node.id}`, async () => {
+       
         return await nodeExecutor({
           data: node.data,
           nodeId: node.id,
           context,
+          publish
         });
       });          
       
-      context[node?.data?.config?.variable || node.id] = result;
+      context[node?.data?.config?.variable || node.id] = response;
     }
 
     //console.log(context);

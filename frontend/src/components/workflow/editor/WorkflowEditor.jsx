@@ -12,7 +12,7 @@ const WorkflowEditor = () => {
   const deleteNodeId = useEditorUIStore((s) => s.deleteNodeRequestId);
   const clearDeleteNodeRequest = useEditorUIStore( (s) => s.clearDeleteNodeRequest );
 
-  const hasUnsavedChanges = workflow.nodes.length > 0 || isSidebarOpen || isConfigSidebarOpen;
+  //const hasUnsavedChanges = workflow.nodes.length > 0 || isSidebarOpen || isConfigSidebarOpen;
 
   // useEffect(() => {
   //   const handleBeforeUnload = (e) => {

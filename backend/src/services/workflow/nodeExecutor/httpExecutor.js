@@ -1,17 +1,37 @@
 import { NonRetriableError } from "inngest";
+import { httpRequestChannel } from "../../../inngest/httpRequestChannel.js";
 import axios from "axios";
 import Handlebars from 'handlebars';
 import { createExecutionResult } from "../../../utils/executionResult.js";
 
-export const httpExecutor = async ({data, nodeId, context}) => {
+export const httpExecutor = async ({data, nodeId, context, publish}) => {
+
+    await publish(
+        httpRequestChannel().status({
+            nodeId,
+            status: "loading",
+        })
+    );
 
     if (!data.isConfigured || !["GET", "POST", "PUT", "PATCH", "DELETE"].includes(data?.config?.method) || !data.config.variable ) {
+        await publish(
+            httpRequestChannel().status({
+                nodeId,
+                status: "error",
+            })
+        );
         throw new NonRetriableError("Node is not configured.")
     }
 
     const method = data.config.method;
     
     if (["POST", "PUT", "PATCH"].includes(method) && !data.config.body && !data.config.headers) {
+        await publish(
+            httpRequestChannel().status({
+                nodeId,
+                status: "error",
+            })
+        );
         throw new NonRetriableError("Node is not configured.");
     }
     
@@ -40,8 +60,20 @@ export const httpExecutor = async ({data, nodeId, context}) => {
         }
 
         result = await axios(config);
-        //console.log(result);
+
+        await publish(
+            httpRequestChannel().status({
+                nodeId,
+                status: "success",
+            })
+        );
     } catch (err) {
+        await publish(
+            httpRequestChannel().status({
+                nodeId,
+                status: "error",
+            })
+        );
         console.log(err);
         executionStatus = false;
         error = {

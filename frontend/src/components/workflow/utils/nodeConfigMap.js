@@ -21,10 +21,17 @@ export const nodeConfigMap = {
         config?.url
             ? `${config.method} ${new URL(config.url).pathname}`
             : "HTTP Request"
-    ,
-            
+    , 
 
     isComplete: (config) =>
         Boolean(config?.url && config?.method),
+    },
+
+    googleForm: {
+        defaultConfig: {},
+
+        buildSummary: () => "Google Form Trigger",
+
+        isComplete: () => true,
     }
 }

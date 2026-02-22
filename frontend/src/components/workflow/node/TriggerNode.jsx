@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Handle, Position } from "@xyflow/react";
 import { TiFlowChildren } from "react-icons/ti";
 import { EllipsisVertical, Globe, MousePointer ,CircleDot, CheckCircle, AlertCircle } from "lucide-react";
@@ -99,6 +98,8 @@ export const TriggerNode = ({ id ,data, type }) => {
 
 
       <Handle type="source" position={Position.Right} />
+
+      
     </div>
   );
 };

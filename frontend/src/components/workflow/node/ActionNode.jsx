@@ -1,5 +1,6 @@
 import { Handle, Position } from "@xyflow/react";
 import { EllipsisVertical, Zap, Globe, MousePointer, CircleDot, CheckCircle, CheckCircle2 } from "lucide-react";
+import { SiGoogleforms } from "react-icons/si";
 import NodeMenu from "./NodeMenu";
 import useEditorUIStore from "@/stores/workflowEditorStore";
 
@@ -17,6 +18,7 @@ export const ActionNode = ({ id, data, type }) => {
 
   const iconMap = {
     http: Globe,
+    googleForm: SiGoogleforms, 
   };
 
   const Icon = iconMap[data.triggerType] || Zap;

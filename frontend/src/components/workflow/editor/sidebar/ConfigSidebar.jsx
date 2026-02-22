@@ -2,12 +2,12 @@ import useEditorUIStore from "@/stores/workflowEditorStore";
 import { X } from 'lucide-react';
 import ManualTriggerConfig from "../config-panels/ManualTriggerConfig";
 import HTTPConfig from "../config-panels/HTTPConfig";
+import GoogleFormConfig from "../config-panels/GoogleFormConfig";
 import CloseBtn from "@/components/common/CloseBtn";
 
 const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
 
     const { activeNodeId } = useEditorUIStore();
-    const { setIsConfigSidebarClose } = useEditorUIStore();
 
     const selectedNode = nodes.find((node) => node.id === activeNodeId);
     const nodeType = selectedNode ? selectedNode.type : null;
@@ -34,6 +34,9 @@ const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
     
     case "http": 
         return <HTTPConfig selectedNode={selectedNode} onClose={onClose} nodeType={nodeType} setNodeConfig={setNodeConfig} />;
+
+    case "googleForm":
+        return <GoogleFormConfig onClose={onClose} />;
 
     default: return ;
     //   return (

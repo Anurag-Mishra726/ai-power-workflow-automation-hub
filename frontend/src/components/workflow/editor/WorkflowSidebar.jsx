@@ -1,6 +1,6 @@
 import {MousePointer, Globe,X} from "lucide-react"
+import { SiGoogleforms } from "react-icons/si";
 import useEditorUIStore from "@/stores/workflowEditorStore";
-import toast from "react-hot-toast";
 import CloseBtn from "@/components/common/CloseBtn";
 
 const WorkflowSidebar = ({ onClose, setTriggerType }) => {
@@ -24,10 +24,10 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
 
       <div className="flex-1 overflow-y-auto px-3 py-5 ">
             
-        <div className="flex justify-center items-center gap-4 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
+        <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
-         onClick={(e)=> {
-          setTriggerType( "Mannual Trigger", "manual" );
+         onClick={()=> {
+          setTriggerType( "Manual Trigger", "manual" );
           onClose();
           setIsConfigSidebarOpen();
          }}
@@ -39,9 +39,9 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
             </div>
         </div>
 
-        <div className="flex justify-center items-center gap-4 mt-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
+        <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
-         onClick={(e)=> {
+         onClick={()=> {
           setTriggerType("HTTP Request", "http");
           onClose();
           setIsConfigSidebarOpen();
@@ -50,11 +50,31 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
             <Globe size={28} />
             <div>
                 <h2 className="text-xl">HTTP Request</h2>
-                <p className="text-zinc-400">Start this flow by clicking a button.</p>
+                <p className="text-zinc-400">Send data to or fetch data from an API.</p>
             </div>
         </div>
+
+        <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
+         hover:bg-zinc-800 cursor-pointer"
+         onClick={()=> {
+          setTriggerType( "Google Forms", "googleForm" );
+          onClose();
+          setIsConfigSidebarOpen();
+         }}
+         >
+            {/* <SiGoogleforms size={28} color="#4285F4" /> */}
+            <img src="/googleform.svg" alt="Google Forms" height={25} width={25} />
+            <div>
+                <h2 className="text-xl">Google Forms</h2>
+                <p className="text-zinc-400">Trigger this flow when a Google Form is submitted.</p>
+            </div>
+        </div>  
         
       </div>
+
+            
+            
+        
     </aside>
   );
 };

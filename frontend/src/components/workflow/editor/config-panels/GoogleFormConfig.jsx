@@ -1,7 +1,7 @@
 import { MousePointer, X } from 'lucide-react';
 import CloseBtn from '@/components/common/CloseBtn';
 
-const ManualTriggerConfig = ({onClose}) => {
+const GoogleFormConfig = ({onClose}) => {
 
 
   return (
@@ -11,9 +11,11 @@ const ManualTriggerConfig = ({onClose}) => {
       <div className="flex px-4 py-3 border-b-2 border-zinc-700 relative">
         <div>
             <h2 className="text-3xl font-semibold  text-zinc-100 font-mono flex items-center gap-3">
-                <span className='p-2 border border-zinc-400 rounded-xl '><MousePointer size={20} /></span> Manual Trigger
+                <span className='p-2 border border-zinc-400 rounded-xl '>
+                  <img src="/googleform.svg" alt="Google Forms" className="w-6 h-6" />
+                </span> Google Form
             </h2>
-            <p className="text-sm text-[#E5E5E5] mt-2 font-normal">Starts the workflow when you manually run it.</p>
+            <p className="text-sm text-[#E5E5E5] mt-2 font-normal">Configure setting for Google Form node.</p>
         </div>
             <CloseBtn onClose={onClose} />
         </div>  
@@ -25,4 +27,4 @@ const ManualTriggerConfig = ({onClose}) => {
   );
 };
 
-export default ManualTriggerConfig;
+export default GoogleFormConfig;

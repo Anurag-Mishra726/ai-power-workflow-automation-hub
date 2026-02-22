@@ -1,8 +1,8 @@
 import { ReactFlow, Background, Controls, MiniMap, Panel } from "@xyflow/react";
 import useEditorUIStore from "@/stores/workflowEditorStore";
-import { FlaskConical } from "lucide-react";
 import useWorkflowData from "@/stores/workflowDataStore";
 import ExecuteWorkflowButton from "./ExecuteWorkflowButton";
+//import { ExecutionStatus } from "@/hooks/realtimeStatus";
 
 const WorkflowCanvas = ({
   nodes,
@@ -13,6 +13,8 @@ const WorkflowCanvas = ({
   onConnect,
   onNodeClick,
 }) => {
+
+  //ExecutionStatus();
 
   const closeNodeMenu = useEditorUIStore(s => s.closeNodeMenu);
   const {workflowId, workflowNodes} = useWorkflowData();

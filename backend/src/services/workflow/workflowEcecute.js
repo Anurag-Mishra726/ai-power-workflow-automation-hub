@@ -15,7 +15,7 @@ export const executeWorkflowService = async (userData, workflowId) => {
         throw new AppError("Workflow Not Found! Save and try again.", 404);
     }
     const workflowGraph = await Workflow.getWorkflowGraph({workflowId});
-     await inngest.send({
+    await inngest.send({
         name: "workflow/execute",
         data: {
             userId: userId,
