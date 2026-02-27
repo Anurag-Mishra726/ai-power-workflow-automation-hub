@@ -23,7 +23,7 @@ const BaseNodeSchema = z.object({
         isTrigger: z.boolean(),
         isConfigured: z.boolean(),
         label: z.string().optional(),
-        triggerType: z.enum(["manual", "http"]).optional(),
+        triggerType: z.enum(["manual", "http", "googleForm"]).optional(),
         summary: z.string().optional().or(z.literal("")),
         config: z.any(),
     }),

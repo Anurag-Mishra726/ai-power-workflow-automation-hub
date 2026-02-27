@@ -15,12 +15,13 @@ import {gemini, perplexity} from "./src/ai/generateText.js";
 import authRoutes from "./src/routes/auth.routes.js";
 import profileRoutes from "./src/routes/profile.routes.js";
 import workflowRoutes from "./src/routes/workflows.routes.js";
+import webhooks from "./src/routes/webhook.route.js";
 
 const app = express();
 await connectDB();
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173'],  
+  origin: ['http://localhost:3000', 'http://localhost:5173', 'https://linus-terrible-murray.ngrok-free.dev'],  
   credentials: true,  
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -41,21 +42,20 @@ app.get("/", (req, res) => {
     
 });
 
-
 app.get("/api/realtime/token", async (req, res) => {
-  // 1. Generate a secure token for the channel
   const token = await getSubscriptionToken(inngest, {
     channel: httpRequestChannel(),
     topics: ["status"],
   });
 
-  // 2. Send it to the frontend
   res.json(token);
 });
 
 app.use("/api/auth", authRoutes);
 app.use("/api/workflows", workflowRoutes);
+app.use("/api/webhook", webhooks);
 app.use("/api/user", profileRoutes);
+
 
 app.use((err, req, res, next) => {
     console.log("app.js --> ", err.message);

@@ -3,7 +3,8 @@ import { TiFlowChildren } from "react-icons/ti";
 import { EllipsisVertical, Globe, MousePointer ,CircleDot, CheckCircle, AlertCircle } from "lucide-react";
 import NodeMenu from "./NodeMenu";
 import useEditorUIStore from "@/stores/workflowEditorStore";
-
+import NodeStatusSpinner from "@/components/common/NodeStatus";
+import { SiGoogleforms } from "react-icons/si";
 export const TriggerNode = ({ id ,data, type }) => {
 
   const setActiveNode = useEditorUIStore(s => s.setActiveNode);
@@ -18,7 +19,8 @@ export const TriggerNode = ({ id ,data, type }) => {
 
   const iconMap = {
     http: Globe,
-    manual: MousePointer
+    manual: MousePointer,
+    googleForm: SiGoogleforms,
   }
 
   const Icon = iconMap[data.triggerType] || TiFlowChildren;
@@ -39,25 +41,27 @@ export const TriggerNode = ({ id ,data, type }) => {
             setIsSidebarOpen();
           }}
         >
-         {
-          data.label && data.triggerType ? (
-            <>
-              <span className="text-[12px] ">
-                <Icon size={12} />
-              </span>
-              <p>{data.label}</p>
-            </>
-          ) : (
-            <>
-              <span className="text-[12px]">
-                <TiFlowChildren size={12} />
-              </span> 
-              <p>Trigger</p>
-            </>
-          )
-        }
+          {
+            data.label && data.triggerType ? (
+              <>
+                <span className="text-[12px] ">
+                  <Icon size={12} />
+                </span>
+                <p>{data.label}</p>
+              </>
+            ) : (
+              <>
+                <span className="text-[12px]">
+                  <TiFlowChildren size={12} />
+                </span> 
+                <p>Trigger</p>
+              </>
+            )
+          }
+          {/* <NodeStatusSpinner/> */}
         </div>
-        <button className="text-white/70 text-sm cursor-pointer absolute top-0 right-0 mr-2 mt-1 py-[3px]  hover:text-white"
+       
+        <button className="text-white/70 text-sm cursor-pointer absolute top-0 right-0 mr-2 mt-2 py-[3px]  hover:text-white"
           onClick={(e) => {
             e.stopPropagation(); 
             setActiveNode(id);
@@ -96,9 +100,7 @@ export const TriggerNode = ({ id ,data, type }) => {
         )}
       </div>
 
-
       <Handle type="source" position={Position.Right} />
-
       
     </div>
   );

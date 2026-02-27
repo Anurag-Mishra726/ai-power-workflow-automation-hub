@@ -57,13 +57,13 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
         <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
          onClick={()=> {
-          setTriggerType( "Google Forms", "googleForm" );
+          setTriggerType( "Google Form", "googleForm" );
           onClose();
           setIsConfigSidebarOpen();
          }}
          >
             {/* <SiGoogleforms size={28} color="#4285F4" /> */}
-            <img src="/googleform.svg" alt="Google Forms" height={25} width={25} />
+            <img src="/googleform.svg" alt="Google Form" height={25} width={25} />
             <div>
                 <h2 className="text-xl">Google Forms</h2>
                 <p className="text-zinc-400">Trigger this flow when a Google Form is submitted.</p>

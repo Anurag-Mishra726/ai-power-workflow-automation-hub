@@ -10,5 +10,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
     },
   },
+  server: {
+    // Allow ngrok domain
+    allowedHosts: ["linus-terrible-murray.ngrok-free.dev"],
+  },
 });
 

@@ -125,6 +125,7 @@ export const deleteWorkflowData = async(req, res) => {
 export const executeWorkflow = async (req, res) => {
     try {
         const { workflowId } = req.params;
+        console.log("Google form metadata",req?.body?.metadata);
         if (!workflowId) {
             return res.status(400).json({
                 message: "WorkflowId not found! Bad request.",

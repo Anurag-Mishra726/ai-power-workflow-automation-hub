@@ -3,6 +3,7 @@ import { EllipsisVertical, Zap, Globe, MousePointer, CircleDot, CheckCircle, Che
 import { SiGoogleforms } from "react-icons/si";
 import NodeMenu from "./NodeMenu";
 import useEditorUIStore from "@/stores/workflowEditorStore";
+import NodeStatusSpinner from "@/components/common/NodeStatus";
 
 export const ActionNode = ({ id, data, type }) => {
 
@@ -24,7 +25,8 @@ export const ActionNode = ({ id, data, type }) => {
   const Icon = iconMap[data.triggerType] || Zap;
   
   return (
-    <div className="pointer-events-auto p-2 w-44 bg-zinc-900 relative border  border-zinc-700 rounded-lg text-white flex flex-col gap-2 "
+    <div className="pointer-events-auto p-2 w-44 bg-zinc-900 relative border  border-zinc-700 rounded-lg text-white flex flex-col gap-2
+    hover:border-white "
       onClick={()=> {
         setActiveNode(id);
       }}
@@ -38,25 +40,26 @@ export const ActionNode = ({ id, data, type }) => {
             setIsSidebarOpen();
           }}
         >
-        {
-          data.label && data.triggerType ? (
-            <>
-              <span className="text-[12px] text-white">
-                 <Icon size={12} />
-              </span>
-              <p>{data.label}</p>
-            </>
-          ) : (
-            <>
-              <span className="text-[12px] text-white">
-                <Zap size={12} />
-              </span> 
-              <p>Action</p>
-            </>
-          )
-        }
+          {
+            data.label && data.triggerType ? (
+              <>
+                <span className="text-[12px] text-white">
+                  <Icon size={12} />
+                </span>
+                <p>{data.label}</p>
+              </>
+            ) : (
+              <>
+                <span className="text-[12px] text-white">
+                  <Zap size={12} />
+                </span> 
+                <p>Action</p>
+              </>
+            )
+          }
+            {/* <NodeStatusSpinner/> */}
         </div>
-        <button className="text-white/70 text-sm cursor-pointer absolute top-0 right-0 mr-2 mt-1 py-[3px]  hover:text-white"
+        <button className="text-white/70 text-sm cursor-pointer absolute top-0 right-0 mr-2 mt-2 py-[3px]  hover:text-white"
           onClick={(e) => {
             e.stopPropagation();
             console.log("Action Menu clicked...");

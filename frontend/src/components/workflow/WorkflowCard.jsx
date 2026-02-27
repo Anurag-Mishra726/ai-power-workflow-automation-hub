@@ -2,15 +2,16 @@ import {
   Zap,
   Globe,
   MousePointer,
-  EllipsisVertical,
 } from "lucide-react";
+import { TiFlowChildren } from "react-icons/ti";
+import { SiGoogleforms } from "react-icons/si";
 
 const WorkflowCard = ({data, onClick}) => {
 
   const iconMap = {
     http: Globe,
     manual: MousePointer,
-    Gloaaa: <Globe/>
+    googleForm: SiGoogleforms,
   }
   const Icon = iconMap[data.trigger_type] || TiFlowChildren ;
   const workflow = {
