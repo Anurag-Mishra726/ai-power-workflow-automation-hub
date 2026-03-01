@@ -2,7 +2,7 @@ import { ReactFlow, Background, Controls, MiniMap, Panel } from "@xyflow/react";
 import useEditorUIStore from "@/stores/workflowEditorStore";
 import useWorkflowData from "@/stores/workflowDataStore";
 import ExecuteWorkflowButton from "./ExecuteWorkflowButton";
-//import { ExecutionStatus } from "@/hooks/realtimeStatus";
+//import { ExecutionStatus } from "@/hooks/useRealtimeStatus";
 
 const WorkflowCanvas = ({
   nodes,
@@ -14,7 +14,7 @@ const WorkflowCanvas = ({
   onNodeClick,
 }) => {
 
-  //ExecutionStatus();
+  // ExecutionStatus();
 
   const closeNodeMenu = useEditorUIStore(s => s.closeNodeMenu);
   const {workflowId, workflowNodes} = useWorkflowData();

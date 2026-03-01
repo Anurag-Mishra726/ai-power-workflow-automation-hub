@@ -4,8 +4,7 @@ import {
     getWorkflowMetadata, 
     getWorkflowGraph, 
     deleteWorkflow,
-} from "../services/workflow/workflow.service.js";
-import { executeWorkflowService } from "../services/workflow/workflowEcecute.js";
+} from "../services/workflow/repositories/workflow.repositories.js";
 
 export const getWorkflowId = (req, res) => {
     const workflowId = generateWorkflowId();
@@ -122,29 +121,3 @@ export const deleteWorkflowData = async(req, res) => {
     }
 } 
 
-export const executeWorkflow = async (req, res) => {
-    try {
-        const { workflowId } = req.params;
-        console.log("Google form metadata",req?.body?.metadata);
-        if (!workflowId) {
-            return res.status(400).json({
-                message: "WorkflowId not found! Bad request.",
-                success: false
-            });
-        }
-        const execute = await executeWorkflowService(req.user, workflowId);
-        //console.log(execute);
-        
-        return res.status(200).json({
-            message: "Workflow Executed Successfully.",
-            success: true,
-            //data: execute,
-        })
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-                message: error.message || "Bad Request",
-                success: false
-            })
-    }
-}

@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import {User} from "../models/user.model.js";
-import { AppError } from "../utils/AppErrors.js";
+import {User} from "../../models/user.model.js";
+import { AppError } from "../../utils/AppErrors.js";
 
 export const signupService = async (userData, ip) => {
     const {username, email, password} = userData;

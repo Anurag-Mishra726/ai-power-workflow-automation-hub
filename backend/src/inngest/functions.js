@@ -3,7 +3,7 @@ import { NonRetriableError } from "inngest";
 import { Workflow } from "../models/workflow.model.js";
 import { sortWorkflowNodes } from "../utils/toposortNodes.js";
 import { getNodeExecutor } from "../services/workflow/nodeExecutor/executorRegistry.js";
-import { httpRequestChannel } from "./httpRequestChannel.js";
+import { httpRequestChannel } from "./workflowStatus.js";
 
 // import {gemini, perplexity} from "../ai/generateText.js";
 // import { generateText } from "ai";
@@ -22,12 +22,11 @@ export const executeWorkflow = inngest.createFunction(
     }
 
     const sortedNodes = await step.run("prepare-workflow", async () => {
-  
+
       const workflowGraph = await Workflow.getWorkflowGraph({ workflowId });
 
       try {
         const executableNodes = await sortWorkflowNodes(workflowGraph);
-        //const sortedExecutableNodes = executableNodes.filter((n) => n?.data?.triggerType !== "manual");
         return executableNodes;
       } catch (error) {
         throw new NonRetriableError(error.message || "Invalid workflow!");
@@ -35,9 +34,7 @@ export const executeWorkflow = inngest.createFunction(
 
     });
 
-    let context = {
-      
-    };
+    let context = event.data.initialData || {};
 
     for (const node of sortedNodes) {
       const triggerType = node?.data?.triggerType;

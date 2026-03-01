@@ -8,7 +8,6 @@ import {
     workflowMetadata, 
     workflowGraphData, 
     deleteWorkflowData,
-    executeWorkflow
  } from "../controllers/workflow.controllers.js"
 
 const router = express.Router();
@@ -20,7 +19,5 @@ router.get("/metadata", workflowMetadata);
 router.get("/graph", workflowGraphData);
 router.post("/save", validateRequest(SaveWorkflowSchema), saveWorkflow);
 router.delete("/delete-workflow", deleteWorkflowData);
-
-router.post("/:workflowId/execute", executeWorkflow)
 
 export default router;  

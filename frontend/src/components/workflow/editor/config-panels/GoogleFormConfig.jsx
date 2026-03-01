@@ -37,7 +37,7 @@ const GoogleFormConfig = ({onClose}) => {
           <h3 className="text-lg font-semibold text-zinc-200">Webhook URL</h3>
 
           <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-3 flex items-center justify-between">
-            <p className="text-sm text-white break-all">
+            <p className="text-sm text-white break-all mr-1">
               {webhookURL}
             </p>
             <CopyToClipboard text={webhookURL} />
@@ -73,7 +73,7 @@ const GoogleFormConfig = ({onClose}) => {
           <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-4 text-sm text-zinc-300 space-y-2">
             <p>1. Open your Google Form.</p>
             <p>2. Click the <span className="text-white">three dots (⋮) then Apps Script editor.</span></p>
-            <p>3. Delete any code there and paste THIS code.</p>
+            <p>3. Delete any code there and <span className='text-white'>copy</span> the code from below <span className='text-white'> Apps Script</span>  and <span className='text-white'>past</span>.</p>
             <p>4. Replace <span className="text-white">'YOUR_PLATFORM_URL'</span> with the URL provided above.</p>
             <p>5. Click the <span className="text-white">Clock Icon (Triggers) - Add Trigger.</span></p>
             <p>6. Choose: <span className="text-white">'onFormSubmit' | 'From form' | 'On form submit'.</span></p>
@@ -104,6 +104,18 @@ const GoogleFormConfig = ({onClose}) => {
           <p className="text-sm text-zinc-500">
             This script includes the necessary functions and your webhook URL to send form responses to the workflow platform.
           </p>
+        </div>
+
+        <div className='space-y-3'>
+            <h3 className="text-lg font-semibold text-zinc-200">
+              Variable
+            </h3>
+            <div className="bg-black border border-zinc-800 rounded-lg p-3 text-sm font-mono overflow-x-auto">
+              googleFormData.response.data
+            </div>
+            <p className="text-sm text-zinc-500">
+              Reference this node's output in other nodes: <span className='text-white'>{`{{googleFormData.response.data}}`}</span> ← Copy this syntax.
+            </p>
         </div>
 
         {/* <div className="space-y-3">

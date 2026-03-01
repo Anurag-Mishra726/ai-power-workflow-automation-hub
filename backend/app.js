@@ -8,7 +8,7 @@ import {serve} from "inngest/express";
 import {inngest} from "./src/inngest/client.js";
 import { executeWorkflow } from "./src/inngest/functions.js";
 import { getSubscriptionToken } from "@inngest/realtime";
-import { httpRequestChannel } from "./src/inngest/httpRequestChannel.js";
+import { httpRequestChannel } from "./src/inngest/workflowStatus.js";
 
 import {gemini, perplexity} from "./src/ai/generateText.js";
 

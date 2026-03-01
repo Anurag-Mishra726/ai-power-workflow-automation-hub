@@ -1,5 +1,5 @@
 import { NonRetriableError } from "inngest";
-import { httpRequestChannel } from "../../../inngest/httpRequestChannel.js";
+import { httpRequestChannel } from "../../../inngest/workflowStatus.js";
 import axios from "axios";
 import Handlebars from 'handlebars';
 import { createExecutionResult } from "../../../utils/executionResult.js";

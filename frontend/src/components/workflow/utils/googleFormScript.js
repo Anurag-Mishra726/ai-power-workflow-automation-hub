@@ -18,7 +18,7 @@ export const googleFormScript = (webhookUrl) =>
                     respondentEmail: formResponse.getRespondentEmail() || "Anonymous"
                 },
                 // This maps Question Title -> User Answer
-                answers: {}
+                response: {}
             };
 
             // Loop through each question answered
@@ -27,7 +27,7 @@ export const googleFormScript = (webhookUrl) =>
                 const answer = itemResponse.getResponse();
                 
                 // Handle array-based answers (like Checkboxes)
-                payload.answers[question] = answer;
+                payload.response[question] = answer;
             });
 
             // Send the data to your backend

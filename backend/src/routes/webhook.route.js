@@ -1,12 +1,14 @@
 import express from "express";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
-import { executeWorkflow } from "../controllers/workflow.controllers.js"
+import { 
+    manualExecuteWorkflow, 
+    googleFormExecuteWorkflow,
+} from "../controllers/webhook.controllers.js";
 
 const router = express.Router();
 
-//router.use(authMiddleware);
-
-router.post("/google-form/:workflowId/",executeWorkflow);
+router.post("/:workflowId/execute", authMiddleware, manualExecuteWorkflow)
+router.post("/google-form/:workflowId/", googleFormExecuteWorkflow);
 
 export default router
 

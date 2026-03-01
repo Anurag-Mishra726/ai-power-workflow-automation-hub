@@ -18,9 +18,16 @@ export const nodeConfigMap = {
         },
 
     buildSummary: (config) =>
-        config?.url
+    {
+        try {
+            config?.url
             ? `${config.method} ${new URL(config.url).pathname}`
             : "HTTP Request"
+        } catch (error) {
+            console.log(error);
+            return "HTTP Request";
+        }
+    }// TODOs : Fix this build summary for the url (When user enters only the variable name in the url field, it breaks the summary because of URL constructor. We need to handle that case.)
     , 
 
     isComplete: (config) =>
