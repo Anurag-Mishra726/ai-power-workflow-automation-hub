@@ -23,7 +23,14 @@ const BaseNodeSchema = z.object({
         isTrigger: z.boolean(),
         isConfigured: z.boolean(),
         label: z.string().optional(),
-        triggerType: z.enum(["manual", "http", "googleForm"]).optional(),
+        triggerType: z.enum([
+            "manual", 
+            "http", 
+            "googleForm",
+            "geminiAI",
+            "openAI",
+            "perplexityAI",
+        ]).optional(),
         summary: z.string().optional().or(z.literal("")),
         config: z.any(),
     }),
@@ -64,6 +71,14 @@ const HttpConfig = z.object({
     }
 });
 
+const AI = z.object({
+    variable: z.string().min(2, "Variable name is too small.").max(15, "Variable name is too big").regex( 
+        /^[a-zA-Z0-9-_]+$/, 
+        "Special characters are not allowed. Please use only letters, numbers, hypen: (-) and underscore: (_)."
+    ),
+    systemPrompt: z.string().optional(),
+    userPrompt: z.string(),
+});
 
 const workflowNodeSchema = BaseNodeSchema.superRefine((node, ctx) => {
     if (!node.data.isConfigured) {
@@ -91,6 +106,18 @@ const workflowNodeSchema = BaseNodeSchema.superRefine((node, ctx) => {
                     code: issue.code,
                     message: issue.message,
                     path: ["data", "config", ...issue.path],
+                })
+            });
+        }
+    }
+
+    if(["geminiAI", "perplexityAI"].includes(node.data.triggerType)){
+        const result = AI.safeParse(node.data.config);
+        if (!result.success) {
+            result.error.issues.forEach(issue => {
+                ctx.addIssue({
+                    code: issue.code,
+                    message: issue.message,
                 })
             });
         }

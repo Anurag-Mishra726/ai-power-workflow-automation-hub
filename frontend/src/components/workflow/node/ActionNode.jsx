@@ -1,6 +1,7 @@
 import { Handle, Position } from "@xyflow/react";
-import { EllipsisVertical, Zap, Globe, MousePointer, CircleDot, CheckCircle, CheckCircle2 } from "lucide-react";
+import { EllipsisVertical, Zap, Globe, CircleDot, CheckCircle, } from "lucide-react";
 import { SiGoogleforms } from "react-icons/si";
+import { RiOpenaiFill, RiPerplexityFill, RiGeminiFill  } from "react-icons/ri";
 import NodeMenu from "./NodeMenu";
 import useEditorUIStore from "@/stores/workflowEditorStore";
 import NodeStatusSpinner from "@/components/common/NodeStatus";
@@ -19,7 +20,10 @@ export const ActionNode = ({ id, data, type }) => {
 
   const iconMap = {
     http: Globe,
-    googleForm: SiGoogleforms, 
+    googleForm: SiGoogleforms,
+    openAI: RiOpenaiFill,
+    perplexityAI: RiPerplexityFill,
+    geminiAI: RiGeminiFill,
   };
 
   const Icon = iconMap[data.triggerType] || Zap;
@@ -81,7 +85,7 @@ export const ActionNode = ({ id, data, type }) => {
       </div>
 
       <div className="text-sm text-white/50 flex items-center gap-2 ">
-        {data.summary && data.config ? (
+        {data.summary && (data.config || data.isConfigured) ? (
           <>
             <span className="flex items-center gap-2 truncate">
               <CheckCircle size={12} className="self-center translate-y-0.5" />

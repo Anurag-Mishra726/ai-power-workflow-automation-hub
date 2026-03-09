@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 const GoogleFormConfig = ({onClose}) => {
 
   const workflowId = useWorkflowData((state) => state.workflowId);
-  console.log(workflowId);
+  
   const webhookURL = `https://linus-terrible-murray.ngrok-free.dev/api/webhook/google-form/${workflowId}`;
 
   return (

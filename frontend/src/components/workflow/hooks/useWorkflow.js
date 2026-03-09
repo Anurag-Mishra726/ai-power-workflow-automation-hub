@@ -233,11 +233,7 @@ export const useWorkflow = () => {
                         }
                     }
                 }); 
-
-                console.log(updatedNodes);
-
                 return updatedNodes;
-
             });
 
             if (updatedNodes) {

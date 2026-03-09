@@ -20,7 +20,7 @@ export const nodeConfigMap = {
     buildSummary: (config) =>
     {
         try {
-            config?.url
+            return config?.url
             ? `${config.method} ${new URL(config.url).pathname}`
             : "HTTP Request"
         } catch (error) {
@@ -40,5 +40,33 @@ export const nodeConfigMap = {
         buildSummary: () => "Google Form Trigger",
 
         isComplete: () => true,
-    }
+    },
+
+    geminiAI: {
+        defaultConfig: {
+            variable: "",
+            systemPrompt: "",
+            userPrompt: "",
+        },
+
+        buildSummary: (config) => {
+            return config?.userPrompt ? `AI: ${config.userPrompt.substring(0, 20)}...` : "Gemini AI";
+        },
+
+        isComplete: () => true,
+    },
+
+    perplexityAI: {
+        defaultConfig: {
+            variable: "",
+            systemPrompt: "",
+            userPrompt: "",
+        },
+
+        buildSummary: (config) => {
+            return config?.userPrompt ? `AI: ${config.userPrompt.substring(0, 20)}...` : "Perplexity AI";
+        },
+
+        isComplete: () => true,
+    },
 }

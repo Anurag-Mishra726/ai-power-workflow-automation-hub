@@ -3,6 +3,8 @@ import { X } from 'lucide-react';
 import ManualTriggerConfig from "../config-panels/ManualTriggerConfig";
 import HTTPConfig from "../config-panels/HTTPConfig";
 import GoogleFormConfig from "../config-panels/GoogleFormConfig";
+import GeminiConfig from "../config-panels/GeminiConfig";
+import PerplexityConfig from "../config-panels/PerplexityConfig";
 import CloseBtn from "@/components/common/CloseBtn";
 
 const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
@@ -13,19 +15,7 @@ const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
     const nodeType = selectedNode ? selectedNode.type : null;
 
   if (!selectedNode || !selectedNode.data.isTrigger || activeNodeId === null) {
-    return (
-        <div className="absolute top-0 right-0 h-full w-1/3 m-1 bg-[#000000] border border-zinc-700 rounded-lg text-white z-50 flex flex-col"
-        >
-            <CloseBtn onClose={onClose} />
-
-            <div>
-                <h2 className="text-3xl font-semibold  text-zinc-100 font-mono p-4">
-                    Select a node to Configure
-                </h2>
-                
-            </div>
-        </div>
-    );
+    onClose();
   }
 
   switch (selectedNode.data.triggerType) {
@@ -38,25 +28,13 @@ const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
     case "googleForm":
         return <GoogleFormConfig onClose={onClose} />;
 
+    case "geminiAI":
+        return <GeminiConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
+
+    case "perplexityAI":
+        return <PerplexityConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
+
     default: return ;
-    //   return (
-    //     <>
-    //         <div className="absolute top-0 right-0 h-full w-1/3  m-1  bg-[#000000] border border-zinc-700 rounded-lg text-white z-50 flex flex-col">
-
-                
-    //             <CloseBtn onClose={onClose} />
-
-    //             <div className="">
-    //                 <h2 className="text-3xl font-semibold  text-zinc-100 font-mono p-4">
-    //                     {selectedNode.data.label} Configuration
-    //                 </h2>
-    //                 <div className="p-4">
-    //                     Configuration panel for {selectedNode.data.label} is not yet implemented.
-    //                 </div>
-    //             </div>
-    //         </div>
-    //     </>
-    //   );
   }
 };
 

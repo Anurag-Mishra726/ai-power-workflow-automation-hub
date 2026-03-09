@@ -45,7 +45,7 @@ const NodeMenu = ({ actions, nodeId, type }) => {
                     e.stopPropagation()
                     onNodeMenuClick(action.key)
                 }}
-                className={`block w-full px-3 py-2 text-left text-sm
+                className={`block w-full px-3 py-2 text-left text-sm rounded-md
                     ${action.danger ? "text-red-500" : "text-white"}
                     ${action.disabled ? "opacity-40 cursor-not-allowed" : "hover:bg-neutral-800"}`}
             >

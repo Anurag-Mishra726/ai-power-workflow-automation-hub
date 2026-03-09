@@ -91,9 +91,11 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
       </div>
 
       <form onSubmit={(e) => {
-        e.preventDefault();
-        handleSubmit(onSubmit)(e);
-      }} className="flex-1 flex flex-col overflow-hidden">
+          e.preventDefault();
+          handleSubmit(onSubmit)(e);
+        }} 
+        className="flex-1 flex flex-col overflow-hidden"
+      >
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
           <section>
             <h3 className="text-lg font-semibold text-zinc-200 mb-2">
