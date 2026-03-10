@@ -79,7 +79,7 @@ const AIConfig = ({ selectedNode, onClose, setNodeConfig, configParams }) => {
                   className={`flex rounded-md w-full bg-zinc-900 border border-zinc-700 px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500 `}
                 />
                 <p className="text-[12px] mt-1 text-zinc-400">Reference this node's output in other nodes: {" "}
-                  <span className='text-white text-[13px]'>{`{{${watchMyVariableName.trim()}.output.data}}`}</span>
+                  <span className='text-white text-[13px]'>{`{{${watchMyVariableName.trim()}.output.text}}`}</span>
                   <span className="text-[12px] text-zinc-400"> {" "} ← Copy this syntax</span>  
                 </p>
                 {errors.variable && (

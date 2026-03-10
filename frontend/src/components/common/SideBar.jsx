@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHouse, faMicrochip, faTableCellsLarge, faCirclePlay, faBook, faCircleNodes, faRobot, faList, faGear } from '@fortawesome/free-solid-svg-icons'
+import { faHouse, faMicrochip, faKey, faCirclePlay, faBook, faCircleNodes, faRobot, faGear } from '@fortawesome/free-solid-svg-icons'
 import { FaRegUser } from "react-icons/fa";
 import { LuLogIn, LuLogOut} from "react-icons/lu";
 import useAuthStore from '@/stores/authStore'
@@ -26,7 +26,7 @@ const Sidebar = () => {
   const navItems = [
     {name: "Home", to: "/home", icon: faHouse},
     {name: "Workflow", to: "/workflow", icon: faMicrochip},
-    {name: "Integrations", to: "/integration", icon: faTableCellsLarge},
+    {name: "Integrations", to: "/integrations", icon: faKey},
     {name: "Runs", to: "/runs", icon: faCirclePlay},
     {name: "Logs", to: "/logs", icon: faBook},
     {name: "Webhooks", to: "/webhooks", icon: faCircleNodes},
@@ -41,7 +41,6 @@ const Sidebar = () => {
           <img src={Logo} alt="FlowAI" width={60} />
           <h1 className='text-5xl font-semibold '>FlowAI</h1>
         </div>
-          {/* <div className="menu flex items-center px-8 mt-4 rounded-lg text-xl font-medium cursor-pointer"> <span className='mr-2'><FontAwesomeIcon icon={faList} /></span> Menu</div> */}
         <nav className='text-white flex-1 px-5 py-6 space-y-1 overflow-y-auto'>
           {
             navItems.map((items) => (

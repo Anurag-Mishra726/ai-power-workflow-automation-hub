@@ -20,6 +20,10 @@ import Auth from './pages/auth/Auth';
 import WorkflowLayout from './layouts/WorkflowLayout';
 import WorkflowMain from './components/workflow/WorkflowMain';
 import WorkflowEditor from './components/workflow/editor/WorkflowEditor'
+
+// Integrations
+import Integrations from './pages/integrations/Integrations';
+
 // Test Route
 import Test from './pages/Test'
 
@@ -52,6 +56,8 @@ function App() {
                   <Route path="new/:id" element={<WorkflowEditor />} />
                   <Route path=":id" element={<WorkflowEditor />} />
                 </Route>
+
+                <Route path='/integrations' element={<Integrations />} />
 
                 <Route path="/test" element={<Test />} />
 

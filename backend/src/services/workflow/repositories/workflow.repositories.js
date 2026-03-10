@@ -14,7 +14,7 @@ export const saveWorkflowData = async (userData, saveWorkflowData) => {
         await connection.beginTransaction();
 
         const existingWorkflow = await Workflow.exists({workflowId, userId}, connection);
-        console.log("*******%%%%%%: ", existingWorkflow)
+
         if (!existingWorkflow) {
 
             await Workflow.insertWorkflowsData({
@@ -46,8 +46,6 @@ export const saveWorkflowData = async (userData, saveWorkflowData) => {
         }
 
         const workflowData = await Workflow.getFullWorkflow({workflowId, userId}, connection);
-
-        //console.log(workflowData);
 
         await connection.commit();
 

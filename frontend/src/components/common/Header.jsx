@@ -26,6 +26,8 @@ const Header = () => {
     pageTitle = "Home";
   }else if(path.startsWith("/workflow")){
     pageTitle = "Workflow";
+  }else if (path.startsWith("/integrations")) {
+    pageTitle = "Integrations";
   }else{
     pageTitle = "FlowAI";
   }

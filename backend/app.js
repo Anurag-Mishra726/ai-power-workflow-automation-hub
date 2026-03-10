@@ -16,6 +16,7 @@ import authRoutes from "./src/routes/auth.routes.js";
 import profileRoutes from "./src/routes/profile.routes.js";
 import workflowRoutes from "./src/routes/workflows.routes.js";
 import webhooks from "./src/routes/webhook.route.js";
+import aiIntegrationRoutes from "./src/routes/aiIntegration.routes.js";
 
 const app = express();
 await connectDB();
@@ -54,6 +55,7 @@ app.get("/api/realtime/token", async (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/workflows", workflowRoutes);
 app.use("/api/webhook", webhooks);
+app.use("/api/ai/integration", aiIntegrationRoutes);
 app.use("/api/user", profileRoutes);
 
 

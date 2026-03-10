@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { MdOutlineAccountTree, MdErrorOutline } from "react-icons/md";
 import { FaArrowRight } from "react-icons/fa6";
 import { GoZap } from "react-icons/go";
-import {faBell, faMagnifyingGlass, faPlus} from "@fortawesome/free-solid-svg-icons";
+import { faPlus} from "@fortawesome/free-solid-svg-icons";
 import useAuthStore from "@/stores/authStore";
 import { useNavigate } from "react-router-dom";
 import { useGenerateWorkflowId } from "@/hooks/useWorkflowApi ";
@@ -12,7 +12,7 @@ import React from "react";
 const Main = () => {
 
   const navigate = useNavigate();
-  const { mutate, isPending } = useGenerateWorkflowId();
+  const { mutate } = useGenerateWorkflowId();
   const username = useAuthStore( (state) => state.username ) || "Effortlessly";
   const isAuthenticated  = useAuthStore( (state) => state.isAuthenticated ) || false;
 

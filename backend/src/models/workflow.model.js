@@ -94,13 +94,13 @@ export const Workflow = {
         
         const { setClause, values } = genericQueryGenerator(updatableFields, { workflowId, userId });
 
-        const result = await query(
+        const rows = await query(
             `UPDATE workflows SET ${setClause} WHERE id = ? AND user_id = ?`,
             values,
             client
         );
 
-        return result;
+        return rows;
     },
 
     insertWorkflowGraphData: async ({workflowId, nodes, edges}, client = pool) => {
@@ -115,13 +115,13 @@ export const Workflow = {
 
         const { setClause, values } = genericQueryGenerator(updatableFields, { workflowId });
 
-        const result = await query(
+        const rows = await query(
             `UPDATE workflow_graphs SET ${setClause} WHERE workflow_id = ? `,
             values,
             client
         );
 
-        return result;
+        return rows;
     },
 
     deleteWorkflow: async ({ userId, workflowId }, client = pool) => {
