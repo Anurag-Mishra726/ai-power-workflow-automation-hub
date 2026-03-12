@@ -10,6 +10,7 @@ const GoogleFormConfig = ({onClose}) => {
   const workflowId = useWorkflowData((state) => state.workflowId);
   
   const webhookURL = `https://linus-terrible-murray.ngrok-free.dev/api/webhook/google-form/${workflowId}`;
+  // TODOs: Validate the user by making secret token system.
 
   return (
    

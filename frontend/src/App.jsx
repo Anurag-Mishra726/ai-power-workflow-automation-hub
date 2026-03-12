@@ -11,18 +11,22 @@ import AppLayout from "./layouts/AppLayout";
 // Landing
 import Landing from './pages/landing/Landing'
 import Home from "./components/home/Main";
+
 // Auth Routes
 import Auth from './pages/auth/Auth';
-// import Home from './pages/home/Home';
+
 
 // Workflow Routes
-// import Workflow from './pages/workflow/Workflow';
 import WorkflowLayout from './layouts/WorkflowLayout';
 import WorkflowMain from './components/workflow/WorkflowMain';
 import WorkflowEditor from './components/workflow/editor/WorkflowEditor'
 
 // Integrations
-import Integrations from './pages/integrations/Integrations';
+import IntegrationLayout from './layouts/IntegrationLayout';
+import IntegrationMain from './components/integrations/IntegrationMain';
+import AddIntegrationForm from './components/integrations/AddIntegrationForm';
+import EditIntegrationForm from './components/integrations/EditIntegrationForm';
+
 
 // Test Route
 import Test from './pages/Test'
@@ -57,7 +61,11 @@ function App() {
                   <Route path=":id" element={<WorkflowEditor />} />
                 </Route>
 
-                <Route path='/integrations' element={<Integrations />} />
+                <Route path="/integrations" element={<IntegrationLayout />} >
+                  <Route index element={<IntegrationMain />} />
+                  <Route path="add/new/apikey" element={<AddIntegrationForm />} />
+                  <Route path="edit/:provider/apikey" element={<EditIntegrationForm />} />
+                </Route>
 
                 <Route path="/test" element={<Test />} />
 

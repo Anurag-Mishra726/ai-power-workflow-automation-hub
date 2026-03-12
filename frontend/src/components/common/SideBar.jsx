@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHouse, faMicrochip, faKey, faCirclePlay, faBook, faCircleNodes, faRobot, faGear } from '@fortawesome/free-solid-svg-icons'
+import { faHouse, faMicrochip, faCodeMerge, faCirclePlay, faBook, faCircleNodes, faRobot, faGear } from '@fortawesome/free-solid-svg-icons'
 import { FaRegUser } from "react-icons/fa";
 import { LuLogIn, LuLogOut} from "react-icons/lu";
 import useAuthStore from '@/stores/authStore'
@@ -26,7 +26,7 @@ const Sidebar = () => {
   const navItems = [
     {name: "Home", to: "/home", icon: faHouse},
     {name: "Workflow", to: "/workflow", icon: faMicrochip},
-    {name: "Integrations", to: "/integrations", icon: faKey},
+    {name: "Integrations", to: "/integrations", icon: faCodeMerge}, 
     {name: "Runs", to: "/runs", icon: faCirclePlay},
     {name: "Logs", to: "/logs", icon: faBook},
     {name: "Webhooks", to: "/webhooks", icon: faCircleNodes},

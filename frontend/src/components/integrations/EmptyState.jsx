@@ -1,7 +1,11 @@
-import { SiOpenai, SiGoogle, SiPerplexity } from "react-icons/si";
+import { SiOpenai, SiGooglegemini, SiPerplexity } from "react-icons/si";
 import { FaPlus, FaKey } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-const EmptyState = ({ onAddClick }) => {
+const EmptyState = () => {
+
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col items-center justify-center border-2 border-dashed border-zinc-800 rounded-3xl py-24 px-6 text-center bg-zinc-900/10 animate-in fade-in zoom-in duration-500">
       {/* Icon Circle */}
@@ -22,19 +26,20 @@ const EmptyState = ({ onAddClick }) => {
       </p>
       
       <button 
-        onClick={onAddClick}
-        className="flex items-center gap-3 bg-white text-black px-8 py-4 rounded-2xl font-bold hover:bg-zinc-200 hover:scale-105 transition-all active:scale-95 shadow-lg shadow-white/5"
+        onClick={() => navigate("/integrations/add/new/apikey")}
+        className="flex items-center gap-3 bg-white text-black px-8 py-4 rounded-2xl font-bold hover:bg-zinc-200 hover:scale-105 
+        transition-all active:scale-95 shadow-lg shadow-white/5"
       >
-        <FaPlus size={14} /> 
-        Connect Provider
+        <FaPlus size={20} /> 
+        <span className="text-xl">Connect Provider</span>
       </button>
 
       {/* Social Proof / Capability Icons */}
       <div className="mt-16">
         <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-600 mb-4 font-bold">Supported Platforms</p>
-        <div className="flex gap-8 grayscale opacity-20 hover:opacity-50 transition-opacity duration-500">
+        <div className="flex justify-center gap-8 grayscale opacity-20 hover:opacity-50 transition-opacity duration-500">
             <SiOpenai size={28} title="OpenAI" />
-            <SiGoogle size={28} title="Google Gemini" />
+            <SiGooglegemini size={34} title="Google Gemini" />
             <SiPerplexity size={28} title="Perplexity AI" />
         </div>
       </div>

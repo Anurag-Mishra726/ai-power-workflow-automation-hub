@@ -1,4 +1,5 @@
 import { ReactFlow, Background, Controls, MiniMap, Panel } from "@xyflow/react";
+import '@xyflow/react/dist/style.css'; // It was missing add at the end of main.jsx, but I think it's better to import it here in the component where ReactFlow is used. Don't know why it was this breaks the style when it was not imported. Before it was not imported at all, and I don't know how it was working without styles. And suddenly it was not working, so I added the import and it works fine now. Maybe it was cached before or something.
 import useEditorUIStore from "@/stores/workflowEditorStore";
 import useWorkflowData from "@/stores/workflowDataStore";
 import ExecuteWorkflowButton from "./ExecuteWorkflowButton";

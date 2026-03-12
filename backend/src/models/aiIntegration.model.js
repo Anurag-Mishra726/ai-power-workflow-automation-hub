@@ -22,6 +22,14 @@ export const aiIntegration = {
 
     getApiKey: async({userId, provider}) => {
         const rows = await query(
+            "SELECT * FROM ai_integrations WHERE user_id = ? AND provider = ? LIMIT 1",
+            [userId, provider]
+        );
+        return rows[0] || null;
+    },
+
+    apiKey: async({userId, provider}) => {
+        const rows = await query(
             "SELECT api_key FROM ai_integrations WHERE user_id = ? AND provider = ? LIMIT 1",
             [userId, provider]
         );

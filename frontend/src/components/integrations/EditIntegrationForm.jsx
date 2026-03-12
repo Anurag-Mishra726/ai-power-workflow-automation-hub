@@ -1,35 +1,77 @@
-import React from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { SiOpenai, SiGoogle, SiPerplexity } from "react-icons/si";
-import { FaRobot } from "react-icons/fa";
+import { useNavigate, useParams } from "react-router-dom";
+import LoadingState from "../common/LoadingState";
+import ErrorState from "../common/ErrorState";
+import { useGetApiKey, useUpdateApiKey } from "@/hooks/useIntegration";
+import { AiIntegrationSchema } from "@/schemas/aiIntegrationSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import toast from "react-hot-toast";
 
-// 1. Dummy Data Object (Simulating "Selected" item)
-const currentIntegration = {
-  id: 1,
-  name: "My OpenAI Key",
-  provider: "openai",
-  apiKey: "sk-1234567890abcdef",
-};
-
-// 2. Icon Map
 const providerIcons = {
-  openai: <SiOpenai className="text-emerald-400 text-3xl" />,
-  gemini: <SiGoogle className="text-blue-400 text-3xl" />,
-  perplexity: <SiPerplexity className="text-cyan-400 text-3xl" />,
-  default: <FaRobot className="text-zinc-400 text-3xl" />,
+  openai: "/openai.svg",
+  gemini: "/gemini.svg",
+  perplexity: "/perplexity.svg",
+  //TODO: Add default icon for unknown providers
 };
 
 const EditIntegrationForm = () => {
-  const { register, handleSubmit } = useForm({
+
+  const { provider } = useParams();
+  const navigate = useNavigate();
+  const { data, isPending, isError } = useGetApiKey(provider);
+  const { mutate, isPending: isSaving } = useUpdateApiKey();
+
+  const { register, handleSubmit, reset, formState: { errors }, } = useForm({
     defaultValues: {
-      name: currentIntegration.name,
-      apiKey: currentIntegration.apiKey,
+      name: "",
+      provider: "",
+      apiKey: "",
     },
+    resolver: zodResolver(AiIntegrationSchema),
   });
 
+  useEffect(() => {
+    if (data) {
+      reset({
+        name: data.apiKey.name || "",
+        provider: data.apiKey.provider || "",
+        apiKey: data.apiKey.apiKey || "",
+      });
+    }
+  }, [data, reset]);
+
+  if(isPending){
+    return (
+      <div className="flex justify-center items-center mt-40">
+        <LoadingState
+            text="LOADING*DATA*"
+            onHover="speedUp"
+            spinDuration={20}
+            className="custom-class"
+        />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex justify-center items-center mt-40">
+        <ErrorState/>
+      </div>
+    );
+  }  
+
   const onSubmit = (data) => {
-    console.log("Updated Data:", { ...data, provider: currentIntegration.provider });
-    alert("Integration updated! Check console.");
+    mutate(data, {
+      onSuccess: () => {
+        toast.success("API Key Udated successfully.");
+        navigate("/integrations");
+      },
+      onError: (error) => {
+        toast.error(error || "Something went wrong!");
+      }
+    });
   };
 
   return (
@@ -40,11 +82,11 @@ const EditIntegrationForm = () => {
         {/* Logo Display instead of text */}
         <div className="flex items-center gap-4 p-4 bg-zinc-950 rounded-2xl border border-zinc-800">
           <div className="w-16 h-16 flex items-center justify-center bg-zinc-900 rounded-xl border border-zinc-800">
-            {providerIcons[currentIntegration.provider] || providerIcons.default}
+            <img src={providerIcons[data?.apiKey.provider] || providerIcons.default} alt="AI Provider" className="h-12 w-12" />
           </div>
           <div>
             <p className="text-zinc-400 text-xs uppercase font-bold tracking-widest">Provider</p>
-            <p className="text-white font-medium capitalize">{currentIntegration.provider}</p>
+            <p className="text-white font-medium capitalize">{data?.apiKey.provider}</p>
           </div>
         </div>
 
@@ -55,6 +97,7 @@ const EditIntegrationForm = () => {
             {...register("name", { required: true })}
             className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:ring-1 focus:ring-white outline-none"
           />
+          {errors.name && <span className="text-red-500 text-xs">{errors.name.message}</span>}
         </div>
 
         {/* Input: API Key */}
@@ -62,17 +105,28 @@ const EditIntegrationForm = () => {
           <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">New API Key</label>
           <input
             type="password"
-            {...register("apiKey", { required: true })}
+            {...register("apiKey")}
             className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white font-mono focus:ring-1 focus:ring-white outline-none"
           />
+          {errors.apiKey && <span className="text-red-500 text-xs">{errors.apiKey.message}</span>}
         </div>
 
-        <button
-          type="submit"
-          className="w-full py-3 rounded-xl bg-white text-black font-bold hover:bg-zinc-200 transition"
-        >
-          Save Changes
-        </button>
+        <div className="w-full flex justify-between">
+          <button
+            type="submit"
+            className="w-1/4 py-3 text-center rounded-xl bg-white text-black font-bold hover:bg-zinc-200 transition"
+            onClick={() => navigate("/integrations")}
+          >
+            Cancle
+          </button>
+          <button
+            type="submit"
+            className="w-1/4 py-3 text-center rounded-xl bg-white text-black font-bold hover:bg-zinc-200 transition"
+            disabled={isSaving}
+          >
+            Save 
+          </button>
+        </div>
       </form>
     </div>
   );

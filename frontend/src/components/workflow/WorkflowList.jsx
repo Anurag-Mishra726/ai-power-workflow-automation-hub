@@ -57,7 +57,10 @@ const WorkflowList = ({data}) => {
           </p>
         </div>
 
-        <button className="group relative bg-white text-black hover:bg-blue-500 hover:text-white px-8 py-4 rounded-full font-black shadow-2xl transition-all active:scale-95 flex items-center justify-center space-x-3 overflow-hidden" onClick={() => mutate()}>
+        <button className="group relative bg-white text-black hover:bg-blue-500 hover:text-white px-8 py-4 rounded-full font-black shadow-2xl transition-all active:scale-95 flex items-center justify-center space-x-3 overflow-hidden" 
+        onClick={() => mutate()}
+        disabled={isPending}
+        >
           <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
           <Plus className="relative z-10" size={22} strokeWidth={3} />
           <span className="relative z-10 text-lg uppercase tracking-tight">

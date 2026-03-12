@@ -71,9 +71,9 @@ export const useGetWorkflowGraph = () => {
         setWorkflowCreatedAt,
         setWorkflowUpdatedAt,
     } = useWorkflowData();
-
+    // TODOs : use useQuery here for retrieving workflow graph data.
     return useMutation({
-        mutationFn: async (workflowId) => await getWorkflowGraph(workflowId),
+        mutationFn: getWorkflowGraph,
         onSuccess: (data) => {
             //console.log(data);
             setWorkflowId(data.workflowId);
@@ -85,7 +85,7 @@ export const useGetWorkflowGraph = () => {
             setNodesInStore(data.nodes);
             setEdgesInStore(data.edges);
         }
-    })
+    });
 }
 
 export const useGenerateWorkflowId = () => {
@@ -99,6 +99,10 @@ export const useGenerateWorkflowId = () => {
             navigate(`/workflow/new/${data.workflowId}`)
             console.log(data);
         },
+        onError: (error) => {
+            console.warn("Failed to generate workflow.", error.message || error);
+            toast.error("Failed to generate workflow. Please try again.");
+        }
     });
 };
 
@@ -106,7 +110,7 @@ export const useDeleteWorkflow = () => {
     const {clearData} = useWorkflowData();
     const navigate = useNavigate();
     return useMutation({
-        mutationFn: async(workflowId) => await deleteWorkflow(workflowId),
+        mutationFn: deleteWorkflow,
         onSuccess: () => {
             navigate('/workflow');
             clearData();

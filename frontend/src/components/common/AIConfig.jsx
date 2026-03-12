@@ -66,6 +66,7 @@ const AIConfig = ({ selectedNode, onClose, setNodeConfig, configParams }) => {
               <h3 className="text-lg font-semibold text-zinc-200 mb-2">
                 Configuration Panel : 
               </h3>
+              <p className='text-xs' >Please configure your API key in the Integrations page to use this feature.</p>
             </section>
             <section>
               <div>

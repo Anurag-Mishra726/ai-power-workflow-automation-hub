@@ -6,12 +6,12 @@ import {
   deleteApiKey
 } from "../services/aiIntegration/aiIntegration.service.js";
 
-export const addApiKeyController = async (req, res, next) => {
+export const addApiKeyController = async (req, res) => {
   try {
 
     const userId = req.user.userId;
     const { name, provider, apiKey } = req.body;
-
+    
     const result = await addApiKey({
       userId,
       name,
@@ -32,7 +32,7 @@ export const addApiKeyController = async (req, res, next) => {
   }
 };
 
-export const getApiKeyController = async (req, res, next) => {
+export const getApiKeyController = async (req, res) => {
   try {
 
     const userId = req.user.userId;
@@ -45,7 +45,7 @@ export const getApiKeyController = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: result
+      apiKey: result
     });
 
   } catch (error) {
@@ -57,7 +57,7 @@ export const getApiKeyController = async (req, res, next) => {
 };
 
 
-export const getAllApiKeysController = async (req, res, next) => {
+export const getAllApiKeysController = async (req, res) => {
   try {
 
     const userId = req.user.userId;
@@ -68,7 +68,7 @@ export const getAllApiKeysController = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: result
+      allApiKeys: result
     });
 
   } catch (error) {
@@ -80,7 +80,7 @@ export const getAllApiKeysController = async (req, res, next) => {
 };
 
 
-export const updateApiKeyController = async (req, res, next) => {
+export const updateApiKeyController = async (req, res) => {
   try {
 
     const userId = req.user.userId;
@@ -107,7 +107,7 @@ export const updateApiKeyController = async (req, res, next) => {
 };
 
 
-export const deleteApiKeyController = async (req, res, next) => {
+export const deleteApiKeyController = async (req, res) => {
   try {
 
     const userId = req.user.userId;

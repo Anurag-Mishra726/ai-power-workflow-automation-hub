@@ -17,8 +17,10 @@ export const manualExecuteWorkflowService = async (userData, workflowId) => {
     await inngest.send({
         name: "workflow/execute",
         data: {
-            userId: userId,
             workflowId: workflowId,
+            initialData: {
+                userId: userId
+            }
         }
     });
     return ;
