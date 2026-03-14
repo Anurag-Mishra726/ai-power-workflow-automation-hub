@@ -30,7 +30,7 @@ const WorkflowEditor = () => {
     if (!deleteNodeId) return;
     workflow.deleteNode(deleteNodeId);
     clearDeleteNodeRequest();
-  }, [deleteNodeId]);
+  }, [clearDeleteNodeRequest, deleteNodeId, workflow]);
 
   return (
     <>

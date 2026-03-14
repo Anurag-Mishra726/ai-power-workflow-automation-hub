@@ -69,4 +69,18 @@ export const nodeConfigMap = {
 
         isComplete: () => true,
     },
+
+    openAI: {
+        defaultConfig: {
+            variable: "",
+            systemPrompt: "",
+            userPrompt: "",
+        },
+
+        buildSummary: (config) => {
+            return config?.userPrompt ? `AI: ${config.userPrompt.substring(0, 20)}...` : "ChatGPT";
+        },
+
+        isComplete: () => true,
+    },
 }

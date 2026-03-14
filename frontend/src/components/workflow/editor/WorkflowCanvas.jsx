@@ -55,7 +55,7 @@ const WorkflowCanvas = ({
         />
 
        {
-        workflowNodes[0]?.data?.triggerType === "manual" && 
+        workflowNodes && workflowNodes[0]?.data?.triggerType === "manual" && 
          <Panel position="bottom-center">
           <ExecuteWorkflowButton workflowId={workflowId} />
           </Panel>

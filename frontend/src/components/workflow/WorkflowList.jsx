@@ -3,38 +3,39 @@ import { Plus, Activity } from "lucide-react";
 import WorkflowCard from './WorkflowCard';
 import { useNavigate } from 'react-router-dom';
 import { useGetWorkflowGraph } from '@/hooks/useWorkflowApi ';
-import LoadingState from "../common/LoadingState";
-import ErrorState from "../common/ErrorState";
+// import LoadingState from "../common/LoadingState";
+// import ErrorState from "../common/ErrorState";
 import { useGenerateWorkflowId } from "@/hooks/useWorkflowApi ";
 
 const WorkflowList = ({data}) => {
 
   const navigate = useNavigate();
-  const {mutateAsync, isLoading, error} = useGetWorkflowGraph()
- const { mutate, isPending } = useGenerateWorkflowId();
+  //const {mutateAsync, isLoading, error} = useGetWorkflowGraph()
+  const {mutateAsync} = useGetWorkflowGraph()
+  const { mutate, isPending } = useGenerateWorkflowId();
 
   const onCardClick = async (id) => {
     const workflowGraph = await mutateAsync(id);
-    if(isLoading){
-      return (
-        <div className="flex justify-center items-center mt-40">
-          <LoadingState
-              text="LOADING*WORKFLOWS*"
-              onHover="speedUp"
-              spinDuration={20}
-              className="custom-class"
-          />
-        </div>
-      )
-    }
+    // if(isLoading){
+    //   return (
+    //     <div className="flex justify-center items-center mt-40">
+    //       <LoadingState
+    //           text="LOADING*WORKFLOWS*"
+    //           onHover="speedUp"
+    //           spinDuration={20}
+    //           className="custom-class"
+    //       />
+    //     </div>
+    //   )
+    // }
 
-    if (error) {
-      return (
-        <div className="flex justify-center items-center mt-40">
-          <ErrorState/>
-        </div>
-      )
-    }
+    // if (error) {
+    //   return (
+    //     <div className="flex justify-center items-center mt-40">
+    //       <ErrorState/>
+    //     </div>
+    //   )
+    // }
     navigate(`/workflow/${id}`)
     console.log("Card Cicked... ", workflowGraph);
 

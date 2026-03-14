@@ -1,7 +1,7 @@
 import CopyToClipboard from "../common/CopyToClipboard";
 import { FaPlus, FaTrashAlt } from "react-icons/fa";
 import { HiOutlineExternalLink } from "react-icons/hi";
-import { useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useDeleteApiKey } from "@/hooks/useIntegration";
 import toast from "react-hot-toast";
 
@@ -15,7 +15,6 @@ const providerIcons = {
 const IntegrationCard = ({data}) => {
 
   const { mutate, isPending } = useDeleteApiKey();
-  const navigate = useNavigate();
 
   const maskKey = (key) => `•••• •••• ${key.slice(-4)}`;
 
@@ -34,18 +33,20 @@ const IntegrationCard = ({data}) => {
     <div className="  p-5 text-zinc-100 font-sans">
       <div className=" mx-auto">
         {/* Header Section */}
-        <div className="flex justify-between items-end mb-8">
+        <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">AI Integrations</h1>
             <p className="text-zinc-400 mt-1">Manage your API connections and provider keys.</p>
           </div>
-          <button className="flex items-center gap-1 bg-white text-black px-4 py-2 rounded-lg font-medium
-           hover:bg-blue-500 hover:text-white transition-colors "
-            onClick={() => navigate("/integrations/add/new/apikey")}
+          <NavLink
+            to="/integrations/add/new/apikey"
           >
-            <FaPlus size={14} /> 
-            <span className="text-lg">Add Integration</span>
-          </button>
+            <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg font-medium
+            hover:bg-blue-500 hover:text-white transition-colors ">
+              <FaPlus size={14} /> 
+              <span className="text-lg font-bold">Add Integration</span>
+            </button>
+          </NavLink>
         </div>
 
         {/* Integration List */}
@@ -81,11 +82,13 @@ const IntegrationCard = ({data}) => {
                 <p className="text-xs text-zinc-400 mr-4 hidden sm:block">
                   Added {new Date(conn.createdAt).toLocaleDateString()}
                 </p>
-                <button className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition"
-                  onClick={() => navigate(`/integrations/edit/${conn.provider}/apikey`)}
+                <NavLink
+                  to={`/integrations/edit/${conn.provider}/apikey`}
                 >
+                  <button className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition">
                   <HiOutlineExternalLink size={20} />
                 </button>
+                </NavLink>
                 <button className="p-2 text-zinc-400 hover:text-red-400 hover:bg-red-500/20 rounded-lg transition"
                   onClick={() => handleDelete(conn.provider)} 
                   disabled={isPending}

@@ -5,6 +5,7 @@ import HTTPConfig from "../config-panels/HTTPConfig";
 import GoogleFormConfig from "../config-panels/GoogleFormConfig";
 import GeminiConfig from "../config-panels/GeminiConfig";
 import PerplexityConfig from "../config-panels/PerplexityConfig";
+import OpenAiConfig from "../config-panels/OpenAiConfig";
 import CloseBtn from "@/components/common/CloseBtn";
 
 const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
@@ -33,6 +34,9 @@ const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
 
     case "perplexityAI":
         return <PerplexityConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
+
+      case "openAI":
+        return <OpenAiConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
 
     default: return ;
   }

@@ -138,6 +138,21 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
                 <p className="text-zinc-400">Use Perplexity-AI to generate AI-powered output.</p>
             </div>
         </div>
+
+        <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
+         hover:bg-zinc-800 cursor-pointer"
+         onClick={()=> {
+          setTriggerType("ChatGPT", "openAI");
+          onClose();
+          setIsConfigSidebarOpen();
+         }}
+         >
+            <img src="/openai.svg" alt="ChatGPT" height={32} width={32} />
+            <div>
+                <h2 className="text-xl">ChatGPT</h2>
+                <p className="text-zinc-400">Use ChatGPT to generate AI-powered output.</p>
+            </div>
+        </div>
         
       </div>
     </aside>

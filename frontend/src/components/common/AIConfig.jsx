@@ -34,7 +34,8 @@ const AIConfig = ({ selectedNode, onClose, setNodeConfig, configParams }) => {
 
   const logoMap = {
     gemini: "/gemini.svg",
-    perplexity: "/perplexity.svg"
+    perplexity: "/perplexity.svg",
+    openai: "/openai.svg"
   }
 
   return (
