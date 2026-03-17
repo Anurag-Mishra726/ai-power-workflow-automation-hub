@@ -46,6 +46,14 @@ export const Workflow = {
         return Number(rows[0].workflowExists) === 1;
     },
 
+    getUserId: async({workflowId}) => {
+        const rows = await query(
+            "SELECT user_id FROM workflows WHERE id = ?",
+            [workflowId]
+        );
+        return rows[0];
+    },
+
     getWorkflowMetadata: async ({userId}, client = pool) => {
         const rows = await query(
             "SELECT * FROM workflows WHERE user_id = ?",

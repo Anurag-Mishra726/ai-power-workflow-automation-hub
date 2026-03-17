@@ -109,8 +109,8 @@ export const deleteWorkflowData = async(req, res) => {
         }
         const result = await deleteWorkflow(req.user, workflowId);
         res.status(204).json({
-            message: "Workflow deleted successfully",
-            success: true
+            message: result?.message || "Workflow deleted successfully",
+            success: result?.success || true
         });
     } catch (error) {
         console.log(error);

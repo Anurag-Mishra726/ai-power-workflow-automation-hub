@@ -5,6 +5,7 @@ import {
     getApiKey,
     updateApiKey,
     deleteApiKey,
+    apiKeyExists,
 } from '@/api/integration.api'
 import { queryClient } from '@/utils/queryClient';
 
@@ -22,6 +23,14 @@ export const useAddApiKey = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ["integrations", "allapikeys"]})
         }
+    });
+}
+
+export const useApiKeyExists = (provider) => {
+    return useQuery({
+        queryKey: ["integration", provider],
+        queryFn: () => apiKeyExists(provider),
+        refetchOnMount: true,
     });
 }
 

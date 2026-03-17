@@ -10,6 +10,7 @@ export const ActionNode = ({ id, data, type }) => {
 
   const setActiveNode = useEditorUIStore(s => s.setActiveNode);
   const setOpenNodeMenu = useEditorUIStore(s => s.setOpenNodeMenu);
+  const setNodeType = useEditorUIStore(s => s.setNodeType);
   const {isNodeMenuOpen, activeNodeId, setIsSidebarOpen} = useEditorUIStore();
 
   const actions = [
@@ -33,6 +34,7 @@ export const ActionNode = ({ id, data, type }) => {
     hover:border-white "
       onClick={()=> {
         setActiveNode(id);
+        setNodeType("action");
       }}
     >
       <div className="flex items-center justify-between ">

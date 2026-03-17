@@ -25,6 +25,22 @@ export const addApiKey = async ({ userId, name, provider, apiKey }) => {
     };
 }
 
+export const apiKeyExists = async ({userId, provider}) => {
+    const exists = await aiIntegration.exists({ userId, provider });
+
+    if (!exists) {
+      return {
+        message: "API key not found.",
+        exists: false
+      }    
+    }
+
+    return {
+      message: "API Key Exists.",
+      exists: true
+    }
+}
+
 export const getApiKey = async ({ userId, provider }) => {
 
     const record = await aiIntegration.getApiKey({ userId, provider });

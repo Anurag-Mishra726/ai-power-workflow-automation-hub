@@ -117,13 +117,16 @@ export const deleteWorkflow = async (userData, workflowId) => {
     console.log("user and workflow id : ", userId, workflowId);
 
     const workflowExists = await Workflow.exists({workflowId, userId});
-    console.log(workflowExists);
+    
     if (!workflowExists) {
-        throw new AppError("Workflow Not Found!", 404);
+        return { 
+            message: "Workflow not found!",
+            success: false
+        };
     }
 
     await Workflow.deleteWorkflow({ userId, workflowId });
-    return { message: "Workflow deleted successfully" };
+    return { message: "Workflow deleted successfully." };
 
 }
 

@@ -10,6 +10,11 @@ export const addApiKey = async (data) => {
     return res.data;
 }
 
+export const apiKeyExists = async (provider) => {
+    const res = await api.get(`/ai/integration/${provider}/apikey/exist`);
+    return res.data;
+}
+
 export const getApiKey = async (provider) => {
     const res = await api.get(`ai/integration/get/apikey/${provider}`);
     return res.data;

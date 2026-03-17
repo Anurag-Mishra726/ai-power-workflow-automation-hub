@@ -1,10 +1,22 @@
 import {MousePointer, Globe,X} from "lucide-react"
 import useEditorUIStore from "@/stores/workflowEditorStore";
 import CloseBtn from "@/components/common/CloseBtn";
+//import toast from "react-hot-toast";
 
 const WorkflowSidebar = ({ onClose, setTriggerType }) => {
 
-  const {setIsConfigSidebarOpen} = useEditorUIStore();
+  const {setIsConfigSidebarOpen, /* nodeType */} = useEditorUIStore();
+
+  const handleOnClick = (label, triggerType) => {
+    // console.log("NodeTypes:: " ,nodeType)
+    // if ( (nodeType == "action" && label == "HTTP Webhook") || (nodeType == "trigger" && label == "HTTP Request") || (nodeType == "action" && triggerType == "manual") ) {
+    //   toast.error(` ${label} can only be trigger Node!`);
+    //   return;
+    // }
+    setTriggerType(label, triggerType);
+    onClose();
+    setIsConfigSidebarOpen();
+  }
 
   return (
     <aside
@@ -23,16 +35,14 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
 
       <div className="flex-1 overflow-y-auto px-3 py-5 ">
 
-        <div className="mb-2 pb-1 border-b border-gray-300">
+        {/* <div className="mb-2 pb-1 border-b border-gray-300">
           <h2 className="text-2xl">Triggers Nodes</h2>
-        </div>
+        </div> */}
             
         <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
          onClick={()=> {
-          setTriggerType( "Manual Trigger", "manual" );
-          onClose();
-          setIsConfigSidebarOpen();
+          handleOnClick("Manual Trigger", "manual");
          }}
          >
             <MousePointer size={28} />
@@ -42,12 +52,10 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
             </div>
         </div>
 
-        <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
+        {/* <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
          onClick={()=> {
-          setTriggerType("HTTP Webhook", "http");
-          onClose();
-          setIsConfigSidebarOpen();
+          handleOnClick("HTTP Webhook", "http");
          }}
          >
             <Globe size={28} className="text-blue-600" />
@@ -55,14 +63,12 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
                 <h2 className="text-xl">HTTP Webhook</h2>
                 <p className="text-zinc-400 text-sm ">Start this workflow when an HTTP request is received.</p>
             </div>
-        </div>
+        </div> */}
 
         <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
          onClick={()=> {
-          setTriggerType( "Google Form", "googleForm" );
-          onClose();
-          setIsConfigSidebarOpen();
+          handleOnClick("Google Form", "googleForm");
          }}
          >
             <img src="/googleform.svg" alt="Google Form" height={25} width={25} />
@@ -75,16 +81,14 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
 
          {/* Action Nodes */}
 
-        <div className="mt-8 pb-1 border-b border-gray-300">
+        {/* <div className="mt-8 pb-1 border-b border-gray-300">
           <h2 className="text-2xl">Actions Nodes</h2>
-        </div>
+        </div> */}
 
         <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
          onClick={()=> {
-          setTriggerType("HTTP Request", "http");
-          onClose();
-          setIsConfigSidebarOpen();
+          handleOnClick("HTTP Request", "http");
          }}
          >
             <Globe size={28} className="text-blue-600" />
@@ -94,27 +98,10 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
             </div>
         </div>
 
-        {/* <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
-         hover:bg-zinc-800 cursor-pointer"
-         onClick={()=> {
-          setTriggerType("Chat GPT", "openAI");
-          onClose();
-          setIsConfigSidebarOpen();
-         }}
-         >
-            <Globe size={28} />
-            <div>
-                <h2 className="text-xl">ChatGPT</h2>
-                <p className="text-zinc-400">Use ChatGPT-AI to generate AI-powered output.</p>
-            </div>
-        </div> */}
-
         <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
          onClick={()=> {
-          setTriggerType("Gemini", "geminiAI");
-          onClose();
-          setIsConfigSidebarOpen();
+          handleOnClick("Gemini", "geminiAI");
          }}
          >
             <img src="/gemini.svg" alt="Gemini AI" height={32} width={32} />
@@ -127,9 +114,7 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
         <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
          onClick={()=> {
-          setTriggerType("Perplexity", "perplexityAI");
-          onClose();
-          setIsConfigSidebarOpen();
+          handleOnClick("Perplexity", "perplexityAI");
          }}
          >
             <img src="/perplexity.svg" alt="Perplexity AI" height={32} width={32} />
@@ -142,14 +127,25 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
         <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
          onClick={()=> {
-          setTriggerType("ChatGPT", "openAI");
-          onClose();
-          setIsConfigSidebarOpen();
+          handleOnClick("ChatGPT", "openAI");
          }}
          >
             <img src="/openai.svg" alt="ChatGPT" height={32} width={32} />
             <div>
                 <h2 className="text-xl">ChatGPT</h2>
+                <p className="text-zinc-400">Use ChatGPT to generate AI-powered output.</p>
+            </div>
+        </div>
+
+        <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
+         hover:bg-zinc-800 cursor-pointer"
+         onClick={()=> {
+          handleOnClick("ChatGPT", "openAI");
+         }}
+         >
+            <img src="/slack.svg" alt="Slack" height={32} width={32} />
+            <div>
+                <h2 className="text-xl">Slack</h2>
                 <p className="text-zinc-400">Use ChatGPT to generate AI-powered output.</p>
             </div>
         </div>

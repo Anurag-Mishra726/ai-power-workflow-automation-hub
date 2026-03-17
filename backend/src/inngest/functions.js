@@ -34,6 +34,11 @@ export const executeWorkflow = inngest.createFunction(
 
     });
 
+    const userId = await step.run("find-userId", async () =>{
+      const userId = await Workflow.getUserId({workflowId});
+      return userId.user_id;
+    });
+
     let context = event.data.initialData || {};
 
     for (const node of sortedNodes) {
@@ -46,6 +51,7 @@ export const executeWorkflow = inngest.createFunction(
           data: node.data,
           nodeId: node.id,
           context,
+          userId,
           publish
         });
       });          

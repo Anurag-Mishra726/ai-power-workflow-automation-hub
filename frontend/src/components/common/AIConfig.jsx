@@ -2,9 +2,13 @@ import { useForm, useWatch } from 'react-hook-form';
 import CloseBtn from "@/components/common/CloseBtn";
 import useEditorUIStore from "@/stores/workflowEditorStore";
 import toast from 'react-hot-toast';
+import { useApiKeyExists } from '@/hooks/useIntegration';
+import { AlertCircle, CircleCheckBig, Loader2 } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 
 const AIConfig = ({ selectedNode, onClose, setNodeConfig, configParams }) => {
 
+  const { data, isLoading, isError } = useApiKeyExists(configParams.logo);
   const {setIsConfigSidebarClose} = useEditorUIStore();
 
   const { register, handleSubmit, control, formState: { errors },  } = useForm({
@@ -67,7 +71,44 @@ const AIConfig = ({ selectedNode, onClose, setNodeConfig, configParams }) => {
               <h3 className="text-lg font-semibold text-zinc-200 mb-2">
                 Configuration Panel : 
               </h3>
-              <p className='text-xs' >Please configure your API key in the Integrations page to use this feature.</p>
+              {isLoading ? (
+                <div className="flex items-center gap-2 text-zinc-500">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span className="text-xs">Checking configuration...</span>
+                </div>
+
+                ) : isError ? (
+                  /* Actual Error (server/network issue) */
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20">
+                    <AlertCircle className="w-5 h-5 text-red-500" />
+                    <p className="text-xs text-red-400">
+                      Something went wrong while checking configuration. Please try again.
+                    </p>
+                  </div>
+
+                ) : data?.exists ? (
+                  /* API Key exists */
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                    <CircleCheckBig className="w-4 h-4 text-emerald-500" />
+                    <p className="text-xs font-medium text-emerald-400">
+                      API Key active and ready for {configParams.title}.
+                    </p>
+                  </div>
+
+                ) : (
+                  /* API Key missing */
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700">
+                    <AlertCircle className="w-5 h-5 text-red-500" />
+                    <p className="text-xs text-zinc-400">
+                      Please configure your API key in the
+                      <NavLink to="/integrations">
+                        <span className="text-white ml-1">integrations </span>
+                      </NavLink>
+                      page to use this feature.
+                    </p>
+                  </div>
+                )
+              }
             </section>
             <section>
               <div>

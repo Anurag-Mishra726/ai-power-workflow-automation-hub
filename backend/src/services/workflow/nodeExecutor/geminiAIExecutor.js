@@ -4,9 +4,9 @@ import { createExecutionResult } from "../../../utils/executionResult.js";
 import { NonRetriableError } from "inngest";
 import { aiIntegration } from "../../../models/aiIntegration.model.js"
 
-export const geminiAIExecutor = async ({data, nodeId, context, publish}) => {
+export const geminiAIExecutor = async ({data, nodeId, context, userId, publish}) => {
 
-    if (!context.userId) {
+    if (!userId) {
         throw new NonRetriableError("User Id is missing");
     }
 
@@ -15,7 +15,7 @@ export const geminiAIExecutor = async ({data, nodeId, context, publish}) => {
     }
 
     const apiKey = await aiIntegration.apiKey({ 
-        userId: context.userId, 
+        userId, 
         provider: "gemini",
     });
 
