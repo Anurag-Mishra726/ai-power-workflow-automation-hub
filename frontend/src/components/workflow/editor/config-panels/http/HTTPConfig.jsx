@@ -211,12 +211,12 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
         
         </div>
 
-        <div className="border-t border-zinc-800 px-4 py-3 flex justify-end bg-zinc-900/50">
+        <div className="border-t border-zinc-600 px-4 py-3 flex justify-end bg-zinc-900/50">
           <button
             type="submit"
-            className="rounded-md bg-blue-600 px-4 py-2 text-xs font-semibold hover:bg-blue-500 active:bg-blue-700 transition-colors"
+            className="w-full flex items-center justify-center gap-2 bg-white text-black font-bold py-3 rounded-xl hover:bg-zinc-200 transition-colors"
           >
-            Save
+            Save Configuration
           </button>
         </div>
       </form>

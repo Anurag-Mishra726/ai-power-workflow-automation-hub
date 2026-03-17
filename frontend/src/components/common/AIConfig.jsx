@@ -68,9 +68,9 @@ const AIConfig = ({ selectedNode, onClose, setNodeConfig, configParams }) => {
         >
           <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
             <section>
-              <h3 className="text-lg font-semibold text-zinc-200 mb-2">
+              {/* <h3 className="text-lg font-semibold text-zinc-200 mb-2">
                 Configuration Panel : 
-              </h3>
+              </h3> */}
               {isLoading ? (
                 <div className="flex items-center gap-2 text-zinc-500">
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -151,7 +151,7 @@ const AIConfig = ({ selectedNode, onClose, setNodeConfig, configParams }) => {
             <section>
               <div>
                   <h3 className="text-sm font-semibold text-zinc-200 mb-3">
-                    User Prompt (Optional)
+                    User Prompt
                   </h3>
 
                   <textarea
@@ -171,12 +171,12 @@ const AIConfig = ({ selectedNode, onClose, setNodeConfig, configParams }) => {
             </section>
             
           </div>
-          <div className="border-t border-zinc-800 px-4 py-3 flex justify-end bg-zinc-900/50">
+          <div className="border-t border-zinc-600 px-4 py-3 flex justify-end bg-zinc-900/50">
             <button
               type="submit"
-              className="rounded-md bg-blue-600 px-4 py-2 text-xs font-semibold hover:bg-blue-500 active:bg-blue-700 transition-colors"
+              className="w-full flex items-center justify-center gap-2 bg-white text-black font-bold py-3 rounded-xl hover:bg-zinc-200 transition-colors"
             >
-              Save
+              Save Configuration
             </button>
           </div>
         </form>

@@ -1,4 +1,4 @@
-import { MousePointer, X } from 'lucide-react';
+import { MousePointer } from 'lucide-react';
 import CloseBtn from '@/components/common/CloseBtn';
 
 const ManualTriggerConfig = ({onClose}) => {

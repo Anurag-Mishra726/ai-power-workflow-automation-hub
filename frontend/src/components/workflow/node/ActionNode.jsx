@@ -1,6 +1,6 @@
 import { Handle, Position } from "@xyflow/react";
 import { EllipsisVertical, Zap, Globe, CircleDot, CheckCircle, } from "lucide-react";
-import { SiGoogleforms } from "react-icons/si";
+import { SiGoogleforms, SiSlack  } from "react-icons/si";
 import { RiOpenaiFill, RiPerplexityFill, RiGeminiFill  } from "react-icons/ri";
 import NodeMenu from "./NodeMenu";
 import useEditorUIStore from "@/stores/workflowEditorStore";
@@ -25,6 +25,7 @@ export const ActionNode = ({ id, data, type }) => {
     openAI: RiOpenaiFill,
     perplexityAI: RiPerplexityFill,
     geminiAI: RiGeminiFill,
+    slack: SiSlack 
   };
 
   const Icon = iconMap[data.triggerType] || Zap;

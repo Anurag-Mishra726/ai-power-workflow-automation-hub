@@ -140,7 +140,7 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
         <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
          onClick={()=> {
-          handleOnClick("ChatGPT", "openAI");
+          handleOnClick("Slack", "slack");
          }}
          >
             <img src="/slack.svg" alt="Slack" height={32} width={32} />

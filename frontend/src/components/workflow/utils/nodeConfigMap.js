@@ -83,4 +83,12 @@ export const nodeConfigMap = {
 
         isComplete: () => true,
     },
+
+    slack: {
+        defaultConfig: {},
+
+        buildSummary: () => "Slack !!",
+
+        isComplete: () => true,
+    }
 }

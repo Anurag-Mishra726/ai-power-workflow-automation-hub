@@ -1,6 +1,6 @@
 import CloseBtn from '@/components/common/CloseBtn';
 import CopyToClipboard from '@/components/common/CopyToClipboard';
-import { googleFormScript } from '../../utils/googleFormScript';
+import { googleFormScript } from '@/components/workflow/utils/googleFormScript';
 import useWorkflowData from '@/stores/workflowDataStore';
 import { Copy } from 'lucide-react';
 import toast from 'react-hot-toast';

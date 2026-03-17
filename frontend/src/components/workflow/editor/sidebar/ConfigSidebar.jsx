@@ -1,12 +1,12 @@
 import useEditorUIStore from "@/stores/workflowEditorStore";
-import { X } from 'lucide-react';
-import ManualTriggerConfig from "../config-panels/ManualTriggerConfig";
-import HTTPConfig from "../config-panels/HTTPConfig";
-import GoogleFormConfig from "../config-panels/GoogleFormConfig";
-import GeminiConfig from "../config-panels/GeminiConfig";
-import PerplexityConfig from "../config-panels/PerplexityConfig";
-import OpenAiConfig from "../config-panels/OpenAiConfig";
-import CloseBtn from "@/components/common/CloseBtn";
+import DefaultConfig from "../config-panels/default/DefaultConfig";
+import ManualTriggerConfig from "../config-panels/manualTrigger/ManualTriggerConfig";
+import HTTPConfig from "../config-panels/http/HTTPConfig";
+import GoogleFormConfig from "../config-panels/googleForm/GoogleFormConfig";
+import GeminiConfig from "../config-panels/ai/gemini/GeminiConfig";
+import PerplexityConfig from "../config-panels/ai/perplexity/PerplexityConfig";
+import OpenAiConfig from "../config-panels/ai/openai/OpenAiConfig";
+import SlackConfig from "../config-panels/slack/SlackConfig";
 
 const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
 
@@ -35,10 +35,13 @@ const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
     case "perplexityAI":
         return <PerplexityConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
 
-      case "openAI":
-        return <OpenAiConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
+    case "openAI":
+      return <OpenAiConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
 
-    default: return ;
+    case "slack": 
+      return <SlackConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} /> ;
+
+    default: return <DefaultConfig onClose={onClose} />;
   }
 };
 
