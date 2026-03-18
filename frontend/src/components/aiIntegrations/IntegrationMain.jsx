@@ -1,6 +1,6 @@
 import EmptyState from "./EmptyState";
 import IntegrationCard from "./IntegrationCard";
-import { useGetAllIntegrations } from "@/hooks/useIntegration";
+import { useGetAllIntegrations } from "@/hooks/useAiIntegration";
 import LoadingState from "../common/LoadingState";
 import ErrorState from "../common/ErrorState";
 

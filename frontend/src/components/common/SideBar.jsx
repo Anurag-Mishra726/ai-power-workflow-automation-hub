@@ -26,11 +26,10 @@ const Sidebar = () => {
   const navItems = [
     {name: "Home", to: "/home", icon: faHouse},
     {name: "Workflow", to: "/workflow", icon: faMicrochip},
-    {name: "Integrations", to: "/integrations", icon: faCodeMerge}, 
+    {name: "AI-Integrations", to: "/ai/integrations", icon: faCodeMerge}, 
     {name: "Runs", to: "/runs", icon: faCirclePlay},
     {name: "Logs", to: "/logs", icon: faBook},
     {name: "Webhooks", to: "/webhooks", icon: faCircleNodes},
-    {name: "AI Assistant", to: "/ai", icon: faRobot},
     {name: "test", to: "/test", icon: faRobot},
   ]
 

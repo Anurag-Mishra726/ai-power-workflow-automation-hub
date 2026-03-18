@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingState from "../common/LoadingState";
 import ErrorState from "../common/ErrorState";
-import { useGetApiKey, useUpdateApiKey } from "@/hooks/useIntegration";
+import { useGetApiKey, useUpdateApiKey } from "@/hooks/useAiIntegration";
 import { AiIntegrationSchema } from "@/schemas/aiIntegrationSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
@@ -66,7 +66,7 @@ const EditIntegrationForm = () => {
     mutate(data, {
       onSuccess: () => {
         toast.success("API Key Udated successfully.");
-        navigate("/integrations");
+        navigate("/ai/integrations");
       },
       onError: (error) => {
         toast.error(error || "Something went wrong!");
@@ -113,9 +113,9 @@ const EditIntegrationForm = () => {
 
         <div className="w-full flex justify-between">
           <button
-            type="submit"
+          type="button"
             className="w-1/4 py-3 text-center rounded-xl bg-white text-black font-bold hover:bg-zinc-200 transition"
-            onClick={() => navigate("/integrations")}
+            onClick={() => navigate("/ai/integrations")}
           >
             Cancle
           </button>

@@ -1,10 +1,8 @@
 import { SiOpenai, SiGooglegemini, SiPerplexity } from "react-icons/si";
 import { FaPlus, FaKey } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const EmptyState = () => {
-
-  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col items-center justify-center border-2 border-dashed border-zinc-800 rounded-3xl py-24 px-6 text-center bg-zinc-900/10 animate-in fade-in zoom-in duration-500">
@@ -24,16 +22,17 @@ const EmptyState = () => {
       <p className="text-zinc-500 max-w-sm mb-10 leading-relaxed">
         You haven't connected any AI models yet. Add your API keys to start generating content.
       </p>
-      
-      <button 
-        onClick={() => navigate("/integrations/add/new/apikey")}
-        className="flex items-center gap-3 bg-white text-black px-8 py-4 rounded-2xl font-bold hover:bg-zinc-200 hover:scale-105 
-        transition-all active:scale-95 shadow-lg shadow-white/5"
+      <NavLink 
+        to="/ai/integrations/add/new/apikey"
       >
-        <FaPlus size={20} /> 
-        <span className="text-xl">Connect Provider</span>
-      </button>
-
+        <button 
+          className="flex items-center gap-3 bg-white text-black px-8 py-4 rounded-2xl font-bold hover:bg-zinc-200 hover:scale-105 
+          transition-all active:scale-95 shadow-lg shadow-white/5"
+        >
+          <FaPlus size={20} /> 
+          <span className="text-xl">Connect Provider</span>
+        </button>
+      </NavLink>
       {/* Social Proof / Capability Icons */}
       <div className="mt-16">
         <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-600 mb-4 font-bold">Supported Platforms</p>

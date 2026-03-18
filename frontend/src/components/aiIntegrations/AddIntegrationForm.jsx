@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useAddApiKey } from "@/hooks/useIntegration";
+import { useAddApiKey } from "@/hooks/useAiIntegration";
 import { AiIntegrationSchema } from "@/schemas/aiIntegrationSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
@@ -41,7 +41,7 @@ const AddIntegrationForm = () => {
       onSuccess: () => {
         toast.success("API Key added successfully.");
         reset();
-        navigate("/integrations");
+        navigate("/ai/integrations");
       },
       onError: (error) => {
         toast.error(error || "Failed to add API Key.");

@@ -23,9 +23,9 @@ import WorkflowEditor from './components/workflow/editor/WorkflowEditor'
 
 // Integrations
 import IntegrationLayout from './layouts/IntegrationLayout';
-import IntegrationMain from './components/integrations/IntegrationMain';
-import AddIntegrationForm from './components/integrations/AddIntegrationForm';
-import EditIntegrationForm from './components/integrations/EditIntegrationForm';
+import IntegrationMain from './components/aiIntegrations/IntegrationMain';
+import AddIntegrationForm from './components/aiIntegrations/AddIntegrationForm';
+import EditIntegrationForm from './components/aiIntegrations/EditIntegrationForm';
 
 
 // Test Route
@@ -61,7 +61,7 @@ function App() {
                   <Route path=":id" element={<WorkflowEditor />} />
                 </Route>
 
-                <Route path="/integrations" element={<IntegrationLayout />} >
+                <Route path="/ai/integrations" element={<IntegrationLayout />} >
                   <Route index element={<IntegrationMain />} />
                   <Route path="add/new/apikey" element={<AddIntegrationForm />} />
                   <Route path="edit/:provider/apikey" element={<EditIntegrationForm />} />

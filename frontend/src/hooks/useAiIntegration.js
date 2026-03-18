@@ -1,18 +1,18 @@
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {
-    getAllIntegration,
+    getAllAiIntegration,
     addApiKey,
     getApiKey,
     updateApiKey,
     deleteApiKey,
     apiKeyExists,
-} from '@/api/integration.api'
+} from '@/api/aiIntegration.api'
 import { queryClient } from '@/utils/queryClient';
 
 export const useGetAllIntegrations = () => {
     return useQuery({
         queryKey: ["integrations", "allapikeys"],
-        queryFn: getAllIntegration,
+        queryFn: getAllAiIntegration,
         staleTime: 3 * 1000,
     });
 }

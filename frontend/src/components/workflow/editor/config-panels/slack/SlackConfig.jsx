@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import CloseBtn from '@/components/common/CloseBtn'
 import AuthState from './AuthState';
 import ConfigState from './ConfigState';
+import useWorkflowData from '@/stores/workflowDataStore';
 
 const SlackConfig = ({ /* selectedNode, */ onClose, /* setNodeConfig */ }) => {
+
+    const {workflowId} = useWorkflowData();
 
     const [isConnected, setIsConnected] = useState(false);
     const [isConnecting, setIsConnecting] = useState(false);
@@ -18,6 +21,11 @@ const SlackConfig = ({ /* selectedNode, */ onClose, /* setNodeConfig */ }) => {
     const handleConnect = () => {
         setIsConnecting(true);
         // In production, this would be: window.location.href = "/api/auth/slack"
+        //window.location.href = `https://linus-terrible-murray.ngrok-free.dev/api/integration/oauth/slack/connect?workflowId=${workflowId}`;
+        window.open(
+          `https://linus-terrible-murray.ngrok-free.dev/api/integration/oauth/slack/connect?workflowId=${workflowId}`,
+          "_blank"
+        );
         setTimeout(() => {
         setIsConnected(true);
         setIsConnecting(false);

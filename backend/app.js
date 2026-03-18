@@ -18,6 +18,8 @@ import workflowRoutes from "./src/routes/workflows.routes.js";
 import webhooks from "./src/routes/webhook.route.js";
 import aiIntegrationRoutes from "./src/routes/aiIntegration.routes.js";
 
+import integrationRoutes from "./src/routes/integration/integration.auth.routes.js"
+
 const app = express();
 await connectDB();
 
@@ -39,8 +41,8 @@ app.use("/api/inngest", serve({
 }));
 
 app.get("/", (req, res) => {
-     res.send("Welcome to the AI Power Workflow Automation Hub!");
-    
+    res.send("Welcome to the AI Power Workflow Automation Hub!");
+    // res.redirect("http://localhost:5173/workflow")
 });
 
 app.get("/api/realtime/token", async (req, res) => {
@@ -56,6 +58,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/workflows", workflowRoutes);
 app.use("/api/webhook", webhooks);
 app.use("/api/ai/integration", aiIntegrationRoutes);
+app.use("/api/integration", integrationRoutes);
 app.use("/api/user", profileRoutes);
 
 
@@ -72,4 +75,4 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log("Server is running on http://localhost:" + PORT);
-})
+});

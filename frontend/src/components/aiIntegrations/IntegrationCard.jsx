@@ -2,7 +2,7 @@ import CopyToClipboard from "../common/CopyToClipboard";
 import { FaPlus, FaTrashAlt } from "react-icons/fa";
 import { HiOutlineExternalLink } from "react-icons/hi";
 import { NavLink } from "react-router-dom";
-import { useDeleteApiKey } from "@/hooks/useIntegration";
+import { useDeleteApiKey } from "@/hooks/useAiIntegration";
 import toast from "react-hot-toast";
 
 const providerIcons = {
@@ -39,7 +39,7 @@ const IntegrationCard = ({data}) => {
             <p className="text-zinc-400 mt-1">Manage your API connections and provider keys.</p>
           </div>
           <NavLink
-            to="/integrations/add/new/apikey"
+            to="/ai/integrations/add/new/apikey"
           >
             <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg font-medium
             hover:bg-blue-500 hover:text-white transition-colors ">
@@ -83,7 +83,7 @@ const IntegrationCard = ({data}) => {
                   Added {new Date(conn.createdAt).toLocaleDateString()}
                 </p>
                 <NavLink
-                  to={`/integrations/edit/${conn.provider}/apikey`}
+                  to={`/ai/integrations/edit/${conn.provider}/apikey`}
                 >
                   <button className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition">
                   <HiOutlineExternalLink size={20} />

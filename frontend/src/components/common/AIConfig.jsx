@@ -2,7 +2,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import CloseBtn from "@/components/common/CloseBtn";
 import useEditorUIStore from "@/stores/workflowEditorStore";
 import toast from 'react-hot-toast';
-import { useApiKeyExists } from '@/hooks/useIntegration';
+import { useApiKeyExists } from '@/hooks/useAiIntegration';
 import { AlertCircle, CircleCheckBig, Loader2 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
