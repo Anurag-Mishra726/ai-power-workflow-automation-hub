@@ -6,7 +6,7 @@ const router = express.Router();
 
 //router.use(authMiddleware);
 
-router.get("/oauth/:provider/connect", startOAuth);
+router.get("/oauth/:provider/connect", authMiddleware, startOAuth);
 router.get("/oauth/:provider/callback", handleOAuthCallback);
 
 export default router;

@@ -62,7 +62,7 @@ export const saveWorkflowData = async (userData, saveWorkflowData) => {
         };
     } catch (error) {
         await connection.rollback();
-        throw new AppError("Something went wong!", 500)
+        throw new AppError("Something went wong!", 500);
     } finally {
         connection.release();
     }    

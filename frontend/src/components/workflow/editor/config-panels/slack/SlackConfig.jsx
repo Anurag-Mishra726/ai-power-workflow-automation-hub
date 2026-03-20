@@ -23,7 +23,7 @@ const SlackConfig = ({ /* selectedNode, */ onClose, /* setNodeConfig */ }) => {
         // In production, this would be: window.location.href = "/api/auth/slack"
         //window.location.href = `https://linus-terrible-murray.ngrok-free.dev/api/integration/oauth/slack/connect?workflowId=${workflowId}`;
         window.open(
-          `https://linus-terrible-murray.ngrok-free.dev/api/integration/oauth/slack/connect?workflowId=${workflowId}`,
+          `http://localhost:5000/api/integration/oauth/slack/connect?workflowId=${workflowId}`,
           "_blank"
         );
         setTimeout(() => {

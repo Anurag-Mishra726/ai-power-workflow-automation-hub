@@ -1,18 +1,22 @@
-import { integrationOAuthService, integrationHandleOAuthCallback } from "../../../services/integration/utils/integration.service.js";
+import { 
+    integrationOAuthGetUrl, 
+    integrationHandleOAuthCallback, 
+    integrationInsertOAuthToken } from "../../../services/integration/utils/integration.service.js";
 
 export const startOAuth = async (req, res) => {
     try {
         const { provider } = req.params;
-        const {workflowId } = req.query
-        console.log("OAuth WorkflowId : ", workflowId);
+        const {workflowId, userId } = req.query;
+        console.log(userId)  // why undifined 
+
         if (!workflowId) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: "Invalid request! WorkflowId is missing!",
                 success: false
             });
         }
 
-        const url = await integrationOAuthService(provider, workflowId);
+        const url = await integrationOAuthGetUrl(provider, workflowId, userId);
 
         return res.redirect(url);
 
@@ -23,17 +27,33 @@ export const startOAuth = async (req, res) => {
             message: error.message || "Internal Server Error!"
         });
     }
-
 }
 
 export const handleOAuthCallback = async (req, res) => {
     try {
         const { provider } = req.params;
-        const { code, workflowId } = req.query;
-        console.log("OAuth Callback WorkflowId : ", workflowId);
-        await integrationHandleOAuthCallback(provider, code);
+        const { code } = req.query;
+        const { state } = req.query;
+
+        const decoded = JSON.parse(
+            Buffer.from(state, "base64").toString("utf-8")
+        );
+        console.log("decoded ", decoded);
+        const {workflowId, userId } = decoded;
+
+        if (!code) {
+            console.error("Code is missing.......");
+            return res.redirect(`http://localhost:5173/workflow/`);
+        }
+        
+        const data = await integrationHandleOAuthCallback(provider, code, userId);
+
+        console.log(data);
+
+        await integrationInsertOAuthToken(data);
 
         return res.redirect(`http://localhost:5173/workflow/${workflowId}`);
+
     } catch (error) {
         console.log("OAuth Callback Error: ", error);
         res.status( error.statusCode || 500).json({

@@ -5,11 +5,11 @@ export const signup = async (req, res) => {
         const user = await signupService(req.body, req.ip);
 
         res.cookie("token", user.token, {
-            http: true,
-            secure: true,
-            sameSite: "strict",
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: "lax",
             maxAge: 7 * 24 * 60 * 60 *1000
-        })
+        });
         
         res.status(201).json({
             username: user.username,
@@ -30,11 +30,11 @@ export const login = async (req, res) => {
         const user = await loginService(req.body);
 
         res.cookie("token", user.token, {
-            http: true,
-            secure: true,
-            sameSite: "strict",
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: "lax",
             maxAge: 7 * 24 * 60 * 60 *1000
-        })
+        });
 
         res.status(200).json({
             username: user.username,
