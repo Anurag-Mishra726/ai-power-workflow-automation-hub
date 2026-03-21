@@ -17,10 +17,8 @@ const SlackConfig = ({ /* selectedNode, */ onClose, /* setNodeConfig */ }) => {
         { id: 'acc_2', name: 'Marketing HQ', icon: '🚀' }
     ];
 
-    // 2. Mock OAuth Logic
     const handleConnect = () => {
         setIsConnecting(true);
-        // In production, this would be: window.location.href = "/api/auth/slack"
         //window.location.href = `https://linus-terrible-murray.ngrok-free.dev/api/integration/oauth/slack/connect?workflowId=${workflowId}`;
         window.open(
           `http://localhost:5000/api/integration/oauth/slack/connect?workflowId=${workflowId}`,

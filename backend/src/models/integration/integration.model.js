@@ -13,7 +13,7 @@ const query = async (sql, params = [], client = pool) => {
 
 export const Integration = {        // external_id == team.id for slack
 
-    exists: async({userId, provider, teamId}, client = pool) => {
+    sameIntegrationExists: async({userId, provider, teamId}, client = pool) => {
         const rows = await query(
             "SELECT EXISTS (SELECT 1 FROM integrations WHERE user_id = ? AND provider = ? AND external_id = ?) AS apiKeyExists",
             [userId, provider, teamId], 
@@ -32,7 +32,7 @@ export const Integration = {        // external_id == team.id for slack
             client
         );
 
-        return rows[0];
+        return rows;
     },
 
     insertOAuthToken: async ({ 

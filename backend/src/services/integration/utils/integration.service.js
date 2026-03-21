@@ -5,15 +5,21 @@ const getProviderUrl = {
     slack: getSlackAuthUrl
 }
 
-export const integrationOAuthGetUrl = async(provider, workflowId, userId) => {  // Do i need to make this integrationOAuthService func async/await ?
+const handleCallback = {
+    slack: handleSlackCallback
+}
+
+const handleInsertToken = {
+    slack: saveSlackIntegration
+}
+
+
+export const integrationOAuthGetUrl = async(provider, workflowId, userId) => { 
     const fn = getProviderUrl[provider];
     if (!fn) throw new AppError("Unsupported Provider!", 400);
     return await fn(workflowId, userId);
 }
 
-const handleCallback = {
-    slack: handleSlackCallback
-}
 
 export const integrationHandleOAuthCallback = async (provider, code, userId) => {
     const fn = handleCallback[provider];
@@ -21,12 +27,21 @@ export const integrationHandleOAuthCallback = async (provider, code, userId) => 
     return await fn(code, userId);
 }
 
-const handleInsertToken = {
-    slack: saveSlackIntegration
-}
 
 export const integrationInsertOAuthToken = async (provider, data) => {
     const fn = handleInsertToken[provider];
     if (!fn) throw new AppError("Unsupported Provider!", 400);
     return await fn(data);
 }
+
+// const data = {
+//   userId: 1,
+//   provider: "slack",
+//   teamId: "T0123456789",
+//   name: "AI-Powered Workflow Automation Hub",
+//   accessToken: "xoxp-1234567890-1234567890-1234567890123",
+//   tokenType: "bot",
+//   scope: "chat:write,channels:read,groups:read,im:read,mpim:read",
+//   refreshToken: "xoxr-1234567890-1234567890123-abcdef1234567890abcdef1234567890",
+// };
+

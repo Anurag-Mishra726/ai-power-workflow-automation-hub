@@ -5,7 +5,7 @@ import { AppError } from "../../../utils/AppErrors.js";
 
 export const getSlackAuthUrl = (workflowId, userId) => {
     const base = "https://slack.com/oauth/v2/authorize";
-    console.log("userId::", userId);
+    
     const stateData = {
         workflowId: workflowId,
         userId: userId
@@ -30,6 +30,7 @@ export const handleSlackCallback = async (code, userId) => {
         code: code,
         redirect_uri: process.env.SLACK_REDIRECT_URI,
     });
+
     const response = await axios.post(
         "https://slack.com/api/oauth.v2.access",
         formData.toString(), 
@@ -46,7 +47,6 @@ export const handleSlackCallback = async (code, userId) => {
         console.error("Slack Error:", data.error);
         throw new AppError("Slack OAuth failed", 500);
     }
-    //console.log("SLACK OAUTH : ", data);
 
     return {
         userId: userId,
@@ -62,15 +62,17 @@ export const handleSlackCallback = async (code, userId) => {
 export const saveSlackIntegration = async (data) => {
     const connection = await pool.getConnection();
 
-    console.log("From services . js",data);
-
     const {
         userId,
         provider,
         teamId,
         name,
         accessToken,
-        scope
+        tokenType,
+        scope,
+        refreshToken,
+        expiresAt,
+        last_refreshed_at,
     } = data;
 
     try {
@@ -78,6 +80,12 @@ export const saveSlackIntegration = async (data) => {
 
         const result = await Integration.insertTokenProvider({userId, provider, teamId, name}, connection);
         const integrationId = result.insertId;
+
+        const exists = await Integration.sameIntegrationExists({ userId, provider, teamId}, connection);
+
+        if (exists) {
+            throw new AppError("Integration already exists", 400);
+        }
 
         await Integration.insertOAuthToken({
             integrationId, 
@@ -98,6 +106,7 @@ export const saveSlackIntegration = async (data) => {
 
     } catch (error) {
         await connection.rollback();
+        console.error(error.message);
         throw new AppError("Something went wong!", 500);
     } finally {
         connection.release();

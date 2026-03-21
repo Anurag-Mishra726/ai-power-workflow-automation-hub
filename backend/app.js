@@ -24,7 +24,7 @@ const app = express();
 await connectDB();
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'https://linus-terrible-murray.ngrok-free.dev'],  
+  origin: ['http://localhost:5173', 'https://linus-terrible-murray.ngrok-free.dev'],  
   credentials: true,  
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']

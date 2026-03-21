@@ -3,7 +3,7 @@ import LoadingState from "../common/LoadingState";
 import ErrorState from "../common/ErrorState";
 import WorkflowEmptyState from "./WorkflowEmptyState"; 
 import WorkflowList from "./WorkflowList";
-import { useGetWorkflowMetadata } from "@/hooks/useWorkflowApi ";
+import { useGetWorkflowMetadata } from "@/hooks/useWorkflowApi";
 
 const WorkflowMain = () => {
 

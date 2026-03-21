@@ -6,8 +6,8 @@ import {
 export const startOAuth = async (req, res) => {
     try {
         const { provider } = req.params;
-        const {workflowId, userId } = req.query;
-        console.log(userId)  // why undifined 
+        const {workflowId } = req.query;
+        const userId = req.user.userId
 
         if (!workflowId) {
             return res.status(400).json({
@@ -38,7 +38,7 @@ export const handleOAuthCallback = async (req, res) => {
         const decoded = JSON.parse(
             Buffer.from(state, "base64").toString("utf-8")
         );
-        console.log("decoded ", decoded);
+
         const {workflowId, userId } = decoded;
 
         if (!code) {
@@ -48,9 +48,7 @@ export const handleOAuthCallback = async (req, res) => {
         
         const data = await integrationHandleOAuthCallback(provider, code, userId);
 
-        console.log(data);
-
-        await integrationInsertOAuthToken(data);
+        await integrationInsertOAuthToken(provider, data);
 
         return res.redirect(`http://localhost:5173/workflow/${workflowId}`);
 

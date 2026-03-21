@@ -6,7 +6,7 @@ import { GoZap } from "react-icons/go";
 import { faPlus} from "@fortawesome/free-solid-svg-icons";
 import useAuthStore from "@/stores/authStore";
 import { NavLink } from "react-router-dom";
-import { useGenerateWorkflowId } from "@/hooks/useWorkflowApi ";
+import { useGenerateWorkflowId } from "@/hooks/useWorkflowApi";
 import React from "react";
 
 const Main = () => {

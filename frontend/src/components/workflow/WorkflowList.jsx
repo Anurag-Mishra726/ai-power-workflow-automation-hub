@@ -2,10 +2,10 @@ import React from 'react'
 import { Plus, Activity } from "lucide-react";
 import WorkflowCard from './WorkflowCard';
 import { useNavigate } from 'react-router-dom';
-import { useGetWorkflowGraph } from '@/hooks/useWorkflowApi ';
+import { useGetWorkflowGraph } from '@/hooks/useWorkflowApi';
 // import LoadingState from "../common/LoadingState";
 // import ErrorState from "../common/ErrorState";
-import { useGenerateWorkflowId } from "@/hooks/useWorkflowApi ";
+import { useGenerateWorkflowId } from "@/hooks/useWorkflowApi";
 
 const WorkflowList = ({data}) => {
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import { FlaskConical } from "lucide-react";
-import { useExecuteWorkflow } from '@/hooks/useWorkflowApi ';
+import { useExecuteWorkflow } from '@/hooks/useWorkflowApi';
 
 const ExecuteWorkflowButton = ({workflowId}) => {
   const { mutate, isPending } = useExecuteWorkflow();

@@ -8,7 +8,7 @@ import {
   Cpu,
   MessageSquare,
 } from "lucide-react";
-import { useGenerateWorkflowId } from "@/hooks/useWorkflowApi ";
+import { useGenerateWorkflowId } from "@/hooks/useWorkflowApi";
 
 const WorkflowEmptyState = () => {
 
