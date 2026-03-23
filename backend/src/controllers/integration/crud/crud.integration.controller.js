@@ -11,13 +11,13 @@ export const getIntegrationController = async (req, res) => {
                 success: false
             });
         }
-
+        //await new Promise(resolve => setTimeout(resolve, 5000))
         const result = await getIntegration(userId, provider);
-
+        
         return res.status(200).json({
             success: true,
             message: result?.message || "All Integration Fetched.",
-            data: result?.data
+            data: result.data
         });
     } catch (error) {
         console.log(error);

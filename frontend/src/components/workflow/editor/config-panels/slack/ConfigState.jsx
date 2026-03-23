@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import {
   Plus, 
@@ -6,6 +6,8 @@ import {
   ChevronRight,
   LayoutGrid,
   Send,
+  Braces,
+  CircleDot
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useEditorUIStore from "@/stores/workflowEditorStore";
@@ -40,9 +42,9 @@ const WORKSPACES = [
     ]
   }
 ];
-
-const ConfigState = ({handleConnect, selectedNode, setNodeConfig}) => {
-       
+// let WORKSPACES;
+const ConfigState = ({handleConnect, selectedNode, setNodeConfig, data}) => {    
+    
     const {setIsConfigSidebarClose} = useEditorUIStore();
     
     const { 
@@ -50,15 +52,27 @@ const ConfigState = ({handleConnect, selectedNode, setNodeConfig}) => {
         handleSubmit, 
         watch,
         control,
+        reset,
         formState: { errors } 
     } = useForm({
         defaultValues: {
-            variable: selectedNode?.data?.config?.variable || null ,
-            workspaceId: selectedNode?.data?.config?.workspaceId ||  WORKSPACES[0].id,
-            channelId: selectedNode?.data?.config?.channelId ||  WORKSPACES[0].channels[0].id,
-            message: selectedNode?.data?.config?.message ||  ''
+            variable: '',
+            workspaceId: '',
+            channelId: '',
+            message: ''
         }
     });
+
+    useEffect(() => {
+        if (data && data.length > 0) {
+            reset({
+            workspaceId: data[0].external_id,
+            channelId: data[0].channels?.[0]?.id || '',
+            variable: selectedNode?.data?.config?.variable || '',
+            message: selectedNode?.data?.config?.message || ''
+            });
+        }
+    }, [data, reset, selectedNode?.data?.config?.message, selectedNode?.data?.config?.variable]);
 
     const selectedWorkspaceId = watch('workspaceId');
 
@@ -89,7 +103,7 @@ const ConfigState = ({handleConnect, selectedNode, setNodeConfig}) => {
                 <section>
                     <div className="space-y-3">
                         <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
-                            Variable
+                            <Braces size={18} /> Variable
                         </label>
                         <input 
                         {...register('variable', { required: 'Variable name is required.',
@@ -115,15 +129,14 @@ const ConfigState = ({handleConnect, selectedNode, setNodeConfig}) => {
                             <LayoutGrid size={15} /> Workspace
                         </label>
                         <div className="relative">
-                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-lg">
-                            {currentWorkspace?.icon || '🏢'}
-                            </div>
+                            <CircleDot className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500' />
                             <select 
                             {...register('workspaceId', { required: true })}
                             className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#E01E5A]/50 appearance-none transition-all cursor-pointer hover:bg-zinc-800/50"
                             >
-                            {WORKSPACES.map(ws => (
-                                <option key={ws.id} value={ws.id}>{ws.name}</option>
+                                <option value="" disabled>Select Workspace</option>
+                            {data.map(ws => (
+                                <option key={ws.external_id} value={ws.external_id}>{ws.name}</option>
                             ))}
                             </select>
                             <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
@@ -144,7 +157,7 @@ const ConfigState = ({handleConnect, selectedNode, setNodeConfig}) => {
                             className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#E01E5A]/50 appearance-none transition-all cursor-pointer hover:bg-zinc-800/50"
                             >
                             {currentWorkspace?.channels.map(ch => (
-                                <option key={ch.id} value={ch.id}>#{ch.name}</option>
+                                <option key={ch.id} value={ch.id}>#{ch?.name || "hola"} </option>
                             ))}
                             </select>
                             <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />

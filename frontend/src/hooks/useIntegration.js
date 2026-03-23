@@ -5,6 +5,7 @@ export const useGetIntegration = (provider) => {
     return useQuery({
         queryKey: ["integration", provider],
         queryFn: () => getIntegration(provider),
+        enabled: !!provider,
         refetchOnMount: true,
     });
 }

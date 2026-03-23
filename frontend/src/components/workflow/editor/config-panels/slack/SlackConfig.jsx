@@ -1,38 +1,50 @@
-import React, { useState } from 'react';
 import CloseBtn from '@/components/common/CloseBtn'
 import AuthState from './AuthState';
 import ConfigState from './ConfigState';
 import useWorkflowData from '@/stores/workflowDataStore';
-import { useGetIntegration } from '@/hooks/useintegration';
+import { useGetIntegration } from '@/hooks/useIntegration';
+import { Loader2, CircleX } from 'lucide-react';
 
 const SlackConfig = ({ selectedNode, onClose, setNodeConfig }) => {
 
     const {workflowId} = useWorkflowData();
-    //const { data, isLoading, isError } = useGetIntegration("slack");
-
-    const [isConnected, setIsConnected] = useState(false);
-    const [isConnecting, setIsConnecting] = useState(false);
-    const [selectedWorkspace, setSelectedWorkspace] = useState(null);
-
-    const connectedAccounts = [
-        { id: 'acc_1', name: 'Engineering Team', icon: '🛠️' },
-        { id: 'acc_2', name: 'Marketing HQ', icon: '🚀' }
-    ];
-
-    const handleConnect = () => {
-        setIsConnecting(true);
-        //window.location.href = `https://linus-terrible-murray.ngrok-free.dev/api/integration/oauth/slack/connect?workflowId=${workflowId}`;
-        // window.open(
-        //   `http://localhost:5000/api/integration/oauth/slack/connect?workflowId=${workflowId}`,
-        //   "_blank"
-        // );
-        setTimeout(() => {
-        setIsConnected(true);
-        setIsConnecting(false);
-        setSelectedWorkspace(connectedAccounts[0]);
-        }, 500);
-    };
+    const { data , isLoading, isError, isFetching, refetch } = useGetIntegration("slack");
   
+    const handleRetry = () => {
+      refetch();
+    }
+
+    if (isLoading) {
+      return (
+        <div className='absolute top-0 right-0 h-full w-1/3  bg-black border border-zinc-700 rounded-lg text-white z-50 flex justify-center items-center'>
+          <Loader2 size={40} className='animate-spin' />
+        </div>
+      );
+    }
+
+    if (isError) {
+      return (
+        <div className='absolute top-0 right-0 h-full w-1/3  bg-black border border-zinc-700 rounded-lg text-white z-50 flex flex-col justify-center items-center gap-3'>
+          <CircleX size={30} className=' animate-pulse text-red-600 ' />
+          <p className='text-xl'>Something went worng!</p>
+          <button className='flex items-center justify-center bg-red-600 hover:bg-[#c2184d] text-white font-semibold py-2 px-6 rounded-xl transition-all active:scale-[0.98] disabled:opacity-50'
+          onClick={handleRetry}
+          disabled={isFetching}
+          >
+            Rety
+          </button>
+        </div>
+      )
+    }
+    
+    const handleConnect = () => {
+      //window.location.href = `https://linus-terrible-murray.ngrok-free.dev/api/integration/oauth/slack/connect?workflowId=${workflowId}`;
+      window.open(
+        `http://localhost:5000/api/integration/oauth/slack/connect?workflowId=${workflowId}`,
+        "_blank"
+      );
+    };
+
   return (
     <>
       <aside className="absolute top-0 right-0 h-full w-1/3 m-1 bg-black border border-zinc-700 rounded-lg text-white z-50 flex flex-col">
@@ -51,16 +63,16 @@ const SlackConfig = ({ selectedNode, onClose, setNodeConfig }) => {
           <CloseBtn onClose={onClose} />
         </div>
 
-            {!isConnected ? 
-                <AuthState handleConnect={handleConnect} isConnecting={isConnecting} /> 
-                : 
-                <ConfigState handleConnect={handleConnect} selectedNode={selectedNode} setNodeConfig={setNodeConfig}  />}
-
-        {/* <div className="px-6 py-4 border-t border-zinc-800 bg-zinc-900/10">
-            <a href="#" className="flex items-center gap-2 text-[10px] text-zinc-500 hover:text-white transition-colors">
-                View Documentation <ExternalLink className="w-3 h-3" />
-            </a>
-        </div> */}
+            { Array.isArray(data) && data.length > 0 ? (
+              <ConfigState 
+                handleConnect={handleConnect} 
+                selectedNode={selectedNode} 
+                setNodeConfig={setNodeConfig} 
+                data={data}  
+              />
+            ) : (
+              <AuthState handleConnect={handleConnect} />
+            )}
       </aside>
     </>
   );

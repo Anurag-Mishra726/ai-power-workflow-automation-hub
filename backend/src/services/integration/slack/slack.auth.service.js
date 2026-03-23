@@ -78,11 +78,8 @@ export const saveSlackIntegration = async (data) => {
     try {
         await connection.beginTransaction();
 
-        const result = await Integration.insertTokenProvider({userId, provider, teamId, name}, connection);
-        const integrationId = result.insertId;
-
         const exists = await Integration.sameIntegrationExists({ userId, provider, teamId}, connection);
-
+        
         if (exists) {
             return {
                 success: true,
@@ -90,6 +87,9 @@ export const saveSlackIntegration = async (data) => {
                 alreadyConnected: true
             };
         }
+
+        const result = await Integration.insertTokenProvider({userId, provider, teamId, name}, connection);
+        const integrationId = result.insertId;
 
         await Integration.insertOAuthToken({
             integrationId, 
@@ -102,7 +102,7 @@ export const saveSlackIntegration = async (data) => {
         }, connection);
 
         await connection.commit();
-
+        
         return {
             success: true,
             message: "Slack Integrated Successfully"

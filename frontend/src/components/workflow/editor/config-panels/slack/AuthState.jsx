@@ -2,11 +2,10 @@ import {
   Plus, 
   CheckCircle2, 
   Info,
-  LoaderCircle
 } from 'lucide-react';
 
 
-const AuthState = ({handleConnect, isConnecting}) => {
+const AuthState = ({handleConnect}) => {
 
   return (
     <>
@@ -39,18 +38,10 @@ const AuthState = ({handleConnect, isConnecting}) => {
 
             <button 
               onClick={handleConnect}
-              disabled={isConnecting}
               className="w-full flex items-center justify-center gap-2 bg-[#E01E5A] hover:bg-[#c2184d] text-white font-semibold py-3 px-4 rounded-xl transition-all active:scale-[0.98] disabled:opacity-50"
             >
-              {isConnecting ? (
-                  <LoaderCircle size={20} className=' animate-spin ' />
-                    ) : (
-                        <>
-                        <Plus className="w-5 h-5" />
-                        Connect Workspace
-                        </>
-                    )
-              }
+                <Plus className="w-5 h-5" />
+                Connect Workspace
             </button>
         </div>
 

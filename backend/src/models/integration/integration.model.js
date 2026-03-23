@@ -15,11 +15,11 @@ export const Integration = {        // external_id == team.id for slack
 
     sameIntegrationExists: async({userId, provider, teamId}, client = pool) => {
         const rows = await query(
-            "SELECT EXISTS (SELECT 1 FROM integrations WHERE user_id = ? AND provider = ? AND external_id = ?) AS apiKeyExists",
+            "SELECT EXISTS (SELECT 1 FROM integrations WHERE user_id = ? AND provider = ? AND external_id = ?) AS sameIntegrationExists",
             [userId, provider, teamId], 
             client
         );
-        return Number(rows[0].apiKeyExists) === 1;
+        return Number(rows[0].sameIntegrationExists) === 1;
     },
 
     insertTokenProvider: async({userId, provider, teamId, name}, client = pool) => {
@@ -65,7 +65,7 @@ export const Integration = {        // external_id == team.id for slack
 
     getIntegration: async({userId, provider}, client = pool) => {
         const rows = await query(
-            "SELECT id, provider, name FROM integrations WHERE user_id = ? AND provider = ?",
+            "SELECT id, provider, external_id, name FROM integrations WHERE user_id = ? AND provider = ?",
             [userId, provider],
             client
         );
