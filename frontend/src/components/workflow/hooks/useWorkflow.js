@@ -218,7 +218,7 @@ export const useWorkflow = () => {
                     if (!configHandler) return node;
 
                     const mergedConfig = {
-                        ...configHandler.defaultConfig,
+                        ...configHandler.defaultConfig,         // to set default data
                         ...node.data.config,
                         ...data
                     }

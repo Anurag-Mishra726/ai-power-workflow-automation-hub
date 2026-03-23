@@ -1,9 +1,7 @@
 import api from "@/utils/axiox";
 
-export const startOAuth = async (provider, workflowId) => {
-    const res = api.post(`/integration/oauth/${provider}/connect`,{
-        params: workflowId
-    });
+export const getIntegration = async (provider) => {
+    const res = api.get(`integration/${provider}/get/integration`);
 
     return res.data;
 }

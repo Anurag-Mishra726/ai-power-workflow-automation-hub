@@ -3,10 +3,12 @@ import CloseBtn from '@/components/common/CloseBtn'
 import AuthState from './AuthState';
 import ConfigState from './ConfigState';
 import useWorkflowData from '@/stores/workflowDataStore';
+import { useGetIntegration } from '@/hooks/useintegration';
 
-const SlackConfig = ({ /* selectedNode, */ onClose, /* setNodeConfig */ }) => {
+const SlackConfig = ({ selectedNode, onClose, setNodeConfig }) => {
 
     const {workflowId} = useWorkflowData();
+    //const { data, isLoading, isError } = useGetIntegration("slack");
 
     const [isConnected, setIsConnected] = useState(false);
     const [isConnecting, setIsConnecting] = useState(false);
@@ -20,10 +22,10 @@ const SlackConfig = ({ /* selectedNode, */ onClose, /* setNodeConfig */ }) => {
     const handleConnect = () => {
         setIsConnecting(true);
         //window.location.href = `https://linus-terrible-murray.ngrok-free.dev/api/integration/oauth/slack/connect?workflowId=${workflowId}`;
-        window.open(
-          `http://localhost:5000/api/integration/oauth/slack/connect?workflowId=${workflowId}`,
-          "_blank"
-        );
+        // window.open(
+        //   `http://localhost:5000/api/integration/oauth/slack/connect?workflowId=${workflowId}`,
+        //   "_blank"
+        // );
         setTimeout(() => {
         setIsConnected(true);
         setIsConnecting(false);
@@ -49,12 +51,10 @@ const SlackConfig = ({ /* selectedNode, */ onClose, /* setNodeConfig */ }) => {
           <CloseBtn onClose={onClose} />
         </div>
 
-        <div className="flex-1 overflow-y-auto">
             {!isConnected ? 
                 <AuthState handleConnect={handleConnect} isConnecting={isConnecting} /> 
                 : 
-                <ConfigState selectedWorkspace={selectedWorkspace} />}
-        </div>
+                <ConfigState handleConnect={handleConnect} selectedNode={selectedNode} setNodeConfig={setNodeConfig}  />}
 
         {/* <div className="px-6 py-4 border-t border-zinc-800 bg-zinc-900/10">
             <a href="#" className="flex items-center gap-2 text-[10px] text-zinc-500 hover:text-white transition-colors">

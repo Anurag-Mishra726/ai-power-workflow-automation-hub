@@ -61,5 +61,15 @@ export const Integration = {        // external_id == team.id for slack
         );
 
         return rows[0];
-    }
+    },
+
+    getIntegration: async({userId, provider}, client = pool) => {
+        const rows = await query(
+            "SELECT id, provider, name FROM integrations WHERE user_id = ? AND provider = ?",
+            [userId, provider],
+            client
+        );
+        
+        return rows;
+    },
 }

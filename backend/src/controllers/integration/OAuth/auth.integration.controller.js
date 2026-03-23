@@ -7,7 +7,7 @@ export const startOAuth = async (req, res) => {
     try {
         const { provider } = req.params;
         const {workflowId } = req.query;
-        const userId = req.user.userId
+        const userId = req.user.userId;
 
         if (!workflowId) {
             return res.status(400).json({

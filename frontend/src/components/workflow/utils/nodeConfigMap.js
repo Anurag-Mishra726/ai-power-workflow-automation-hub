@@ -1,4 +1,6 @@
 
+const defaultSummary = "Please Cofigure Node!";
+
 export const nodeConfigMap = {
     manual: {
         defaultConfig: {},
@@ -50,10 +52,12 @@ export const nodeConfigMap = {
         },
 
         buildSummary: (config) => {
-            return config?.userPrompt ? `AI: ${config.userPrompt.substring(0, 20)}...` : "Gemini AI";
+            return config?.userPrompt ? `AI: ${config.userPrompt.substring(0, 20)}...` : defaultSummary;
         },
 
-        isComplete: () => true,
+        isComplete: (config) => {
+            return config?.userPrompt ? true : false ;
+        },
     },
 
     perplexityAI: {
@@ -64,7 +68,7 @@ export const nodeConfigMap = {
         },
 
         buildSummary: (config) => {
-            return config?.userPrompt ? `AI: ${config.userPrompt.substring(0, 20)}...` : "Perplexity AI";
+            return config?.userPrompt ? `AI: ${config.userPrompt.substring(0, 20)}...` : defaultSummary;
         },
 
         isComplete: () => true,
@@ -78,17 +82,19 @@ export const nodeConfigMap = {
         },
 
         buildSummary: (config) => {
-            return config?.userPrompt ? `AI: ${config.userPrompt.substring(0, 20)}...` : "ChatGPT";
+            return config?.userPrompt ? `AI: ${config.userPrompt.substring(0, 20)}...` : defaultSummary;
         },
 
         isComplete: () => true,
     },
 
     slack: {
-        defaultConfig: {},
+        
 
-        buildSummary: () => "Slack !!",
+        buildSummary: (config) => {
+            return config?.message ? `Msg: ${config.message.substring(0, 20)}...` : defaultSummary
+        },
 
-        isComplete: () => true,
+        isComplete: (config) => Boolean(config?.message),
     }
 }

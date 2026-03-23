@@ -30,6 +30,7 @@ const BaseNodeSchema = z.object({
             "geminiAI",
             "openAI",
             "perplexityAI",
+            "slack",
         ]).optional(),
         summary: z.string().optional().or(z.literal("")),
         config: z.any(),
@@ -80,6 +81,17 @@ const AI = z.object({
     userPrompt: z.string(),
 });
 
+const Slack = z.object({
+    variable: z.string().min(2, "Variable name is too small.").max(15, "Variable name is too big").regex( 
+        /^[a-zA-Z0-9-_]+$/, 
+        "Special characters are not allowed. Please use only letters, numbers, hypen: (-) and underscore: (_)."
+    ),
+    workspaceId: z.string(),
+    channelId: z.string(),
+    message: z.string(),
+});
+
+
 const workflowNodeSchema = BaseNodeSchema.superRefine((node, ctx) => {
     if (!node.data.isConfigured) {
         return;
@@ -113,6 +125,18 @@ const workflowNodeSchema = BaseNodeSchema.superRefine((node, ctx) => {
 
     if(["geminiAI", "perplexityAI"].includes(node.data.triggerType)){
         const result = AI.safeParse(node.data.config);
+        if (!result.success) {
+            result.error.issues.forEach(issue => {
+                ctx.addIssue({
+                    code: issue.code,
+                    message: issue.message,
+                })
+            });
+        }
+    }
+
+    if (node.data.triggerType === "slack") {
+        const result = Slack.safeParse(node.data.config);
         if (!result.success) {
             result.error.issues.forEach(issue => {
                 ctx.addIssue({

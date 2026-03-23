@@ -84,7 +84,11 @@ export const saveSlackIntegration = async (data) => {
         const exists = await Integration.sameIntegrationExists({ userId, provider, teamId}, connection);
 
         if (exists) {
-            throw new AppError("Integration already exists", 400);
+            return {
+                success: true,
+                message: "Slack already connected",
+                alreadyConnected: true
+            };
         }
 
         await Integration.insertOAuthToken({

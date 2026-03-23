@@ -1,5 +1,5 @@
 import useEditorUIStore from "@/stores/workflowEditorStore";
-import DefaultConfig from "../config-panels/default/DefaultConfig";
+import DefaultConfig from "../config-panels/defaultConfig/DefaultConfig";
 import ManualTriggerConfig from "../config-panels/manualTrigger/ManualTriggerConfig";
 import HTTPConfig from "../config-panels/http/HTTPConfig";
 import GoogleFormConfig from "../config-panels/googleForm/GoogleFormConfig";
