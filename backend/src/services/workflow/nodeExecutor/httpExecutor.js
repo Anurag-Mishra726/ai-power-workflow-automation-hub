@@ -35,7 +35,33 @@ export const httpExecutor = async ({data, nodeId, context, publish}) => {
         throw new NonRetriableError("Node is not configured.");
     }
     
-    const endpoint = Handlebars.compile(data.config.url)(context);    
+    const endpoint = Handlebars.compile(data.config.url)(context); 
+    
+    if (!endpoint) {
+        await publish(
+            httpRequestChannel().status({
+                nodeId,
+                status: "error",
+            })
+        );
+        throw new NonRetriableError(
+            "Resolved HTTP URL is empty. Check your URL template and referenced variables."
+        );
+    }
+
+    // try {
+    //     new URL(endpoint);
+    // } catch (error) {
+    //     await publish(
+    //         httpRequestChannel().status({
+    //             nodeId,
+    //             status: "error",
+    //         })
+    //     );
+    //     throw new NonRetriableError(
+    //         `Invalid HTTP URL after template rendering: "${endpoint}".`
+    //     );
+    // }
 
     const startTime = Date.now();
 

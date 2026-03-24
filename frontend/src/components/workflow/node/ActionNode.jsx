@@ -12,7 +12,7 @@ export const ActionNode = ({ id, data, type }) => {
   const setOpenNodeMenu = useEditorUIStore(s => s.setOpenNodeMenu);
   const setNodeType = useEditorUIStore(s => s.setNodeType);
   const {isNodeMenuOpen, activeNodeId, setIsSidebarOpen} = useEditorUIStore();
-
+  
   const actions = [
     { key: "EDIT_NODE", label: "Edit" },
     { key: "DUPLICATE_NODE", label: "Duplicate" },
@@ -64,7 +64,7 @@ export const ActionNode = ({ id, data, type }) => {
               </>
             )
           }
-            {/* <NodeStatusSpinner/> */}
+            {/* <NodeStatusSpinner status={nodeStatus} />             */}
         </div>
         <button className="text-white/70 text-sm cursor-pointer absolute top-0 right-0 mr-2 mt-2 py-[3px]  hover:text-white"
           onClick={(e) => {

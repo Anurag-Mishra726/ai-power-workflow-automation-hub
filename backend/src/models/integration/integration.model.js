@@ -65,11 +65,38 @@ export const Integration = {        // external_id == team.id for slack
 
     getIntegration: async({userId, provider}, client = pool) => {
         const rows = await query(
-            "SELECT id, provider, external_id, name FROM integrations WHERE user_id = ? AND provider = ?",
+            `SELECT
+                i.id,
+                i.name,
+                i.provider,
+                i.external_id,
+                ia.access_token,
+                ia.token_type,
+                ia.scope,
+                ia.refresh_token,
+                ia.last_refreshed_at,
+                ia.expires_at
+            FROM integrations AS i
+            INNER JOIN integration_accounts AS ia ON i.id = ia.integration_id
+            WHERE i.user_id = ? AND i.provider = ?`,
             [userId, provider],
             client
         );
         
         return rows;
+    },
+
+    getIntegrationAccountToken: async ({ userId, provider, externalId }, client = pool) => {
+        const rows = await query(
+            `SELECT ia.access_token
+            FROM integrations AS i
+            INNER JOIN integration_accounts AS ia ON i.id = ia.integration_id
+            WHERE i.user_id = ? AND i.provider = ? AND i.external_id = ?
+            LIMIT 1`,
+            [userId, provider, externalId],
+            client
+        );
+
+        return rows[0]?.access_token || null;
     },
 }

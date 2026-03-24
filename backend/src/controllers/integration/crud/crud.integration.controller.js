@@ -1,4 +1,5 @@
-import { getIntegration } from "../../../services/integration/crud/integration.crud.service.js";
+import { getIntegration } from "../../../services/integration/slack/slack.crud.service.js";
+import { integrationCRUD } from "../../../services/integration/utils/integration.service.js";
 
 export const getIntegrationController = async (req, res) => {
     try {
@@ -12,7 +13,7 @@ export const getIntegrationController = async (req, res) => {
             });
         }
         //await new Promise(resolve => setTimeout(resolve, 5000))
-        const result = await getIntegration(userId, provider);
+        const result = await integrationCRUD(userId, provider);
         
         return res.status(200).json({
             success: true,

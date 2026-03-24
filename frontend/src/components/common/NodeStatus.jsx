@@ -1,6 +1,26 @@
 import React from "react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 
-const NodeStatusSpinner = () => {
+const NodeStatusSpinner = ({ status }) => {
+  if (status === "error") {
+    return (
+      <span className="inline-flex items-center justify-center text-red-500" title="Execution failed">
+        <AlertCircle size={12} />
+      </span>
+    );
+  }
+
+  if (status === "success") {
+    return (
+      <span className="inline-flex items-center justify-center text-green-500" title="Execution successful">
+        <CheckCircle2 size={12} />
+      </span>
+    );
+  }
+
+  if (status !== "loading") {
+    return null;
+  }
 
   return (
     <div className="inline-flex items-center gap-2 text-xs text-white">

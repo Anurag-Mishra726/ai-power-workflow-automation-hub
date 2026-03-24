@@ -1,5 +1,6 @@
 import { AppError } from "../../../utils/AppErrors.js";
 import { getSlackAuthUrl, handleSlackCallback, saveSlackIntegration } from "../slack/slack.auth.service.js";
+import { getIntegration } from "../slack/slack.crud.service.js";
 
 const getProviderUrl = {
     slack: getSlackAuthUrl
@@ -13,8 +14,12 @@ const handleInsertToken = {
     slack: saveSlackIntegration
 }
 
+const handleCRUD = {
+    slack: getIntegration
+}
 
-export const integrationOAuthGetUrl = async(provider, workflowId, userId) => { 
+
+export const integrationOAuthGetUrl = async (provider, workflowId, userId) => { 
     const fn = getProviderUrl[provider];
     if (!fn) throw new AppError("Unsupported Provider!", 400);
     return await fn(workflowId, userId);
@@ -32,6 +37,14 @@ export const integrationInsertOAuthToken = async (provider, data) => {
     const fn = handleInsertToken[provider];
     if (!fn) throw new AppError("Unsupported Provider!", 400);
     return await fn(data);
+}
+
+export const integrationCRUD = async (userId, provider) => {
+    const fn = handleCRUD[provider];
+    if (!fn) {
+        throw new AppError("Unsupported Provider!", 400);
+    }
+    return await fn(userId, provider);
 }
 
 // const data = {

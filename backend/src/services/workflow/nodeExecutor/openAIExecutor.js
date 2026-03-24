@@ -3,14 +3,34 @@ import { generateText } from "ai";
 import { createExecutionResult } from "../../../utils/executionResult.js";
 import { NonRetriableError } from "inngest";
 import { aiIntegration } from "../../../models/aiIntegration.model.js"
+import Handlebars from "handlebars";
+import { httpRequestChannel } from "../../../inngest/workflowStatus.js";
 
 export const openAIExecutor = async ({data, nodeId, context, userId, publish}) => {
+    await publish(
+        httpRequestChannel().status({
+            nodeId,
+            status: "loading",
+        })
+    );
 
     if (!userId) {
+        await publish(
+            httpRequestChannel().status({
+                nodeId,
+                status: "error",
+            })
+        );
         throw new NonRetriableError("User Id is missing");
     }
 
     if (!data.isConfigured || !data.config.variable || !data.config.userPrompt) {
+        await publish(
+            httpRequestChannel().status({
+                nodeId,
+                status: "error",
+            })
+        );
         throw new NonRetriableError("Node is not configured.")
     }
 
@@ -22,19 +42,39 @@ export const openAIExecutor = async ({data, nodeId, context, userId, publish}) =
     //TODOs: This is going to fail if the trigger is google form because in the initial data (context there is no userId). Solve this..
 
     if(!apiKey) {
+            await publish(
+            httpRequestChannel().status({
+                nodeId,
+                status: "error",
+            })
+        );
         throw new NonRetriableError("OpenAI API key is not configured.");
     }
 
     try {
-        const openaiProvider = createOpenAI({
-            apiKey: apiKey
-        });
+         const templateContext = context || {};
+        const compiledSystemPrompt = Handlebars.compile(
+            data.config.systemPrompt || "You are a helpful assistant. Respond clearly and concisely. And keep it short."
+        )(templateContext);
+        const compiledUserPrompt = Handlebars.compile(data.config.userPrompt)(templateContext);
+
+        // const openaiProvider = createOpenAI({
+        //     apiKey: apiKey
+        // });
+
         const result = await generateText({
-            model:  openaiProvider('gpt-5'),
-            system: data.config.systemPrompt || "You are a helpful assistant. Respond clearly and concisely. And keep it short.",
-            prompt: data.config.userPrompt,
-            apiKey: apiKey
+            model: openai("gpt-5"),
+            system: compiledSystemPrompt,
+            prompt: compiledUserPrompt,
+            apiKey
         });
+
+        await publish(
+            httpRequestChannel().status({
+                nodeId,
+                status: "success",
+            })
+        );
 
         return createExecutionResult({
             output: {
@@ -43,7 +83,12 @@ export const openAIExecutor = async ({data, nodeId, context, userId, publish}) =
         });
     } catch (error) {
         console.log(error);
+        await publish(
+        httpRequestChannel().status({
+            nodeId,
+            status: "error",
+        })
+    );
         throw new NonRetriableError("Failed to generate text with ChatGPT.");
     }
-
 }

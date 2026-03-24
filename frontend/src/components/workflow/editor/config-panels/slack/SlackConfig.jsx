@@ -3,7 +3,7 @@ import AuthState from './AuthState';
 import ConfigState from './ConfigState';
 import useWorkflowData from '@/stores/workflowDataStore';
 import { useGetIntegration } from '@/hooks/useIntegration';
-import { Loader2, CircleX } from 'lucide-react';
+import { Loader2, CircleX, NotebookPen } from 'lucide-react';
 
 const SlackConfig = ({ selectedNode, onClose, setNodeConfig }) => {
 
@@ -62,7 +62,9 @@ const SlackConfig = ({ selectedNode, onClose, setNodeConfig }) => {
           </div>
           <CloseBtn onClose={onClose} />
         </div>
-
+          <div className='flex items-center gap-2 px-4 mt-3 relative text-xs text-blue-400'>
+            <NotebookPen size={20} /> FlowAI bot can send messages in this channel. Invite it if it's not already a member.
+          </div>
             { Array.isArray(data) && data.length > 0 ? (
               <ConfigState 
                 handleConnect={handleConnect} 

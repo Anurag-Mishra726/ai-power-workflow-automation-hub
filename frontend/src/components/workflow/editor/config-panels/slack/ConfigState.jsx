@@ -12,37 +12,7 @@ import {
 import toast from 'react-hot-toast';
 import useEditorUIStore from "@/stores/workflowEditorStore";
 
-const WORKSPACES = [
-  { 
-    id: 'w-001', 
-    name: 'Engineering Team', 
-    icon: '🛠️',
-    channels: [
-      { id: 'c-101', name: 'general' },
-      { id: 'c-102', name: 'dev-ops' },
-      { id: 'c-103', name: 'frontend-logs' }
-    ]
-  },
-  { 
-    id: 'w-002', 
-    name: 'Product & Design', 
-    icon: '🎨',
-    channels: [
-      { id: 'c-201', name: 'design-critique' },
-      { id: 'c-202', name: 'roadmap' }
-    ]
-  },
-  { 
-    id: 'w-003', 
-    name: 'Marketing Ops', 
-    icon: '📈',
-    channels: [
-      { id: 'c-301', name: 'social-media' },
-      { id: 'c-302', name: 'campaign-alerts' }
-    ]
-  }
-];
-// let WORKSPACES;
+
 const ConfigState = ({handleConnect, selectedNode, setNodeConfig, data}) => {    
     
     const {setIsConfigSidebarClose} = useEditorUIStore();
@@ -52,6 +22,7 @@ const ConfigState = ({handleConnect, selectedNode, setNodeConfig, data}) => {
         handleSubmit, 
         watch,
         control,
+        setValue,
         reset,
         formState: { errors } 
     } = useForm({
@@ -64,28 +35,45 @@ const ConfigState = ({handleConnect, selectedNode, setNodeConfig, data}) => {
     });
 
     useEffect(() => {
-        if (data && data.length > 0) {
-            reset({
-            workspaceId: data[0].external_id,
-            channelId: data[0].channels?.[0]?.id || '',
-            variable: selectedNode?.data?.config?.variable || '',
-            message: selectedNode?.data?.config?.message || ''
-            });
-        }
-    }, [data, reset, selectedNode?.data?.config?.message, selectedNode?.data?.config?.variable]);
+        if (!data || data.length === 0) return;
+
+        const prefilledWorkspaceId = selectedNode?.data?.config?.workspaceId || data[0].external_id;
+        const selectedWorkspace = data.find((workspace) => workspace.external_id === prefilledWorkspaceId) || data[0];
+        const prefilledChannelId = selectedNode?.data?.config?.channelId || selectedWorkspace?.channels?.[0]?.channelId || "";
+
+        reset({
+            workspaceId: prefilledWorkspaceId,
+            channelId: prefilledChannelId,
+            variable: selectedNode?.data?.config?.variable || "",
+            message: selectedNode?.data?.config?.message || ""
+        });
+    }, [data, reset, selectedNode?.data?.config?.channelId, selectedNode?.data?.config?.message, selectedNode?.data?.config?.variable, selectedNode?.data?.config?.workspaceId]);
 
     const selectedWorkspaceId = watch('workspaceId');
+    const selectedChannelId = watch("channelId");
 
     const watchMyVariableName = useWatch({control, name: 'variable'}) || '' ;
 
     const currentWorkspace = useMemo(() => 
-        WORKSPACES.find(w => w.id === selectedWorkspaceId),
-        [selectedWorkspaceId]
+        data.find((workspace) => workspace.external_id === selectedWorkspaceId),
+        [data, selectedWorkspaceId]
     );
 
-    const onSubmit = async (data) => {      // if setNodeConfig gives or throws error handle it using try-catch
+    useEffect(() => {
+        if (!currentWorkspace?.channels?.length) return;
+
+        const selectedChannelExists = currentWorkspace.channels.some(
+            (channel) => channel.channelId === selectedChannelId
+        );
+
+        if (!selectedChannelExists) {
+            setValue("channelId", currentWorkspace.channels[0].channelId);
+        }
+    }, [currentWorkspace, selectedChannelId, setValue]);
+
+    const onSubmit = async (data) => {
         console.log('Form Submitted:', data);
-        const status = await setNodeConfig(data); // TODOs : make a Schema for this form.
+        const status = await setNodeConfig(data); 
 
         if(status.success) toast.success("Slack Node Configured Successfully");
         else toast.error("Something went Wrong!");
@@ -156,8 +144,8 @@ const ConfigState = ({handleConnect, selectedNode, setNodeConfig, data}) => {
                             {...register('channelId', { required: true })}
                             className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#E01E5A]/50 appearance-none transition-all cursor-pointer hover:bg-zinc-800/50"
                             >
-                            {currentWorkspace?.channels.map(ch => (
-                                <option key={ch.id} value={ch.id}>#{ch?.name || "hola"} </option>
+                            {currentWorkspace?.channels?.map((channel) => (
+                                <option key={channel.channelId} value={channel.channelId}>{channel.channelName}</option>
                             ))}
                             </select>
                             <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />

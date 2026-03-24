@@ -5,6 +5,7 @@ import NodeMenu from "./NodeMenu";
 import useEditorUIStore from "@/stores/workflowEditorStore";
 import NodeStatusSpinner from "@/components/common/NodeStatus";
 import { SiGoogleforms } from "react-icons/si";
+
 export const TriggerNode = ({ id ,data, type }) => {
 
   const setActiveNode = useEditorUIStore(s => s.setActiveNode);
@@ -60,7 +61,7 @@ export const TriggerNode = ({ id ,data, type }) => {
               </>
             )
           }
-          {/* <NodeStatusSpinner/> */}
+          {/* <NodeStatusSpinner status={nodeStatus} /> */}
         </div>
        
         <button className="text-white/70 text-sm cursor-pointer absolute top-0 right-0 mr-2 mt-2 py-[3px]  hover:text-white"

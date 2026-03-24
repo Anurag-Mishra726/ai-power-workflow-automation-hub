@@ -5,6 +5,7 @@ import { googleFormExecutor } from "./googleFormExecutor.js";
 import { geminiAIExecutor } from "./geminiAIExecutor.js";
 import { perplexityAIExecutor } from "./perplexityAIExecutor.js";
 import { openAIExecutor } from "./openAIExecutor.js";
+import { slackExecutor } from "./slackExecutor.js";
 
 export const executorRegistry =  {
     manual: manualExecutor,
@@ -13,6 +14,7 @@ export const executorRegistry =  {
     geminiAI: geminiAIExecutor,
     perplexityAI: perplexityAIExecutor,
     openAI: openAIExecutor,
+    slack: slackExecutor,
 }
 
 export const getNodeExecutor = (type) => {
