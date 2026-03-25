@@ -1,10 +1,11 @@
 import { Handle, Position } from "@xyflow/react";
 import { TiFlowChildren } from "react-icons/ti";
-import { EllipsisVertical, Globe, MousePointer ,CircleDot, CheckCircle, AlertCircle } from "lucide-react";
+import { EllipsisVertical ,CircleDot, CheckCircle, AlertCircle } from "lucide-react";
 import NodeMenu from "./NodeMenu";
 import useEditorUIStore from "@/stores/workflowEditorStore";
 import NodeStatusSpinner from "@/components/common/NodeStatus";
-import { SiGoogleforms } from "react-icons/si";
+
+import IconMap from "../utils/nodeIcon";
 
 export const TriggerNode = ({ id ,data, type }) => {
 
@@ -19,13 +20,7 @@ export const TriggerNode = ({ id ,data, type }) => {
     { key: "DELETE_NODE", label: "Delete", disabled: true, danger: true }
   ];
 
-  const iconMap = {
-    http: Globe,
-    manual: MousePointer,
-    googleForm: SiGoogleforms,
-  }
-
-  const Icon = iconMap[data.triggerType] || TiFlowChildren;
+  const Icon = IconMap[data.triggerType] || TiFlowChildren;
 
   return (
     <div className="pointer-events-auto p-2 w-44 bg-zinc-900 relative border  border-zinc-700 rounded-lg text-white flex flex-col gap-2

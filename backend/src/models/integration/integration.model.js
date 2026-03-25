@@ -99,4 +99,19 @@ export const Integration = {        // external_id == team.id for slack
 
         return rows[0]?.access_token || null;
     },
+
+    getScopes: async ({userId, provider}, client = pool) => {
+        const rows = await query(
+            `SELECT i.id, i.user_id, i.provider, ia.scope
+            FROM integrations AS i
+            INNER JOIN integration_accounts AS ia ON i.id = ia.integration_id
+            WHERE i.user_id = ? AND i.provider = ?
+            LIMIT 1
+            `,
+            [userId, provider],
+            client
+        );
+
+        return rows[0] || null;
+    }
 }

@@ -89,12 +89,23 @@ export const nodeConfigMap = {
     },
 
     slack: {
-        
 
         buildSummary: (config) => {
             return config?.message ? `Msg: ${config.message.substring(0, 20)}...` : defaultSummary
         },
 
         isComplete: (config) => Boolean(config?.message),
+    },
+
+    gmail: {
+        buildSummary: () => "Gmail",
+
+        isComplete: () => true,
+    },
+
+    googleDrive: {
+        buildSummary: () => "Google Drive",
+
+        isComplete: () => true,
     }
 }

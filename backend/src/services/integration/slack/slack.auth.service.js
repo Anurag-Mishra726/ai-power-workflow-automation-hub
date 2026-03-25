@@ -3,12 +3,13 @@ import axios from "axios";
 import { Integration } from "../../../models/integration/integration.model.js";
 import { AppError } from "../../../utils/AppErrors.js";
 
-export const getSlackAuthUrl = (workflowId, userId) => {
+export const getSlackAuthUrl = (userId, workflowId, provider) => {
     const base = "https://slack.com/oauth/v2/authorize";
     
     const stateData = {
         workflowId: workflowId,
-        userId: userId
+        userId: userId,
+        provider: provider
     }
 
     const state = Buffer.from(JSON.stringify(stateData)).toString("base64");

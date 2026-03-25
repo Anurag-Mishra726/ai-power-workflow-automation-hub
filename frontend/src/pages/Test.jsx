@@ -1,194 +1,260 @@
 import React, { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { 
-  Slack, 
-  Plus, 
-  CheckCircle2, 
-  ExternalLink, 
-  Send, 
-  Hash, 
-  Info,
-  ChevronRight,
-  AlertCircle
+  X, 
+  Link as LinkIcon, 
+  FileText, 
+  RefreshCw,
+  Search,
+  Check,
+  ChevronDown,
+  Info
 } from 'lucide-react';
 
-const SlackConfig = ({ onClose }) => {
-  // 1. State Management
-  // In a real app, 'isConnected' would come from your DB/API
+// --- Components ---
+
+const CloseBtn = ({ onClose }) => (
+  <button 
+    onClick={onClose}
+    className="absolute right-4 top-4 p-2 hover:bg-zinc-800 rounded-lg transition-colors text-zinc-400 hover:text-white"
+  >
+    <X size={20} />
+  </button>
+);
+
+// --- Main Application ---
+
+const App = () => {
   const [isConnected, setIsConnected] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   
-  // Dummy data for connected accounts
-  const connectedAccounts = [
-    { id: 'acc_1', name: 'Engineering Team', icon: '🛠️' },
-    { id: 'acc_2', name: 'Marketing HQ', icon: '🚀' }
+  // Dummy Data for Google Forms
+  const dummyForms = [
+    { id: 'form_01', name: 'Customer Feedback Survey 2024', responses: 124, lastModified: '2 hours ago' },
+    { id: 'form_02', name: 'Event Registration - Product Launch', responses: 45, lastModified: 'Yesterday' },
+    { id: 'form_03', name: 'Newsletter Signup Form', responses: 890, lastModified: '3 days ago' },
+    { id: 'form_04', name: 'Employee Satisfaction Poll', responses: 12, lastModified: '1 week ago' },
   ];
 
-  // 2. Mock OAuth Logic
+  // React Hook Form Setup
+  const { register, handleSubmit, control, watch, formState: { errors, isValid } } = useForm({
+    defaultValues: {
+      selectedFormId: '',
+      variableName: 'googleFormData',
+      fetchMethod: 'webhook'
+    },
+    mode: 'onChange'
+  });
+
+  const selectedFormId = watch('selectedFormId');
+
   const handleConnect = () => {
-    setIsConnecting(true);
-    // In production, this would be: window.location.href = "/api/auth/slack"
+    setIsLoading(true);
+    // Simulate OAuth Delay
     setTimeout(() => {
       setIsConnected(true);
-      setIsConnecting(false);
-      setSelectedWorkspace(connectedAccounts[0]);
-    }, 1500);
+      setIsLoading(false);
+    }, 1200);
   };
 
-  // 3. Sub-Components for UI States
-  const AuthState = () => (
-    <div className="flex flex-col gap-6 p-6 animate-in fade-in slide-in-from-bottom-4">
-      <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-            <Slack className="w-8 h-8 text-[#E01E5A]" />
-          </div>
-          <div>
-            <h3 className="text-lg font-medium">Connect Slack</h3>
-            <p className="text-sm text-zinc-400">Allow FlowAI to interact with your workspaces.</p>
-          </div>
+  const onSubmit = (data) => {
+    console.log("Configuration Saved:", data);
+    // Here you would typically send data to your backend
+  };
+
+  const onClose = () => {
+    console.log("Panel closed");
+  };
+
+  return (
+    <div className="min-h-screen bg-zinc-950 p-8 flex justify-end relative font-sans">
+      {/* Background Simulation of Workflow Canvas */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10">
+        <div className="p-10 border-2 border-dashed border-zinc-700 rounded-3xl text-zinc-500 text-2xl font-mono">
+          Workflow Canvas Area
         </div>
-
-        <ul className="space-y-3 mb-6">
-          <li className="flex items-start gap-2 text-sm text-zinc-300">
-            <CheckCircle2 className="w-4 h-4 mt-0.5 text-green-500 shrink-0" />
-            Post messages to public and private channels.
-          </li>
-          <li className="flex items-start gap-2 text-sm text-zinc-300">
-            <CheckCircle2 className="w-4 h-4 mt-0.5 text-green-500 shrink-0" />
-            Upload files and share automated reports.
-          </li>
-          <li className="flex items-start gap-2 text-sm text-zinc-300">
-            <CheckCircle2 className="w-4 h-4 mt-0.5 text-green-500 shrink-0" />
-            Receive notifications from specific triggers.
-          </li>
-        </ul>
-
-        <button 
-          onClick={handleConnect}
-          disabled={isConnecting}
-          className="w-full flex items-center justify-center gap-2 bg-[#E01E5A] hover:bg-[#c2184d] text-white font-semibold py-3 px-4 rounded-xl transition-all active:scale-[0.98] disabled:opacity-50"
-        >
-          {isConnecting ? (
-            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-          ) : (
-            <>
-              <Plus className="w-5 h-5" />
-              Connect Workspace
-            </>
-          )}
-        </button>
       </div>
 
-      <div className="flex gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-        <Info className="w-5 h-5 text-blue-400 shrink-0" />
-        <p className="text-xs text-blue-100/80 leading-relaxed">
-          FlowAI uses official Slack OAuth. We never see your password and you can revoke access anytime from your Slack settings.
-        </p>
-      </div>
-    </div>
-  );
-
-  const ConfigState = () => (
-    <div className="flex flex-col gap-6 p-6 overflow-y-auto h-full animate-in fade-in">
-      {/* Account Selection */}
-      <div className="space-y-3">
-        <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Active Connection</label>
-        <div className="flex items-center justify-between p-3 bg-zinc-900 border border-zinc-800 rounded-xl">
-          <div className="flex items-center gap-3">
-            <span className="text-xl">{selectedWorkspace?.icon}</span>
+      <aside className="absolute top-0 right-0 h-full w-full md:w-1/3 m-0 md:m-1 bg-[#000000] border-l md:border border-zinc-700 md:rounded-lg text-white z-50 flex flex-col shadow-2xl overflow-hidden">
+        
+        {/* Header */}
+        <div className="flex px-4 py-5 border-b border-zinc-800 relative bg-zinc-900/50">
+          <div className="flex items-start gap-4">
+            <span className="p-2.5 border border-zinc-700 rounded-xl bg-zinc-900 shadow-inner flex items-center justify-center">
+               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" fill="#7248B9"/>
+                  <path d="M14 2V8H20L14 2Z" fill="#9061F9"/>
+                  <path d="M9 13H15M9 17H15M9 9H11" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+               </svg>
+            </span>
             <div>
-              <p className="text-sm font-medium">{selectedWorkspace?.name}</p>
-              <p className="text-[10px] text-green-500 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                Connected
+              <h2 className="text-2xl font-bold text-zinc-100">
+                Google Form
+              </h2>
+              <p className="text-xs text-zinc-400 uppercase tracking-widest mt-0.5 font-medium">
+                Trigger Configuration
               </p>
             </div>
           </div>
-          <button className="text-[10px] bg-zinc-800 hover:bg-zinc-700 px-2 py-1 rounded text-zinc-300 transition-colors">
-            Switch
-          </button>
-        </div>
-      </div>
-
-      <hr className="border-zinc-800" />
-
-      {/* Action Configuration */}
-      <div className="space-y-5">
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-zinc-200">Select Channel</label>
-          <div className="relative">
-            <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-            <select className="w-full bg-zinc-900 border border-zinc-800 rounded-lg py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#E01E5A]/50 appearance-none">
-              <option>#general</option>
-              <option>#engineering</option>
-              <option>#notifications</option>
-            </select>
-            <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 rotate-90" />
-          </div>
+          <CloseBtn onClose={onClose} />
         </div>
 
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <label className="text-sm font-medium text-zinc-200">Message Content</label>
-            <span className="text-[10px] text-zinc-500 font-mono">Markdown Supported</span>
-          </div>
-          <textarea 
-            placeholder="Hello team! The workflow has completed..."
-            className="w-full h-32 bg-zinc-900 border border-zinc-800 rounded-lg p-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#E01E5A]/50 resize-none"
-          />
-          <p className="text-[11px] text-zinc-500">
-            Use <code className="bg-zinc-800 px-1 rounded text-zinc-300">{"{{variable}}"}</code> to inject data from previous steps.
-          </p>
+        <div className="flex-1 overflow-y-auto px-5 py-6 space-y-8 scrollbar-thin scrollbar-thumb-zinc-700">
+          
+          {/* Connection Section */}
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Account</h3>
+              {isConnected && (
+                <span className="flex items-center gap-1.5 text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded-full border border-green-400/20">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                  Authenticated
+                </span>
+              )}
+            </div>
+            
+            {!isConnected ? (
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 text-center space-y-4 shadow-sm">
+                <div className="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center mx-auto border border-zinc-700">
+                  <LinkIcon size={20} className="text-zinc-400" />
+                </div>
+                <div>
+                  <h4 className="font-medium text-zinc-200">Connect Google Workspace</h4>
+                  <p className="text-sm text-zinc-500 mt-1 px-4">Grant permission to access your forms for automated triggers.</p>
+                </div>
+                <button 
+                  onClick={handleConnect}
+                  disabled={isLoading}
+                  className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-zinc-800 disabled:text-zinc-500 text-white rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
+                >
+                  {isLoading ? <RefreshCw size={18} className="animate-spin" /> : "Connect Google Form"}
+                </button>
+              </div>
+            ) : (
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex items-center justify-between border-l-4 border-l-indigo-500">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-sm font-bold">
+                    JD
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-zinc-200">John Doe</p>
+                    <p className="text-xs text-zinc-500">j.doe@company.com</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setIsConnected(false)}
+                  className="text-xs text-zinc-500 hover:text-red-400 transition-colors font-medium underline"
+                >
+                  Switch Account
+                </button>
+              </div>
+            )}
+          </section>
+
+          {isConnected && (
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 animate-in fade-in slide-in-from-top-4 duration-500">
+              
+              {/* Form Picker */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Select Form</label>
+                  {errors.selectedFormId && <span className="text-[10px] text-red-400">Required</span>}
+                </div>
+                
+                <Controller
+                  name="selectedFormId"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                      {dummyForms.map((form) => (
+                        <div 
+                          key={form.id}
+                          onClick={() => field.onChange(form.id)}
+                          className={`p-3 border rounded-xl cursor-pointer transition-all flex items-center justify-between group ${
+                            field.value === form.id 
+                              ? 'border-indigo-500 bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.1)]' 
+                              : 'border-zinc-800 bg-zinc-900/40 hover:border-zinc-700 hover:bg-zinc-900'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <FileText size={18} className={field.value === form.id ? 'text-indigo-400' : 'text-zinc-500'} />
+                            <div>
+                              <p className="text-sm font-medium text-zinc-200">{form.name}</p>
+                              <p className="text-[10px] text-zinc-500 mt-0.5">{form.responses} responses • {form.lastModified}</p>
+                            </div>
+                          </div>
+                          {field.value === form.id && (
+                            <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center animate-in zoom-in duration-300">
+                              <Check size={12} strokeWidth={3} />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                />
+              </div>
+
+              {/* Variable Assignment */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Output Variable</label>
+                  <Info size={14} className="text-zinc-500" />
+                </div>
+                <div className="relative group">
+                  <input 
+                    {...register('variableName', { 
+                      required: true,
+                      pattern: /^[a-zA-Z0-9_]+$/
+                    })}
+                    placeholder="e.g. registrationForm"
+                    className={`w-full bg-zinc-900 border ${errors.variableName ? 'border-red-500' : 'border-zinc-800'} rounded-lg py-3 px-4 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all`}
+                  />
+                  {errors.variableName && (
+                    <p className="text-[10px] text-red-400 mt-1">Use only letters, numbers, and underscores.</p>
+                  )}
+                </div>
+                <p className="text-xs text-zinc-500 leading-relaxed bg-zinc-900/40 p-3 rounded-lg border border-zinc-800/50">
+                  Reference this node's data in subsequent steps using: <br/>
+                  <code className="text-indigo-400 mt-1 block font-mono">
+                    {`{{${watch('variableName') || 'variableName'}.response.data}}`}
+                  </code>
+                </p>
+              </div>
+
+              {/* Extra Configuration Toggle (Dummy) */}
+              <div className="space-y-3 pt-2">
+                 <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-900/20 border border-zinc-800/50">
+                    <span className="text-sm text-zinc-300">Auto-refresh responses</span>
+                    <div className="w-10 h-5 bg-indigo-600 rounded-full relative flex items-center px-1">
+                      <div className="w-3.5 h-3.5 bg-white rounded-full absolute right-1" />
+                    </div>
+                 </div>
+              </div>
+            </form>
+          )}
         </div>
 
-        <div className="pt-4">
-          <button className="w-full flex items-center justify-center gap-2 bg-white text-black font-bold py-3 rounded-xl hover:bg-zinc-200 transition-colors">
-            Save Configuration
-          </button>
-          <button className="w-full mt-3 flex items-center justify-center gap-2 bg-transparent text-zinc-400 text-sm py-2 hover:text-zinc-200 transition-colors">
-            <AlertCircle className="w-4 h-4" />
-            Send Test Message
-          </button>
+        {/* Footer Actions */}
+        <div className="p-4 border-t border-zinc-800 bg-zinc-950 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
+           <button 
+             type="button"
+             form="config-form"
+             onClick={handleSubmit(onSubmit)}
+             className={`w-full py-3.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
+               isConnected && isValid && selectedFormId
+                 ? 'bg-white text-black hover:bg-zinc-200 active:scale-[0.98]' 
+                 : 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
+             }`}
+             disabled={!isConnected || !isValid || !selectedFormId}
+           >
+             Save Node Configuration
+           </button>
         </div>
-      </div>
+      </aside>
     </div>
-  );
-
-  return (
-    <aside className="fixed top-0 right-0 h-[calc(100%-8px)] w-[400px] m-1 bg-black border border-zinc-800 rounded-lg text-white z-50 flex flex-col shadow-2xl overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800 bg-zinc-900/20">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-[#E01E5A]/10 border border-[#E01E5A]/20 rounded-lg">
-            <Slack className="w-5 h-5 text-[#E01E5A]" />
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold tracking-tight">Slack Settings</h2>
-            <p className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider">Messaging Node</p>
-          </div>
-        </div>
-        <button 
-          onClick={onClose}
-          className="p-1.5 hover:bg-zinc-800 rounded-md transition-colors text-zinc-500"
-        >
-          <Plus className="w-5 h-5 rotate-45" />
-        </button>
-      </div>
-
-      {/* Dynamic Content */}
-      <div className="flex-1 overflow-y-auto">
-        {!isConnected ? <AuthState /> : <ConfigState />}
-      </div>
-
-      {/* Footer Info */}
-      <div className="px-6 py-4 border-t border-zinc-800 bg-zinc-900/10">
-        <a href="#" className="flex items-center gap-2 text-[10px] text-zinc-500 hover:text-white transition-colors">
-          View Documentation <ExternalLink className="w-3 h-3" />
-        </a>
-      </div>
-    </aside>
   );
 };
 
-export default SlackConfig;
+export default App;

@@ -1,17 +1,27 @@
 import { AppError } from "../../../utils/AppErrors.js";
+import { getGoogleAuthUrl, handleGoogleCallback, saveGoogleIntegration } from "../google/google.auth.service.js";
 import { getSlackAuthUrl, handleSlackCallback, saveSlackIntegration } from "../slack/slack.auth.service.js";
 import { getIntegration } from "../slack/slack.crud.service.js";
 
 const getProviderUrl = {
-    slack: getSlackAuthUrl
+    slack: getSlackAuthUrl,
+    googleDrive: getGoogleAuthUrl,
+    gmail: getGoogleAuthUrl,
+    googleForm: getGoogleAuthUrl,
 }
 
 const handleCallback = {
-    slack: handleSlackCallback
+    slack: handleSlackCallback,
+    googleDrive: handleGoogleCallback,
+    gmail: handleGoogleCallback,
+    googleForm: handleGoogleCallback,
 }
 
 const handleInsertToken = {
-    slack: saveSlackIntegration
+    slack: saveSlackIntegration,
+    googleDrive: saveGoogleIntegration,
+    gmail: saveGoogleIntegration,
+    googleForm: saveGoogleIntegration,
 }
 
 const handleCRUD = {
@@ -22,12 +32,13 @@ const handleCRUD = {
 export const integrationOAuthGetUrl = async (provider, workflowId, userId) => { 
     const fn = getProviderUrl[provider];
     if (!fn) throw new AppError("Unsupported Provider!", 400);
-    return await fn(workflowId, userId);
+    return await fn(userId, workflowId, provider);
 }
 
 
 export const integrationHandleOAuthCallback = async (provider, code, userId) => {
     const fn = handleCallback[provider];
+    console.log(fn);
     if (!fn) throw new AppError("Unsupported Provider!", 400);
     return await fn(code, userId);
 }

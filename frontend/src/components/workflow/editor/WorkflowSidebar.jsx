@@ -33,12 +33,12 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
         
       </div>
 
-      <div className="flex-1 overflow-y-auto px-3 py-5 ">
+      <div className="flex-1 overflow-y-auto px-3 pb-5 ">
 
         {/* <div className="mb-2 pb-1 border-b border-gray-300">
           <h2 className="text-2xl">Triggers Nodes</h2>
         </div> */}
-            
+            {/* Manual Trigger */}
         <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
          onClick={()=> {
@@ -65,25 +65,13 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
             </div>
         </div> */}
 
-        <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
-         hover:bg-zinc-800 cursor-pointer"
-         onClick={()=> {
-          handleOnClick("Google Form", "googleForm");
-         }}
-         >
-            <img src="/googleform.svg" alt="Google Form" height={25} width={25} />
-            <div>
-                <h2 className="text-xl">Google Forms</h2>
-                <p className="text-zinc-400 text-sm ">Trigger this flow when a Google Form is submitted.</p>
-            </div>
-        </div>  
-
-
          {/* Action Nodes */}
 
         {/* <div className="mt-8 pb-1 border-b border-gray-300">
           <h2 className="text-2xl">Actions Nodes</h2>
         </div> */}
+
+        {/* HTTP Request */}
 
         <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
@@ -95,6 +83,65 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
             <div>
                 <h2 className="text-xl">HTTP Request</h2>
                 <p className="text-zinc-400 text-sm ">Send data to or fetch data from an API.</p>
+            </div>
+        </div>
+
+         {/* Google Form */}
+        <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
+         hover:bg-zinc-800 cursor-pointer"
+         onClick={()=> {
+          handleOnClick("Google Form", "googleForm");
+         }}
+         >
+            <img src="/googleform.svg" alt="Google Form" height={25} width={25} />
+            <div>
+                <h2 className="text-xl">Google Forms</h2>
+                <p className="text-zinc-400 text-sm ">Trigger this flow when a Google Form is submitted.</p>
+            </div>
+        </div>
+
+         {/* Google Drive */}
+
+        <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
+         hover:bg-zinc-800 cursor-pointer"
+         onClick={()=> {
+          handleOnClick("Google Drive", "googleDrive");
+         }}
+         >
+            <img src="/googleDrive.svg" alt="Google Drive" height={30} width={30} />
+            <div>
+                <h2 className="text-xl">Google Drive</h2>
+                <p className="text-zinc-400 text-sm ">Trigger this flow when something happens in Drive.</p>
+            </div>
+        </div>
+
+        {/* Gmail */}
+
+        <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
+         hover:bg-zinc-800 cursor-pointer"
+         onClick={()=> {
+          handleOnClick("Gmail", "gmail");
+         }}
+         >
+            <img src="/gmail.svg" alt="Gmail" height={30} width={30} />
+            <div>
+                <h2 className="text-xl">Gmail</h2>
+                <p className="text-zinc-400 text-sm ">Trigger this flow when a mail recived.</p>
+            </div>
+        </div>
+
+        {/* Slack */}
+
+        <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
+         hover:bg-zinc-800 cursor-pointer"
+         onClick={()=> {
+          handleOnClick("Slack", "slack");
+         }}
+         >
+            <img src="/slack.svg" alt="Slack" height={32} width={32} />
+            <div>
+                <h2 className="text-xl">Slack</h2>
+                <p className="text-zinc-400">Use send messages on workspace.</p>
             </div>
         </div>
 
@@ -120,7 +167,7 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
             <img src="/perplexity.svg" alt="Perplexity AI" height={32} width={32} />
             <div>
                 <h2 className="text-xl">Perplexity</h2>
-                <p className="text-zinc-400">Use Perplexity-AI to generate AI-powered output.</p>
+                <p className="text-zinc-400 text-sm">Use Perplexity-AI to generate AI-powered output.</p>
             </div>
         </div>
 
@@ -133,22 +180,11 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
             <img src="/openai.svg" alt="ChatGPT" height={32} width={32} />
             <div>
                 <h2 className="text-xl">ChatGPT</h2>
-                <p className="text-zinc-400">Use ChatGPT to generate AI-powered output.</p>
+                <p className="text-zinc-400 text-sm">Use ChatGPT to generate AI-powered output.</p>
             </div>
         </div>
 
-        <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
-         hover:bg-zinc-800 cursor-pointer"
-         onClick={()=> {
-          handleOnClick("Slack", "slack");
-         }}
-         >
-            <img src="/slack.svg" alt="Slack" height={32} width={32} />
-            <div>
-                <h2 className="text-xl">Slack</h2>
-                <p className="text-zinc-400">Use ChatGPT to generate AI-powered output.</p>
-            </div>
-        </div>
+        
         
       </div>
     </aside>

@@ -1,10 +1,9 @@
 import { Handle, Position } from "@xyflow/react";
-import { EllipsisVertical, Zap, Globe, CircleDot, CheckCircle, } from "lucide-react";
-import { SiGoogleforms, SiSlack  } from "react-icons/si";
-import { RiOpenaiFill, RiPerplexityFill, RiGeminiFill  } from "react-icons/ri";
+import { EllipsisVertical, Zap, CircleDot, CheckCircle, } from "lucide-react";
 import NodeMenu from "./NodeMenu";
 import useEditorUIStore from "@/stores/workflowEditorStore";
 import NodeStatusSpinner from "@/components/common/NodeStatus";
+import IconMap from "../utils/nodeIcon";
 
 export const ActionNode = ({ id, data, type }) => {
 
@@ -19,16 +18,7 @@ export const ActionNode = ({ id, data, type }) => {
     { key: "DELETE_NODE", label: "Delete", disabled: false, danger: true }
   ];
 
-  const iconMap = {
-    http: Globe,
-    googleForm: SiGoogleforms,
-    openAI: RiOpenaiFill,
-    perplexityAI: RiPerplexityFill,
-    geminiAI: RiGeminiFill,
-    slack: SiSlack 
-  };
-
-  const Icon = iconMap[data.triggerType] || Zap;
+  const Icon = IconMap[data.triggerType] || Zap;
   
   return (
     <div className="pointer-events-auto p-2 w-44 bg-zinc-900 relative border  border-zinc-700 rounded-lg text-white flex flex-col gap-2
