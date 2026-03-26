@@ -1,4 +1,5 @@
 import axios from "axios";
+import jwt from "jsonwebtoken";
 import pool from "../../../config/db.js";
 import { Integration } from "../../../models/integration/integration.model.js";
 import { AppError } from "../../../utils/AppErrors.js";
@@ -6,20 +7,30 @@ import { AppError } from "../../../utils/AppErrors.js";
 const googleOauthScopes = {
 
   googleDrive: [
-      "https://www.googleapis.com/auth/drive.readonly",
-      "https://www.googleapis.com/auth/drive",
-      "https://www.googleapis.com/auth/drive.file"
+        // Allows FlowAI to see/edit ONLY files it created (Safe & Recommended)
+        "https://www.googleapis.com/auth/drive.file",
+        // Needed to show a "File Picker" or folder dropdown in your UI
+        "https://www.googleapis.com/auth/drive.metadata.readonly",
+        // If your users need to READ files they didn't create (e.g. for an AI summary)
+        "https://www.googleapis.com/auth/drive.readonly"
   ],
-// http://localhost:5000/api/integration/oauth/slack/connect?workflowId=ff181be3-f56c-494f-9700-abf76491653f
+
   gmail: [
-      "https://www.googleapis.com/auth/gmail.readonly",
-      "https://www.googleapis.com/auth/gmail.send",
-      "https://www.googleapis.com/auth/gmail.modify",
+        // For Triggers: To read email content to process it
+        "https://www.googleapis.com/auth/gmail.readonly",
+        // For Actions: To send automated replies or alerts
+        "https://www.googleapis.com/auth/gmail.send",
+        // For Organization: To add labels or move to trash after processing
+        "https://www.googleapis.com/auth/gmail.modify",
+        // Specifically for managing labels in triggers
+        "https://www.googleapis.com/auth/gmail.labels"
   ],
 
   googleForm: [
-      "https://www.googleapis.com/auth/forms.responses.readonly",
-      "https://www.googleapis.com/auth/forms.body"
+        // Essential for "On Form Submit" triggers
+        "https://www.googleapis.com/auth/forms.responses.readonly",
+        // Allows FlowAI to read form structure/questions
+        "https://www.googleapis.com/auth/forms.body.readonly"
   ],
 
   googleSheet: [
@@ -37,23 +48,13 @@ export const getGoogleAuthUrl = async(userId, workflowId, provider) => {
         provider: provider
     }
 
-    const values = await Integration.getScopes({userId, provider: "google"});    
-
-    const previousScopes = values?.scope?.split(" ") || [];
-
-    const newScopes = googleOauthScopes[provider];
-
-    const finalScopes = [...new Set([...previousScopes, ...newScopes])].join(" ");
-
-    console.log("Final Scopes : ", finalScopes);
-
     const state = Buffer.from(JSON.stringify(stateData)).toString("base64");
 
-    console.log("FinalScope", finalScopes);
+    const finalScopes = googleOauthScopes[provider].join(" ");
 
     const params = new URLSearchParams({ 
         client_id: process.env.GOOGLE_CLIENT_ID,
-        scope: finalScopes,
+        scope:"openid " + finalScopes,
         redirect_uri: process.env.GOOGLE_REDIRECT_URI,
         response_type: "code",
         access_type: "offline",
@@ -85,15 +86,21 @@ export const handleGoogleCallback = async (code, userId) => {
         );
 
         const data = response.data;
+        const id = jwt.decode(data.id_token);
+        const externalId = id.sub;
+        const expiryIn = new Date(Date.now() + data.expires_in * 1000);
+
         console.log("DATA!!!!!! ", data);
         return {
             userId: userId,
             provider: "google",
+            externalId: externalId,
             scope: data.scope,
             tokenType: data.token_type,
             accessToken: data.access_token,
             refreshToken: data.refresh_token || null,
-            //expiresAt: data.expires_in || null,           sometimes returns refreshToken and someTimes not ??
+            expiresAt: expiryIn || null,
+            last_refreshed_at: new Date(),               
         };
     } catch (err) {
         console.error("Google OAuth Error:", err.response?.data || err.message);
@@ -107,7 +114,7 @@ export const saveGoogleIntegration = async (data) => {
     const {
         userId,
         provider,
-        teamId,
+        externalId,
         name,
         accessToken,
         tokenType,
@@ -123,7 +130,7 @@ export const saveGoogleIntegration = async (data) => {
         const result = await Integration.insertTokenProvider({
             userId, 
             provider, 
-            teamId: teamId ?? null , 
+            externalId: externalId ?? null , 
             name: name ?? null,
         }, connection);
 

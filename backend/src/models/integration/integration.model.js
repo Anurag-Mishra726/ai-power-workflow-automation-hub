@@ -13,22 +13,22 @@ const query = async (sql, params = [], client = pool) => {
 
 export const Integration = {        // external_id == team.id for slack
 
-    sameIntegrationExists: async({userId, provider, teamId}, client = pool) => {
+    sameIntegrationExists: async({userId, provider, externalId}, client = pool) => {
         const rows = await query(
             "SELECT EXISTS (SELECT 1 FROM integrations WHERE user_id = ? AND provider = ? AND external_id = ?) AS sameIntegrationExists",
-            [userId, provider, teamId], 
+            [userId, provider, externalId], 
             client
         );
         return Number(rows[0].sameIntegrationExists) === 1;
     },
 
-    insertTokenProvider: async({userId, provider, teamId, name}, client = pool) => {
+    insertTokenProvider: async({userId, provider, externalId, name}, client = pool) => {
         const rows = await query(
             `INSERT INTO integrations (user_id, provider, external_id, name) VALUES (?, ?, ?, ?) 
             ON DUPLICATE KEY UPDATE 
             name = VALUES(name),
             id = LAST_INSERT_ID(id) `,
-            [userId, provider, teamId, name], 
+            [userId, provider, externalId, name], 
             client
         );
 
@@ -50,7 +50,7 @@ export const Integration = {        // external_id == team.id for slack
             VALUES (?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE 
             access_token = VALUES(access_token),
-            refresh_token = VALUES(refresh_token),
+            refresh_token = COALESCE(VALUES(refresh_token), refresh_token),
             token_type = VALUES(token_type),
             scope = VALUES(scope),
             expires_at = VALUES(expires_at),

@@ -52,11 +52,12 @@ export const handleSlackCallback = async (code, userId) => {
     return {
         userId: userId,
         provider: "slack",
-        scope: data.scope,
-        tokenType: data.token_type,
-        accessToken: data.access_token,
-        teamId: data.team.id,
         name: data.team.name,
+        scope: data.scope,
+        accessToken: data.access_token,
+        tokenType: data.token_type,
+        externalId: data.team.id,
+        last_refreshed_at: new Date(),
     }
 }
 
@@ -66,7 +67,7 @@ export const saveSlackIntegration = async (data) => {
     const {
         userId,
         provider,
-        teamId,
+        externalId,
         name,
         accessToken,
         tokenType,
@@ -79,7 +80,7 @@ export const saveSlackIntegration = async (data) => {
     try {
         await connection.beginTransaction();
 
-        const exists = await Integration.sameIntegrationExists({ userId, provider, teamId}, connection);
+        const exists = await Integration.sameIntegrationExists({ userId, provider, externalId}, connection);
         
         if (exists) {
             return {
@@ -89,7 +90,7 @@ export const saveSlackIntegration = async (data) => {
             };
         }
 
-        const result = await Integration.insertTokenProvider({userId, provider, teamId, name}, connection);
+        const result = await Integration.insertTokenProvider({userId, provider, externalId, name}, connection);
         const integrationId = result.insertId;
 
         await Integration.insertOAuthToken({
