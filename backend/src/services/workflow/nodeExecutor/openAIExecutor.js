@@ -1,4 +1,4 @@
-import { openai } from '@ai-sdk/openai';
+import { createOpenAI, openai } from '@ai-sdk/openai';
 import { generateText } from "ai";
 import { createExecutionResult } from "../../../utils/executionResult.js";
 import { NonRetriableError } from "inngest";
@@ -39,8 +39,6 @@ export const openAIExecutor = async ({data, nodeId, context, userId, publish}) =
         provider: "openai",
     });
 
-    //TODOs: This is going to fail if the trigger is google form because in the initial data (context there is no userId). Solve this..
-
     if(!apiKey) {
             await publish(
             httpRequestChannel().status({
@@ -58,12 +56,12 @@ export const openAIExecutor = async ({data, nodeId, context, userId, publish}) =
         )(templateContext);
         const compiledUserPrompt = Handlebars.compile(data.config.userPrompt)(templateContext);
 
-        // const openaiProvider = createOpenAI({
-        //     apiKey: apiKey
-        // });
+        const openaiProvider = createOpenAI({
+            apiKey: String(apiKey),
+        })
 
         const result = await generateText({
-            model: openai("gpt-5"),
+            model: openaiProvider("gpt-3.5-turbo"),
             system: compiledSystemPrompt,
             prompt: compiledUserPrompt,
             apiKey
