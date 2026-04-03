@@ -25,19 +25,51 @@ const formatDate = (isoDate) => {
   return date.toLocaleString();
 };
 
+const GOOGLE_DRIVE_FOLDER_MIME_TYPE = 'application/vnd.google-apps.folder';
+
+const TRIGGER_EVENT_OPTIONS = [
+  { value: 'file_created', label: 'File Created' },
+  { value: 'file_updated', label: 'File Updated' },
+  { value: 'file_deleted', label: 'File Deleted' },
+  { value: 'folder_created', label: 'Folder Created' },
+];
+
+const ACTION_EVENT_GROUPS = [
+  {
+    label: 'Folder Actions',
+    options: [
+      { value: 'create_folder', label: 'Create Folder' },
+      { value: 'delete_folder', label: 'Delete Folder' },
+    ],
+  },
+  {
+    label: 'File Actions',
+    options: [
+      { value: 'upload_file', label: 'Upload File' },
+      { value: 'delete_file', label: 'Delete File' },
+    ],
+  },
+];
+
 const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
   const { setIsConfigSidebarClose } = useEditorUIStore();
+  const isTriggerNode = selectedNode?.type === 'trigger';
+  const isActionNode = selectedNode?.type === 'action';
 
   const {
     register,
     handleSubmit,
     watch,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
       variable: '',
       driveId: '',
+      event: '',
+      folderId: '',
+      fileId: '',
     },
   });
 
@@ -48,17 +80,57 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
     reset({
       variable: selectedNode?.data?.config?.variable || '',
       driveId: prefilledDriveId,
+      event:
+        selectedNode?.data?.config?.event ||
+        (isTriggerNode ? TRIGGER_EVENT_OPTIONS[0].value : ACTION_EVENT_GROUPS[0].options[0].value),
+      folderId: selectedNode?.data?.config?.folderId || '',
+      fileId: selectedNode?.data?.config?.fileId || '',
     });
-  }, [data, reset, selectedNode?.data?.config?.driveId, selectedNode?.data?.config?.variable]);
+  }, [
+    data,
+    isTriggerNode,
+    reset,
+    selectedNode?.data?.config?.driveId,
+    selectedNode?.data?.config?.event,
+    selectedNode?.data?.config?.fileId,
+    selectedNode?.data?.config?.folderId,
+    selectedNode?.data?.config?.variable,
+  ]);
 
   const watchVariable = watch('variable') || '';
   const selectedDriveId = watch('driveId');
+  const selectedFolderId = watch('folderId');
+  const selectedFileId = watch('fileId');
 
   const selectedDrive = useMemo(() => {
     return data.find((item) => item.external_id === selectedDriveId) || data[0];
   }, [data, selectedDriveId]);
 
-  const selectedDriveFiles = selectedDrive?.metadata?.files || [];
+  const selectedDriveFiles = useMemo(() => selectedDrive?.metadata?.files || [], [selectedDrive?.metadata?.files]);
+  const availableFolders = useMemo(
+    () => selectedDriveFiles.filter((file) => file.mimeType === GOOGLE_DRIVE_FOLDER_MIME_TYPE),
+    [selectedDriveFiles]
+  );
+
+  const availableFiles = useMemo(() => {
+    const filesOnly = selectedDriveFiles.filter((file) => file.mimeType !== GOOGLE_DRIVE_FOLDER_MIME_TYPE);
+
+    if (selectedFolderId) {
+      return filesOnly.filter((file) => Array.isArray(file.parents) && file.parents.includes(selectedFolderId));
+    }
+
+    // When no folder is selected in action mode, treat this as "My root files" in UI.
+    return filesOnly;
+  }, [selectedDriveFiles, selectedFolderId]);
+
+  useEffect(() => {
+    if (!isActionNode) return;
+
+    const selectedFileExists = availableFiles.some((file) => file.fileId === selectedFileId);
+    if (!selectedFileExists) {
+      setValue('fileId', availableFiles[0]?.fileId || '');
+    }
+  }, [availableFiles, isActionNode, selectedFileId, setValue]);
 
   const onSubmit = async (formData) => {
     const selectedDriveItem = data.find((item) => item.external_id === formData.driveId);
@@ -130,13 +202,125 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
         </section> */}
 
         <section className="space-y-3">
-        <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
-            <FolderOpen size={16} /> ALL Files
-        </label>
-          {/* <h4 className="text-sm font-semibold text-zinc-100">Drive Files </h4> */}
+          <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
+            <FolderOpen size={16} /> Connected Drive
+          </label>
+          <div className="relative">
+            <FolderOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+            <select
+              {...register('driveId', { required: true })}
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B73E8]/50 appearance-none transition-all cursor-pointer hover:bg-zinc-800/50"
+            >
+              <option value="" disabled>Select Drive account</option>
+              {data.map((drive) => (
+                <option key={drive.external_id} value={drive.external_id}>
+                  {drive.name || drive.email || drive.external_id}
+                </option>
+              ))}
+            </select>
+            <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
+          </div>
+        </section>
+
+        <section className="space-y-3">
+          <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
+            <FileText size={16} /> Event
+          </label>
+          <div className="relative">
+            <FileText className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+            <select
+              {...register('event', { required: true })}
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B73E8]/50 appearance-none transition-all cursor-pointer hover:bg-zinc-800/50"
+            >
+              {isTriggerNode &&
+                TRIGGER_EVENT_OPTIONS.map((eventOption) => (
+                  <option key={eventOption.value} value={eventOption.value}>
+                    {eventOption.label}
+                  </option>
+                ))}
+
+              {isActionNode &&
+                ACTION_EVENT_GROUPS.map((group) => (
+                  <optgroup key={group.label} label={group.label}>
+                    {group.options.map((eventOption) => (
+                      <option key={eventOption.value} value={eventOption.value}>
+                        {eventOption.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+            </select>
+            <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
+          </div>
+        </section>
+
+        <section className="space-y-3">
+          <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
+            <FolderOpen size={16} /> Folder (Optional)
+          </label>
+          <div className="relative">
+            <FolderOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+            <select
+              {...register('folderId')}
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B73E8]/50 appearance-none transition-all cursor-pointer hover:bg-zinc-800/50"
+            >
+              <option value="">No folder selected</option>
+              {availableFolders.map((folder) => (
+                <option key={folder.fileId} value={folder.fileId}>
+                  {folder.name || 'Untitled folder'}
+                </option>
+              ))}
+            </select>
+            <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
+          </div>
+          {isTriggerNode ? (
+            <p className="text-xs text-zinc-400">
+              {selectedFolderId
+                ? 'This trigger will watch the selected folder only.'
+                : 'No folder selected — this trigger will watch your entire Drive.'}
+            </p>
+          ) : (
+            <p className="text-xs text-zinc-400">
+              {selectedFolderId
+                ? 'Selected folder: showing files for this folder.'
+                : 'No folder selected: showing files from your Drive root view.'}
+            </p>
+          )}
+        </section>
+
+        {isActionNode && (
+          <section className="space-y-3">
+            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
+              <FileText size={16} /> File
+            </label>
+            <div className="relative">
+              <FileText className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <select
+                {...register('fileId')}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B73E8]/50 appearance-none transition-all cursor-pointer hover:bg-zinc-800/50"
+              >
+                {availableFiles.length === 0 ? (
+                  <option value="">No files available</option>
+                ) : (
+                  availableFiles.map((file) => (
+                    <option key={file.fileId} value={file.fileId}>
+                      {file.name || 'Unnamed file'}
+                    </option>
+                  ))
+                )}
+              </select>
+              <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
+            </div>
+          </section>
+        )}
+
+        <section className="space-y-3">
+          <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
+            <FolderOpen size={16} /> Files
+          </label>
           <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-            {selectedDriveFiles.length > 0 ? (
-              selectedDriveFiles.map((file) => (
+            {availableFiles.length > 0 ? (
+              availableFiles.map((file) => (
                 <div key={file.fileId} className="border border-zinc-800 rounded-lg p-3 bg-zinc-900/40">
                   <div className="flex items-center gap-2 text-zinc-100">
                     <FileText size={14} className="text-blue-400" />
@@ -159,7 +343,7 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
               ))
             ) : (
               <div className="border border-dashed border-zinc-700 rounded-lg p-3 text-xs text-zinc-400">
-                No files found in backend response for this Drive account.
+                No files available for the selected folder.
               </div>
             )}
           </div>

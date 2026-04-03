@@ -15,7 +15,7 @@ const getDriveFilesMetadata = async (accessToken) => {          // TODOs : handl
         params: {
             pageSize: 50,
             orderBy: "modifiedTime desc",
-            fields: "files(id,name,mimeType,size,modifiedTime,webViewLink)",
+            fields: "files(id,name,mimeType,size,modifiedTime,webViewLink,parents)",
             supportsAllDrives: true,
             includeItemsFromAllDrives: true,
         },
@@ -28,6 +28,7 @@ const getDriveFilesMetadata = async (accessToken) => {          // TODOs : handl
         size: file.size || null,
         modifiedTime: file.modifiedTime,
         webViewLink: file.webViewLink || null,
+        parents: file.parents || [],
     }));
 };
 
