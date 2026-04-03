@@ -63,11 +63,6 @@ const GoogleDriveConfig = ({ selectedNode, onClose, setNodeConfig }) => {
         <CloseBtn onClose={onClose} />
       </div>
 
-      <div className="flex items-center gap-2 px-4 mt-3 relative text-xs text-blue-400">
-        <NotebookPen size={20} />
-        After connection, all connected Google Drive accounts returned by backend are shown below.
-      </div>
-
       {Array.isArray(data) && data.length > 0 ? (
         <ConfigState
           data={data}
