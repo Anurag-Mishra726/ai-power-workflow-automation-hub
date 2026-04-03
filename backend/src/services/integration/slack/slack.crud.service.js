@@ -41,7 +41,7 @@ const getSlackChannels = async (accessToken) => {
     return channels;
 };
 
-export const getIntegration = async(userId, provider) => {
+export const getSlackIntegration = async(userId, provider) => {
     const data = await Integration.getIntegration({userId, provider});
 
     if (data.length == 0) {

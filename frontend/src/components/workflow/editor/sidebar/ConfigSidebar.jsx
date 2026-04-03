@@ -7,6 +7,7 @@ import GeminiConfig from "../config-panels/ai/gemini/GeminiConfig";
 import PerplexityConfig from "../config-panels/ai/perplexity/PerplexityConfig";
 import OpenAiConfig from "../config-panels/ai/openai/OpenAiConfig";
 import SlackConfig from "../config-panels/slack/SlackConfig";
+import GoogleDriveConfig from "../config-panels/googleDrive/GoogleDriveConfig";
 
 const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
 
@@ -40,6 +41,9 @@ const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
 
     case "slack": 
       return <SlackConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} /> ;
+
+    case "googleDrive":
+      return <GoogleDriveConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
 
     default: return <DefaultConfig onClose={onClose} />;
   }

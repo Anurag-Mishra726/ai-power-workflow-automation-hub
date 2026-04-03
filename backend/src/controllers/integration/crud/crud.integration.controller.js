@@ -1,4 +1,3 @@
-import { getIntegration } from "../../../services/integration/slack/slack.crud.service.js";
 import { integrationCRUD } from "../../../services/integration/utils/integration.service.js";
 
 export const getIntegrationController = async (req, res) => {

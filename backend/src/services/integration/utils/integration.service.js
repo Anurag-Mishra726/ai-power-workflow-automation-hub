@@ -1,11 +1,12 @@
 import { AppError } from "../../../utils/AppErrors.js";
 
 import { getSlackAuthUrl, handleSlackCallback, saveSlackIntegration } from "../slack/slack.auth.service.js";
-import { getIntegration } from "../slack/slack.crud.service.js";
+import { getSlackIntegration } from "../slack/slack.crud.service.js";
 
 import { getGoogleAuthUrl, handleGoogleCallback, saveGoogleIntegration } from "../google/google.auth.service.js";
 
 import { getGithubAuthUrl, handleGithubCallback, saveGithubIntegration } from "../github/github.auth.service.js";
+import { getGoogleIntegration } from "../google/google.crud.service.js";
 
 const getProviderUrl = {
     slack: getSlackAuthUrl,
@@ -32,7 +33,11 @@ const handleInsertToken = {
 }
 
 const handleCRUD = {
-    slack: getIntegration
+    slack: getSlackIntegration,
+    googleDrive: getGoogleIntegration,
+    gmail: getGoogleIntegration,
+    googleForm: getGoogleIntegration,
+    
 }
 
 

@@ -7,7 +7,7 @@ const googleApi = axios.create({
     timeout: 10000,
 });
 
-const getDriveFilesMetadata = async (accessToken) => {
+const getDriveFilesMetadata = async (accessToken) => {          // TODOs : handle pagination, in the nextPageToekn there is token to get the more data if the limit exceeds 50 files, also handle the case when the file is in shared drive.
     const response = await googleApi.get("/drive/v3/files", {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -51,7 +51,7 @@ const getGmailMetadata = async (accessToken) => {
                 maxResults: 20,
             },
         }),
-    ]);
+    ])
 
     return {
         profile: {
@@ -95,6 +95,7 @@ const getGoogleFormsMetadata = async (accessToken) => {
 };
 
 const getProviderMetadata = async (provider, accessToken) => {
+    //console.log(accessToken);
     if (provider === "googleDrive") {
         return {
             files: await getDriveFilesMetadata(accessToken),
@@ -115,7 +116,7 @@ const getProviderMetadata = async (provider, accessToken) => {
 };
 
 export const getGoogleIntegration = async (userId, provider) => {
-    const data = await Integration.getIntegration({ userId, provider });
+    const data = await Integration.getIntegration({ userId, provider: "google" });
 
     if (data.length === 0) {
         return {
@@ -135,6 +136,8 @@ export const getGoogleIntegration = async (userId, provider) => {
                 metadata: await getProviderMetadata(provider, integration.access_token),
             }))
         );
+
+        console.log(integrationsWithMetadata);
 
         return {
             success: true,

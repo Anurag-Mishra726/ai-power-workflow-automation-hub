@@ -34,11 +34,13 @@ const BaseNodeSchema = z.object({
         triggerType: z.enum([
             "manual", 
             "http",
-            "googleForm",
             "geminiAI",
             "openAI",
             "perplexityAI",
-            "slack"
+            "slack",
+            "googleForm",
+            "googleDrive",
+            "gmail",
         ]).optional(),
         summary: z.string().optional().or(z.literal("")),
         config: z.any(),
