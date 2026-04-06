@@ -8,6 +8,7 @@ import PerplexityConfig from "../config-panels/ai/perplexity/PerplexityConfig";
 import OpenAiConfig from "../config-panels/ai/openai/OpenAiConfig";
 import SlackConfig from "../config-panels/slack/SlackConfig";
 import GoogleDriveConfig from "../config-panels/googleDrive/GoogleDriveConfig";
+import GmailConfigState from "../config-panels/gmail/GmailConfigState";
 
 const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
 
@@ -44,6 +45,9 @@ const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
 
     case "googleDrive":
       return <GoogleDriveConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
+
+    case "gmail":
+      return <GmailConfigState selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
 
     default: return <DefaultConfig onClose={onClose} />;
   }

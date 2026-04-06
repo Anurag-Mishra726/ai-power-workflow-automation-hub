@@ -98,13 +98,17 @@ export const nodeConfigMap = {
     },
 
     gmail: {
-        buildSummary: () => "Gmail",
+        buildSummary: (config) => {
+            return config?.event ? `Gmail: ${config.event}` : defaultSummary
+        },
 
         isComplete: () => true,
     },
 
     googleDrive: {
-        buildSummary: () => "Google Drive",
+        buildSummary: (config) => {
+            return config?.event ? `Drive: ${config.event}` : defaultSummary;   // Improve the summary by showing selected event like File create or File delet now it is like 
+        },
 
         isComplete: () => true,
     }

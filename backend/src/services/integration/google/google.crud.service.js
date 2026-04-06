@@ -7,7 +7,7 @@ const googleApi = axios.create({
     timeout: 10000,
 });
 
-const getDriveFilesMetadata = async (accessToken) => {          // TODOs : handle pagination, in the nextPageToekn there is token to get the more data if the limit exceeds 50 files, also handle the case when the file is in shared drive.
+const getDriveFilesMetadata = async (accessToken) => {          // TODOs : handle pagination, in the nextPageToken there is token to get the more data if the limit exceeds 50 files, also handle the case when the file is in shared drive.
     const response = await googleApi.get("/drive/v3/files", {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -33,42 +33,69 @@ const getDriveFilesMetadata = async (accessToken) => {          // TODOs : handl
 };
 
 const getGmailMetadata = async (accessToken) => {
+    const headers = {
+        Authorization: `Bearer ${accessToken}`,
+    };
+
     const [profileResponse, labelsResponse, messagesResponse] = await Promise.all([
-        googleApi.get("/gmail/v1/users/me/profile", {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        }),
-        googleApi.get("/gmail/v1/users/me/labels", {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        }),
+        googleApi.get("/gmail/v1/users/me/profile", { headers }),
+        googleApi.get("/gmail/v1/users/me/labels", { headers }),
         googleApi.get("/gmail/v1/users/me/messages", {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-            params: {
-                maxResults: 20,
-            },
+        headers,
+        params: {
+            maxResults: 20,
+        },
         }),
-    ])
+    ]);
+
+    const messages = messagesResponse.data.messages || [];
+
+    const messageDetails = await Promise.all(
+        messages.map((msg) =>
+        googleApi.get(`/gmail/v1/users/me/messages/${msg.id}`, {
+            headers,
+            params: {
+            format: "metadata",
+            metadataHeaders: ["Subject", "From"],
+            },
+        })
+        )
+    );
+
+    const recentMessages = messageDetails.map((res) => {
+        const headers = res.data.payload?.headers || [];
+
+        const subject =
+        headers.find((h) => h.name === "Subject")?.value || "No Subject";
+
+        const fromRaw =
+        headers.find((h) => h.name === "From")?.value || "Unknown";
+
+        const from = fromRaw.replace(/<.*>/, "").trim();
+
+        return {
+        id: res.data.id,
+        subject,
+        from,
+        snippet: res.data.snippet,
+        };
+    });
 
     return {
         profile: {
-            emailAddress: profileResponse.data.emailAddress,
-            historyId: profileResponse.data.historyId,
-            messagesTotal: profileResponse.data.messagesTotal,
-            threadsTotal: profileResponse.data.threadsTotal,
+        emailAddress: profileResponse.data.emailAddress,
+        historyId: profileResponse.data.historyId,
+        messagesTotal: profileResponse.data.messagesTotal,
+        threadsTotal: profileResponse.data.threadsTotal,
         },
         labels: (labelsResponse.data.labels || []).map((label) => ({
-            id: label.id,
-            name: label.name,
-            type: label.type,
-            messagesTotal: label.messagesTotal,
-            messagesUnread: label.messagesUnread,
+        id: label.id,
+        name: label.name,
+        type: label.type,
+        messagesTotal: label.messagesTotal,
+        messagesUnread: label.messagesUnread,
         })),
-        recentMessages: messagesResponse.data.messages || [],
+        recentMessages,
     };
 };
 
@@ -137,8 +164,6 @@ export const getGoogleIntegration = async (userId, provider) => {
                 metadata: await getProviderMetadata(provider, integration.access_token),
             }))
         );
-
-        console.log(integrationsWithMetadata);
 
         return {
             success: true,
