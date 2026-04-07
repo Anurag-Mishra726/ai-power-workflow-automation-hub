@@ -10,6 +10,7 @@ import {
   Trash2,
   Plus,
   Text,
+  Tags,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useEditorUIStore from '@/stores/workflowEditorStore';
@@ -52,13 +53,14 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
   useEffect(() => {
     if (!Array.isArray(data) || data.length === 0) return;
 
+    const defaultLabel = data[0]?.metadata?.labels?.[0]?.id || 'INBOX';
     const defaultEvent = isTriggerNode ? GMAIL_TRIGGER_EVENT_OPTIONS[0].value : GMAIL_ACTION_EVENT_OPTIONS[0].value;
 
     reset({
       variable: selectedConfig?.variable || '',
       gmailAccountId: selectedConfig?.gmailAccountId || data[0]?.external_id || '',
       event: selectedConfig?.event || defaultEvent,
-      label: selectedConfig?.label || '',
+      label: selectedConfig?.label || defaultLabel,
       senderEmail: selectedConfig?.senderEmail || '',
       to: selectedConfig?.to || '',
       subject: selectedConfig?.subject || '',
@@ -75,9 +77,15 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
     () => data.find((account) => account.external_id === selectedGmailAccountId) || data[0],
     [data, selectedGmailAccountId]
   );
+
   const availableEmails = useMemo(
     () => selectedGmailAccount?.metadata?.recentMessages || [],
     [selectedGmailAccount]
+  );
+
+  const availableLabels = useMemo( 
+    () => data[0]?.metadata?.labels || [],
+    [data]
   );
 
   useEffect(() => {
@@ -176,7 +184,17 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
             <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
               <Text size={16} /> Label (Optional)
             </label>
-            <input {...register('label')} placeholder="e.g. INBOX" className={inputClass} />
+            <div className="relative">
+              <Tags className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <select {...register('label', { required: true })} className={selectClass}>
+                {availableLabels.map((label) => (
+                  <option key={label.id} value={label.id}>
+                    {label.id || label.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
+            </div>
           </section>
         )}
 

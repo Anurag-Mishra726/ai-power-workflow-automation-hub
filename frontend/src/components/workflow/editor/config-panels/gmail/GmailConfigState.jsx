@@ -31,6 +31,7 @@ const GmailConfigState = ({ selectedNode, onClose, setNodeConfig }) => {
   if (isError) {
     return (
       <div className="absolute top-0 right-0 h-full w-1/3 bg-black border border-zinc-700 rounded-lg text-white z-50 flex flex-col justify-center items-center gap-3">
+        <CloseBtn onClose={onClose} />
         <CircleX size={30} className="animate-pulse text-red-600" />
         <p className="text-xl">Something went wrong!</p>
         <button
