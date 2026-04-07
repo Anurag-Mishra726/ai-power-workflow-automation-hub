@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { Braces, ChevronRight, FileText, FolderOpen, Plus, CalendarPlus } from 'lucide-react';
+import { Braces, ChevronRight, FileText, FolderOpen, Plus, CalendarPlus, AtSign } from 'lucide-react';
+import { SiGoogledrive } from "react-icons/si";
+
 import toast from 'react-hot-toast';
 import useEditorUIStore from '@/stores/workflowEditorStore';
 import { GOOGLE_DRIVE_ACTION_EVENT_OPTIONS, GOOGLE_DRIVE_TRIGGER_EVENT_OPTIONS } from '@/components/workflow/utils/events';
@@ -177,6 +179,23 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
             <span className="text-[12px] text-zinc-400"> ← Copy this syntax</span>
           </p>
           {errors.variable && <p className={errorClass}>{errors.variable.message}</p>}
+        </section>
+
+        <section className="space-y-3">
+          <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
+            <SiGoogledrive size={16} /> Google Drive Account
+          </label>
+          <div className="relative">
+            <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+            <select {...register('gmailAccountId', { required: true })} className={selectClass}>
+              {data.map((account) => (
+                <option key={account.external_id} value={account.external_id}>
+                  {account.name || account.metadata?.profile?.emailAddress || 'Gmail Account'}
+                </option>
+              ))}
+            </select>
+            <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
+          </div>
         </section>
 
         {/* Event */}
