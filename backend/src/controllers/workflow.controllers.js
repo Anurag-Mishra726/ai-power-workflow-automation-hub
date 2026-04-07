@@ -4,7 +4,7 @@ import {
     getWorkflowMetadata, 
     getWorkflowGraph, 
     deleteWorkflow,
-} from "../services/workflow/repositories/workflow.repositories.js";
+} from "../services/workflow/crud/workflow.repositories.js";
 
 export const getWorkflowId = (req, res) => {
     const workflowId = generateWorkflowId();

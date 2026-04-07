@@ -6,7 +6,7 @@ import cors from "cors";
 
 import {serve} from "inngest/express";
 import {inngest} from "./src/inngest/client.js";
-import { executeWorkflow } from "./src/inngest/functions.js";
+import { executeWorkflow, pollWorkflowTriggers } from "./src/inngest/functions.js";
 import { getSubscriptionToken } from "@inngest/realtime";
 import { httpRequestChannel } from "./src/inngest/workflowStatus.js";
 
@@ -37,7 +37,7 @@ app.use(cookieParser());
 
 app.use("/api/inngest", serve({
     client: inngest,
-    functions : [executeWorkflow]
+    functions : [executeWorkflow, pollWorkflowTriggers ]
 }));
 
 app.get("/", (req, res) => {

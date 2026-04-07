@@ -7,9 +7,9 @@ export const saveWorkflowData = async (userData, saveWorkflowData) => {
     const {workflowId, workflowName, nodes, edges} = saveWorkflowData;
     const userId = userData.userId
     const triggerType = nodes[0].data.triggerType;
-    console.log(nodes);
     const nodeId = nodes[0].id;
     const configJson = nodes[0].data.config || {};
+    const lastChecked = new Date();
 
     const connection = await pool.getConnection();
 
@@ -38,7 +38,8 @@ export const saveWorkflowData = async (userData, saveWorkflowData) => {
                 workflowId,
                 nodeId,
                 triggerType,
-                configJson
+                configJson,
+                lastChecked
             }, connection );
 
         } else {
@@ -60,7 +61,8 @@ export const saveWorkflowData = async (userData, saveWorkflowData) => {
                 workflowId,
                 nodeId,
                 triggerType,
-                configJson
+                configJson,
+                lastChecked
             }, connection );
         }
 

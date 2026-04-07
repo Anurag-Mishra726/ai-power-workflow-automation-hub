@@ -4,10 +4,8 @@ import { Workflow } from "../models/workflow.model.js";
 import { sortWorkflowNodes } from "../utils/toposortNodes.js";
 import { getNodeExecutor } from "../services/workflow/nodeExecutor/executorRegistry.js";
 import { httpRequestChannel } from "./workflowStatus.js";
-
-// import {gemini, perplexity} from "../ai/generateText.js";
-// import { generateText } from "ai";
-// import { perplexitySonar } from "../ai/perplexity.js";
+//import { processWorkflowPolling } from "../services/pollingService.js";
+import { processWorkflowPolling } from "../services/polling/polling.service.js";
 
 export const executeWorkflow = inngest.createFunction(
   { id: "execute-workflow" },
@@ -65,11 +63,19 @@ export const executeWorkflow = inngest.createFunction(
 );
 
 
+export const pollWorkflowTriggers = inngest.createFunction(
+  { id: "poll-workflow-triggers" },
+  { cron: "*/1 * * * *" },
+  async ({ step }) => {
+    const result = await step.run("poll-gmail-drive-triggers", async () => {
+      console.log("Polling workflow triggers...");
+      return processWorkflowPolling();
+    });
+
+    return result;
+  }
+);
 
 
-// if (!result || typeof result !== "object" || !("output" in result)) {
-//   throw new NonRetriableError(
-//     `Invalid execution result from node ${node.id}`
-//   );
-// }
-// console.log("result ", result);
+
+

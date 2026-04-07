@@ -142,21 +142,49 @@ export const Workflow = {
         return;
     },
 
-    insertWorkflowTriggerTypes: async ({userId, workflowId, nodeId, triggerType, configJson}, client = pool) => {
+    insertWorkflowTriggerTypes: async ({userId, workflowId, nodeId, triggerType, configJson, lastChecked}, client = pool) => {
         const rows = await query(
-            `INSERT INTO workflow_triggers (user_id, workflow_id, node_id, trigger_type, config_json) 
-            VALUES (?, ?, ?, ?, ?)
+            `INSERT INTO workflow_triggers (user_id, workflow_id, node_id, trigger_type, config_json, last_checked) 
+            VALUES (?, ?, ?, ?, ?, ?)
             `,
-            [userId, workflowId, nodeId, triggerType, configJson],
+            [userId, workflowId, nodeId, triggerType, configJson, lastChecked],
             client
         );
     },
 
-    updateWorkflowTriggerTypes: async ({userId, workflowId, nodeId, triggerType, configJson}, client = pool) => {
+    updateWorkflowTriggerTypes: async ({userId, workflowId, nodeId, triggerType, configJson, lastChecked}, client = pool) => {
         const rows = await query(
-            `UPDATE workflow_triggers SET trigger_type = ?, config_json = ? WHERE user_id = ? AND workflow_id = ? AND node_id = ?`,
-            [triggerType, configJson, userId, workflowId, nodeId],
+            `UPDATE workflow_triggers SET trigger_type = ?, config_json = ?, last_checked = ? WHERE user_id = ? AND workflow_id = ? AND node_id = ?`,
+            [triggerType, configJson, lastChecked, userId, workflowId, nodeId],
             client
         );
+    },
+
+    getDuePollingTriggers: async (client = pool) => {
+        const rows = await query(
+            `SELECT id, user_id, workflow_id, node_id, trigger_type, config_json, poll_interval, last_checked
+            FROM workflow_triggers
+            WHERE is_active = TRUE
+                AND trigger_type IN ('gmail', 'googleDrive')
+                AND (next_poll_at IS NULL OR next_poll_at <= NOW())
+            ORDER BY next_poll_at ASC`,
+            [],
+            client
+        );
+
+        return rows;
+    },
+
+    updatePollingCheckpoint: async ({ triggerId, lastChecked, pollInterval }, client = pool) => {
+        const rows = await query(
+            `UPDATE workflow_triggers
+            SET last_checked = ?,
+                next_poll_at = DATE_ADD(?, INTERVAL ? SECOND)
+            WHERE id = ?`,
+            [lastChecked, lastChecked, pollInterval, triggerId],
+            client
+        );
+
+        return rows;
     },
 }
