@@ -140,5 +140,23 @@ export const Workflow = {
             client
         );
         return;
-    }
+    },
+
+    insertWorkflowTriggerTypes: async ({userId, workflowId, nodeId, triggerType, configJson}, client = pool) => {
+        const rows = await query(
+            `INSERT INTO workflow_triggers (user_id, workflow_id, node_id, trigger_type, config_json) 
+            VALUES (?, ?, ?, ?, ?)
+            `,
+            [userId, workflowId, nodeId, triggerType, configJson],
+            client
+        );
+    },
+
+    updateWorkflowTriggerTypes: async ({userId, workflowId, nodeId, triggerType, configJson}, client = pool) => {
+        const rows = await query(
+            `UPDATE workflow_triggers SET trigger_type = ?, config_json = ? WHERE user_id = ? AND workflow_id = ? AND node_id = ?`,
+            [triggerType, configJson, userId, workflowId, nodeId],
+            client
+        );
+    },
 }

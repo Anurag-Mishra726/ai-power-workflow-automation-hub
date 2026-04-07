@@ -7,6 +7,9 @@ export const saveWorkflowData = async (userData, saveWorkflowData) => {
     const {workflowId, workflowName, nodes, edges} = saveWorkflowData;
     const userId = userData.userId
     const triggerType = nodes[0].data.triggerType;
+    console.log(nodes);
+    const nodeId = nodes[0].id;
+    const configJson = nodes[0].data.config || {};
 
     const connection = await pool.getConnection();
 
@@ -30,6 +33,14 @@ export const saveWorkflowData = async (userData, saveWorkflowData) => {
                 edges
             }, connection );
 
+            await Workflow.insertWorkflowTriggerTypes({
+                userId,
+                workflowId,
+                nodeId,
+                triggerType,
+                configJson
+            }, connection );
+
         } else {
             await Workflow.updateWorkflowsData({
                 workflowId,
@@ -42,6 +53,14 @@ export const saveWorkflowData = async (userData, saveWorkflowData) => {
                 workflowId,
                 nodes,
                 edges
+            }, connection );
+            
+            await Workflow.updateWorkflowTriggerTypes({
+                userId,
+                workflowId,
+                nodeId,
+                triggerType,
+                configJson
             }, connection );
         }
 
