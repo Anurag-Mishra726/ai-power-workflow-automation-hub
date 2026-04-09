@@ -8,138 +8,135 @@ const googleApi = axios.create({
   timeout: 15000,
 });
 
-const safeJson = (value) => {
-  if (!value) return {};
-  if (typeof value === "object") return value;
-
-  try {
-    return JSON.parse(value);
-  } catch {
-    return {};
-  }
-};
-
 const getGoogleAccessToken = async (userId) => {
   const integration = await Integration.getIntegration({ userId, provider: "google" });
   return integration[0]?.access_token || null;
 };
 
-const fetchGmailDelta = async ( accessToken, lastChecked ) => {
-    const lastCheckedSeconds = Math.floor(new Date(lastChecked).getTime() / 1000);
+const fetchGmailData = async ( accessToken, lastChecked, senderEmail, label ) => {
 
-    const response = await googleApi.get("/gmail/v1/users/me/messages", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-        params: {
-        maxResults: 10,
-        q: `after:${lastCheckedSeconds} label:INBOX`,
-        },
-    });
-    console.log("Gmail API response: ", response.data);
-    const currentIds = (response.data.messages || []).map((message) => message.id);
-    console.log(currentIds);
+  const lastCheckedSeconds = Math.floor(new Date(lastChecked).getTime() / 1000);
+  let searchQuery = `after:${lastCheckedSeconds} label:${label}`;
 
-    return {
-        ids: currentIds.length > 0 ? currentIds : [],
-        newLastChecked: new Date().toISOString(),
-    }
+  if (senderEmail && senderEmail.trim() !== '') {
+    searchQuery += ` from:${senderEmail}`;
+  }    
+  console.log("Serch : ", searchQuery);
+  
+  const response = await googleApi.get("/gmail/v1/users/me/messages", {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    params: {
+      maxResults: 10,
+      q: searchQuery,
+    },
+  });
+
+  console.log("Gmail API response: ", response.data);
+  const currentIds = (response.data.messages || []).map((message) => message.id);
+  console.log(currentIds);
+
+  return {
+      ids: currentIds.length > 0 ? currentIds : [],
+      newLastChecked: new Date().toISOString(),
+  }
 };
 
-const fetchDriveDelta = async (accessToken, previousSnapshot = {}) => {
+const fetchDriveData = async (accessToken, lastChecked, folderId, event) => {
+
+  const lastCheckedISO = new Date(lastChecked).toISOString();
+  let queryPart = [
+    `modifiedTime > '${lastCheckedISO}'` 
+  ];
+
+  if (folderId && folderId.trim() !== '') {
+    queryPart.push(`'${folderId.trim()}' in parents`);
+  }
+
+  if (["file_deleted", "folder_deleted"].includes(event)) {
+    queryPart.push(`trashed = true`);
+  }else{
+    queryPart.push(`trashed = false`);
+  }
+
+  const searchQuery = queryPart.join(' and ')
+  console.log("Drive Query : ", searchQuery);
   const response = await googleApi.get("/drive/v3/files", {
     headers: { Authorization: `Bearer ${accessToken}` },
     params: {
-      pageSize: 50,
+      pageSize: 10,
       orderBy: "modifiedTime desc",
-      fields: "files(id,name,mimeType,modifiedTime,webViewLink)",
+      fields: "nextPageToken, files(id, name ,mimeType, modifiedTime)",
       supportsAllDrives: true,
       includeItemsFromAllDrives: true,
-      q: "trashed = false",
+      q: searchQuery,
     },
   });
-
+  console.log("Drive API response: ", response.data);
   const files = response.data.files || [];
-  const currentMap = Object.fromEntries(
-    files.map((file) => [file.id, file.modifiedTime])
-  );
+  console.log("Drive Polling Data : ", files);
 
-  const previousMap = previousSnapshot.fileMap || {};
-  const changedFiles = files.filter((file) => {
-    const oldModified = previousMap[file.id];
-    return !oldModified || oldModified !== file.modifiedTime;
-  });
-
-  return {
-    hasChanges: changedFiles.length > 0,
-    payload: {
-      files: changedFiles.map((file) => ({
-        id: file.id,
-        name: file.name,
-        mimeType: file.mimeType,
-        modifiedTime: file.modifiedTime,
-        webViewLink: file.webViewLink || null,
-      })),
-    },
-    nextSnapshot: { fileMap: currentMap },
-  };
+  return files
 };
 
 const runTriggerPolling = async (trigger) => {
 
-    const accessToken = await getGoogleAccessToken(trigger.user_id);
-    const lastChecked = trigger.lastChecked;
-    let deltaResult;
+  const accessToken = await getGoogleAccessToken(trigger.user_id);
+  const lastChecked = trigger.last_checked;
+  
+  let pollingResult;
 
-    if (!accessToken) {
-        return {
-        triggerId: trigger.id,
-        skipped: true,
-        reason: "No Google integration token found.",
-        configJson,
-        };
-    }
-
-    if (trigger.trigger_type === "gmail") {
-        deltaResult = await fetchGmailDelta(accessToken, lastChecked);
-    }
-
-    if (trigger.trigger_type === "googleDrive") {
-        deltaResult = await fetchDriveDelta(accessToken);
-    }
-
-    if (deltaResult) {
-        // await inngest.send({
-        //   name: "workflow/execute",
-        //   data: {
-        //     workflowId: trigger.workflow_id,
-        //     initialData: {
-        //       newData: deltaResult.payload,
-        //       triggerType: trigger.trigger_type,
-        //     },
-        //   },
-        // });
-        console.log(`Trigger ${trigger.id} has changes. Payload:`, deltaResult);
-    }
-    console.log(` hola Trigger ${trigger.id} has changes. Payload:`, deltaResult);
-    return {
-        triggerId: trigger.id,
-        deltaResult,
+  if (!accessToken) {
+      return {
+      triggerId: trigger.id,
+      skipped: true,
+      reason: "No Google integration token found.",
     };
+  }
+
+  if (trigger.trigger_type === "gmail") {
+    const senderEmail = trigger.config_json?.senderEmail || null;
+    const label = trigger.config_json?.label || 'INBOX';
+    pollingResult = await fetchGmailData(accessToken, lastChecked, senderEmail, label);
+  }
+
+  if (trigger.trigger_type === "googleDrive") {
+    const folderId = trigger.config_json?.folderId || null;
+    const event = trigger.config_json?.event || null;
+    pollingResult = await fetchDriveData(accessToken, lastChecked, folderId, event);
+  }
+
+  if (pollingResult) {
+    // await inngest.send({
+    //   name: "workflow/execute",
+    //   data: {
+    //     workflowId: trigger.workflow_id,
+    //     initialData: {
+    //       newData: pollingResult.payload,
+    //       triggerType: trigger.trigger_type,
+    //     },
+    //   },
+    // });
+  }
+
+  return {
+      triggerId: trigger.id,
+      pollingResult,
+  };
 };
 
 export const processWorkflowPolling = async () => {
-  const dueTriggers = await Workflow.getDuePollingTriggers();
-  
+
+  const polling = await Workflow.getPollingTriggers();
   const now = new Date();
 
-  for (const trigger of dueTriggers) {
+  for (const trigger of polling) {
     try {
-        const result = await runTriggerPolling(trigger);
+        await runTriggerPolling(trigger);
         
         await Workflow.updatePollingCheckpoint({
             triggerId: trigger.id,
-            configJson: result.configJson,
             lastChecked: now,
-            pollInterval: trigger.poll_interval || 600,
+            pollInterval: 15
         });
     } catch (error) {
         console.error(`Polling failed for trigger ${trigger.id}:`, error.message);
@@ -152,6 +149,6 @@ export const processWorkflowPolling = async () => {
   }
 
   return {
-    polledTriggers: dueTriggers.length,
+    polledTriggers: polling.length,
   };
 };

@@ -69,15 +69,3 @@ export const integrationCRUD = async (userId, provider) => {
     }
     return await fn(userId, provider);
 }
-
-// const data = {
-//   userId: 1,
-//   provider: "slack",
-//   teamId: "T0123456789",
-//   name: "AI-Powered Workflow Automation Hub",
-//   accessToken: "xoxp-1234567890-1234567890-1234567890123",
-//   tokenType: "bot",
-//   scope: "chat:write,channels:read,groups:read,im:read,mpim:read",
-//   refreshToken: "xoxr-1234567890-1234567890123-abcdef1234567890abcdef1234567890",
-// };
-

@@ -53,7 +53,7 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
   useEffect(() => {
     if (!Array.isArray(data) || data.length === 0) return;
 
-    const defaultLabel = data[0]?.metadata?.labels?.[0]?.id || 'INBOX';
+    const defaultLabel = data[0]?.metadata?.labels?.[0]?.id == 'INBOX' || 'INBOX';
     const defaultEvent = isTriggerNode ? GMAIL_TRIGGER_EVENT_OPTIONS[0].value : GMAIL_ACTION_EVENT_OPTIONS[0].value;
 
     reset({
@@ -110,6 +110,10 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
         selectedGmailAccount?.name || selectedGmailAccount?.metadata?.profile?.emailAddress || 'Gmail',
     };
 
+    if (cleanValues.event == "new_email") {
+      cleanValues.senderEmail = '';
+    }
+    console.log("Clean Values : ", cleanValues);
     const status = await setNodeConfig(cleanValues);
 
     if (status?.success) {
@@ -179,7 +183,7 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
           </div>
         </section>
 
-        {selectedEvent === 'new_email' && (
+        {isTriggerNode && (
           <section className="space-y-3">
             <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
               <Text size={16} /> Label (Optional)

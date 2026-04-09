@@ -91,7 +91,6 @@ export const handleGoogleCallback = async (code, userId) => {
         const name = id.name || null;                                   // if needed we can als store email: as id.email
         const expiryIn = new Date(Date.now() + data.expires_in * 1000);
 
-        console.log("DATA!!!!!! ", data);
         return {
             userId: userId,
             provider: "google",
