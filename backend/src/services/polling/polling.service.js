@@ -8,6 +8,33 @@ const googleApi = axios.create({
   timeout: 15000,
 });
 
+const getSafeIsoDate = (value) => {
+  const parsedDate = value ? new Date(value) : null;
+
+  if (!parsedDate || Number.isNaN(parsedDate.getTime())) {
+    return new Date(0).toISOString();
+  }
+
+  return parsedDate.toISOString();
+};
+
+const parseTriggerConfig = (config) => {
+  if (!config) return {};
+
+  if (typeof config === "object") return config;
+
+  if (typeof config === "string") {
+    try {
+      return JSON.parse(config);
+    } catch (error) {
+      console.warn("Failed to parse trigger config_json, using empty config.");
+      return {};
+    }
+  }
+
+  return {};
+};
+
 const getGoogleAccessToken = async (userId) => {
   const integration = await Integration.getIntegration({ userId, provider: "google" });
   return integration[0]?.access_token || null;
@@ -15,7 +42,8 @@ const getGoogleAccessToken = async (userId) => {
 
 const fetchGmailData = async ( accessToken, lastChecked, senderEmail, label ) => {
 
-  const lastCheckedSeconds = Math.floor(new Date(lastChecked).getTime() / 1000);
+  const lastCheckedSeconds = Math.floor(new Date(getSafeIsoDate(lastChecked)).getTime() / 1000);
+
   let searchQuery = `after:${lastCheckedSeconds} label:${label}`;
 
   if (senderEmail && senderEmail.trim() !== '') {
@@ -43,14 +71,30 @@ const fetchGmailData = async ( accessToken, lastChecked, senderEmail, label ) =>
 
 const fetchDriveData = async (accessToken, lastChecked, folderId, event) => {
 
-  const lastCheckedISO = new Date(lastChecked).toISOString();
-  let queryPart = [
-    `modifiedTime > '${lastCheckedISO}'` 
-  ];
+  const lastCheckedISO = getSafeIsoDate(lastChecked);
+  const queryPart = [];
+
+  // const isFileEvent = ["file_created", "file_updated", "file_deleted"].includes(event);
+  // const isFolderEvent = ["folder_created", "folder_deleted"].includes(event);
+
+  if (event === "file_created" || event === "folder_created") {
+    queryPart.push(`createdTime > '${lastCheckedISO}'`);
+  } else {
+    queryPart.push(`modifiedTime > '${lastCheckedISO}'`);
+  }
 
   if (folderId && folderId.trim() !== '') {
     queryPart.push(`'${folderId.trim()}' in parents`);
   }
+
+  // if (isFileEvent) {
+  //   queryPart.push(`mimeType != 'application/vnd.google-apps.folder'`);
+  // }
+
+  // if (isFolderEvent) {
+  //   queryPart.push(`mimeType = 'application/vnd.google-apps.folder'`);
+  // }
+
 
   if (["file_deleted", "folder_deleted"].includes(event)) {
     queryPart.push(`trashed = true`);
@@ -65,9 +109,10 @@ const fetchDriveData = async (accessToken, lastChecked, folderId, event) => {
     params: {
       pageSize: 10,
       orderBy: "modifiedTime desc",
-      fields: "nextPageToken, files(id, name ,mimeType, modifiedTime)",
+      fields: "nextPageToken, files(id,name,mimeType,createdTime,modifiedTime,trashed,parents)",
       supportsAllDrives: true,
       includeItemsFromAllDrives: true,
+      corpora: "allDrives",
       q: searchQuery,
     },
   });
@@ -75,13 +120,18 @@ const fetchDriveData = async (accessToken, lastChecked, folderId, event) => {
   const files = response.data.files || [];
   console.log("Drive Polling Data : ", files);
 
-  return files
+  return {
+    files,
+    ids: files.map((file) => file.id),
+    newLastChecked: new Date().toISOString(),
+  };
 };
 
 const runTriggerPolling = async (trigger) => {
 
   const accessToken = await getGoogleAccessToken(trigger.user_id);
   const lastChecked = trigger.last_checked;
+  const triggerConfig = parseTriggerConfig(trigger.config_json);
   
   let pollingResult;
 
@@ -94,8 +144,8 @@ const runTriggerPolling = async (trigger) => {
   }
 
   if (trigger.trigger_type === "gmail") {
-    const senderEmail = trigger.config_json?.senderEmail || null;
-    const label = trigger.config_json?.label || 'INBOX';
+    const senderEmail = triggerConfig?.senderEmail || null;
+    const label = triggerConfig?.label || 'INBOX';
     pollingResult = await fetchGmailData(accessToken, lastChecked, senderEmail, label);
   }
 
