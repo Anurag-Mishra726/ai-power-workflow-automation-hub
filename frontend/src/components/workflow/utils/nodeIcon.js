@@ -1,5 +1,5 @@
 import { RiOpenaiFill, RiPerplexityFill, RiGeminiFill } from "react-icons/ri";
-import { SiGoogleforms, SiSlack, SiGmail, SiGoogledrive,  } from "react-icons/si";
+import { SiGoogleforms, SiSlack, SiGmail, SiGoogledrive, SiGithub  } from "react-icons/si";
 import { SlGlobe } from "react-icons/sl";;
 import { FiMousePointer } from "react-icons/fi";
 
@@ -13,6 +13,7 @@ const IconMap = {
     openAI: RiOpenaiFill,
     perplexityAI: RiPerplexityFill,
     geminiAI: RiGeminiFill,
+    github: SiGithub,
 }
 
 export default IconMap;

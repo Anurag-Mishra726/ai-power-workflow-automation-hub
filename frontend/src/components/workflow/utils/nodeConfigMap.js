@@ -111,5 +111,15 @@ export const nodeConfigMap = {
         },
 
         isComplete: () => true,
-    }
+    },
+
+    github: {
+        buildSummary: (config) => {
+            const selected = config?.action || config?.event || config?.actionOrEvent;
+            return selected ? `GitHub: ${selected}` : defaultSummary;
+        },
+
+        isComplete: (config) => Boolean(config?.repository && (config?.action || config?.event || config?.actionOrEvent)),
+    },
+    
 }

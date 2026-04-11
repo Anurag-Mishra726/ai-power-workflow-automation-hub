@@ -141,7 +141,20 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
             <img src="/slack.svg" alt="Slack" height={32} width={32} />
             <div>
                 <h2 className="text-xl">Slack</h2>
-                <p className="text-zinc-400">Use send messages on workspace.</p>
+                <p className="text-zinc-400 text-sm">Use send messages on workspace.</p>
+            </div>
+        </div>
+
+        <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
+         hover:bg-zinc-800 cursor-pointer"
+         onClick={()=> {
+          handleOnClick("GitHub", "github");
+         }}
+         >
+            <img src="/github2.svg" alt="GitHub" height={35} width={35}  />
+            <div>
+                <h2 className="text-xl">GitHub</h2>
+                <p className="text-zinc-400 text-sm">Automate your development workflow.</p>
             </div>
         </div>
 
