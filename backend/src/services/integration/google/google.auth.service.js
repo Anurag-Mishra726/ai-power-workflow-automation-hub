@@ -12,7 +12,9 @@ const googleOauthScopes = {
         // Needed to show a "File Picker" or folder dropdown in your UI
         "https://www.googleapis.com/auth/drive.metadata.readonly",
         // If your users need to READ files they didn't create (e.g. for an AI summary)
-        "https://www.googleapis.com/auth/drive.readonly"
+        "https://www.googleapis.com/auth/drive.readonly",
+        // For monitoring changes across the drive (e.g. new files in a folder)
+        "https://www.googleapis.com/auth/drive.activity"
   ],
 
   gmail: [

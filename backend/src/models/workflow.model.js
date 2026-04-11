@@ -163,7 +163,7 @@ export const Workflow = {
 
     getPollingTriggers: async (client = pool) => {
         const rows = await query(
-            `SELECT id, user_id, workflow_id, node_id, trigger_type, config_json, poll_interval, last_checked
+            `SELECT id, user_id, workflow_id, node_id, trigger_type, page_token, config_json, poll_interval, last_checked
             FROM workflow_triggers
             WHERE is_active = TRUE
                 AND trigger_type IN ('gmail', 'googleDrive')
@@ -176,13 +176,14 @@ export const Workflow = {
         return rows;
     },
 
-    updatePollingCheckpoint: async ({ triggerId, lastChecked, pollInterval }, client = pool) => {
+    updatePollingCheckpoint: async ({ triggerId, pageToken, lastChecked, pollInterval }, client = pool) => {
         const rows = await query(
             `UPDATE workflow_triggers
-            SET last_checked = ?,
+            SET page_Token = ?,
+                last_checked = ?,
                 next_poll_at = DATE_ADD(?, INTERVAL ? SECOND)
             WHERE id = ?`,
-            [lastChecked, lastChecked, pollInterval, triggerId],
+            [pageToken, lastChecked, lastChecked, pollInterval, triggerId],
             client
         );
 
