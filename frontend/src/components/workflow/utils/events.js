@@ -34,13 +34,27 @@ export const GOOGLE_DRIVE_ACTION_EVENT_OPTIONS = [
   },
 ];
 
-export const GITHUB_TRIGGER_OPTIONS = [
+export const GITHUB_TRIGGER_OPTIONS = {
+  pull_request: [
+    { value: 'opened', label: 'Opened' },
+    { value: 'closed', label: 'Closed' },
+    { value: 'merged', label: 'Merged' },
+  ],
+  issues: [
+    { value: 'opened', label: 'Created' },
+    { value: 'closed', label: 'Closed' },
+  ],
+  issue_comment: [
+    { value: 'created', label: 'Comment Added' }
+  ],
+  push: [],
+};
+
+export const GITHUB_TRIGGER_EVENT_OPTIONS = [
   { value: 'push', label: 'Push' },
-  { value: 'pull_request_opened', label: 'Pull Request Opened' },
-  { value: 'pull_request_merged', label: 'Pull Request Merged' },
-  { value: 'issue_created', label: 'Issue Created' },
-  { value: 'issue_closed', label: 'Issue Closed' },
-  { value: 'issue_comment_added', label: 'Issue Comment Added' },
+  { value: 'pull_request', label: 'Pull Request' },
+  { value: 'issues', label: 'Issues' },
+  { value: 'issue_comment', label: 'Issue Comment' },
 ];
 
 export const GITHUB_ACTION_OPTIONS = [
@@ -49,4 +63,4 @@ export const GITHUB_ACTION_OPTIONS = [
   { value: 'create_pull_request', label: 'Create Pull Request' },
   { value: 'create_file', label: 'Create File' },
   { value: 'update_file', label: 'Update File' },
-]
+];

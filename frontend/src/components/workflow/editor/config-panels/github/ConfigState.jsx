@@ -2,10 +2,14 @@ import { useEffect } from 'react';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { ChevronRight, PenLine, Plus, Save, } from 'lucide-react';
+import { ChevronRight, Plus } from 'lucide-react';
 
 import useEditorUIStore from '@/stores/workflowEditorStore';
-import { GITHUB_ACTION_OPTIONS, GITHUB_TRIGGER_OPTIONS } from '@/components/workflow/utils/events';
+import {
+  GITHUB_ACTION_OPTIONS,
+  GITHUB_TRIGGER_EVENT_OPTIONS,
+  GITHUB_TRIGGER_OPTIONS,
+} from '@/components/workflow/utils/events';
 
 const inputClass =
   'flex rounded-md w-full bg-zinc-900 border border-zinc-700 px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-zinc-200/40';
@@ -22,11 +26,15 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
     register,
     handleSubmit,
     watch,
+    setValue,
+    getValues,
     reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
       githubAccountId: '',
+      triggerEventType: 'push',
+      triggerEventAction: '',
       repository: '',
       branch: '',
       baseBranch: '',
@@ -37,8 +45,10 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
       comment: '',
       sourceBranch: '',
       targetBranch: '',
+      isDraftPr: false,
       filePath: '',
       content: '',
+      commitMessage: ''
     },
   });
 
@@ -47,28 +57,43 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
   useEffect(() => {
     if (!Array.isArray(data) || data.length === 0) return;
 
-    const defaultRepo = data[0]?.metadata?.repos[0].name || '';
-    const defaultEvent = isTriggerNode ? GITHUB_TRIGGER_OPTIONS[0].value : GITHUB_ACTION_OPTIONS[0].value;
+    const safeConfig = existingConfig || {};
+    const initialAccount = data.find((account) => account.external_id === safeConfig.githubAccountId) || data[0];
+    const accountRepos = initialAccount?.metadata?.repos || [];
+    const defaultRepo = accountRepos[0]?.name || '';
+    const defaultEvent = isTriggerNode ? 'push' : GITHUB_ACTION_OPTIONS[0].value;
+    const savedTriggerEvent = safeConfig.event || 'push';
+    const triggerEventType = savedTriggerEvent.split('_').slice(0, -1).join('_') || savedTriggerEvent;
+    const triggerEventAction = savedTriggerEvent.includes('_') ? savedTriggerEvent.split('_').at(-1) : '';
+    const hasBranches = Array.isArray(accountRepos[0]?.branches) && accountRepos[0].branches.length > 0;
+    const defaultBranch = hasBranches ? accountRepos[0].branches[0] : 'main';
 
     reset({
-      githubAccountId: existingConfig.githubAccountId || data[0].external_id || '',
-      repository: existingConfig.repository || defaultRepo,
-      branch: existingConfig.branch || '',
-      baseBranch: existingConfig.baseBranch || '',
-      event: existingConfig.event ||  defaultEvent,
-      title: existingConfig.title || '',
-      description: existingConfig.description || '',
-      issueNumber: existingConfig.issueNumber || '',
-      comment: existingConfig.comment || '',
-      sourceBranch: existingConfig.sourceBranch || '',
-      targetBranch: existingConfig.targetBranch || '',
-      filePath: existingConfig.filePath || '',
-      content: existingConfig.content || '',
-    })
+      githubAccountId: safeConfig.githubAccountId || data[0].external_id || '',
+      triggerEventType: triggerEventType || 'push',
+      triggerEventAction: triggerEventAction || '',
+      repository: safeConfig.repository || defaultRepo,
+      branch: safeConfig.branch || defaultBranch,
+      baseBranch: safeConfig.baseBranch || 'main',
+      event: safeConfig.event || defaultEvent,
+      title: safeConfig.title || '',
+      description: safeConfig.description || '',
+      issueNumber: safeConfig.issueNumber || '',
+      comment: safeConfig.comment || '',
+      sourceBranch: safeConfig.sourceBranch || defaultBranch,
+      targetBranch: safeConfig.targetBranch || 'main',
+      isDraftPr: Boolean(safeConfig.isDraftPr),
+      filePath: safeConfig.filePath || '',
+      content: safeConfig.content || '',
+      commitMessage: safeConfig.commitMessage || '',
+    });
   } ,[reset, existingConfig, isTriggerNode, data])
 
   const selectedEvent = watch('event');
   const selectedGitHubAccountId = watch('githubAccountId');
+  const selectedTriggerEventType = watch('triggerEventType');
+  const selectedTriggerEventAction = watch('triggerEventAction');
+  const selectedRepository = watch('repository');
 
   const selectedAccount = useMemo(() => {
     if (!Array.isArray(data) || data.length === 0) return null;
@@ -80,6 +105,49 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
   const connectedAvatar =
     selectedAccount?.metadata?.avatar_url ||
     'https://avatars.githubusercontent.com/u/9919?s=64&v=4';
+  const repositoryOptions = useMemo(() => selectedAccount?.metadata?.repos || [], [selectedAccount]);
+
+  const branchOptions = useMemo(() => {
+    const selectedRepoData = repositoryOptions.find((repo) => repo.name === selectedRepository);
+    const repoBranches = selectedRepoData?.branches || [];
+    return repoBranches.length > 0 ? repoBranches : ['main'];
+  }, [repositoryOptions, selectedRepository]);
+  
+  const triggerEventActionOptions = useMemo(
+    () => GITHUB_TRIGGER_OPTIONS[selectedTriggerEventType] || [],
+    [selectedTriggerEventType],
+  );
+
+  useEffect(() => {
+    if (!selectedAccount) return;
+    const repos = selectedAccount?.metadata?.repos || [];
+    const repoNames = repos.map((repo) => repo.name);
+    const currentRepo = getValues('repository');
+    const nextRepo = repoNames.includes(currentRepo) ? currentRepo : repos[0]?.name || '';
+    setValue('repository', nextRepo);
+
+    const nextRepoData = repos.find((repo) => repo.name === nextRepo) || repos[0];
+    const currentBranch = getValues('branch');
+    const nextRepoBranches = nextRepoData?.branches || [];
+    const defaultBranch = nextRepoBranches.includes(currentBranch) ? currentBranch : (nextRepoBranches[0] || 'main');
+    setValue('branch', defaultBranch);
+    setValue('sourceBranch', getValues('sourceBranch') || defaultBranch);
+    setValue('targetBranch', getValues('targetBranch') || 'main');
+  }, [selectedGitHubAccountId, selectedAccount, setValue, getValues]);
+
+  useEffect(() => {
+    if (!isTriggerNode) return;
+    if (selectedTriggerEventType === 'push') {
+      setValue('triggerEventAction', '');
+      setValue('event', 'push');
+      return;
+    }
+
+    const firstAction = triggerEventActionOptions[0]?.value || '';
+    const nextAction = selectedTriggerEventAction || firstAction;
+    setValue('triggerEventAction', nextAction);
+    setValue('event', nextAction ? `${selectedTriggerEventType}_${nextAction}` : selectedTriggerEventType);
+  }, [isTriggerNode, selectedTriggerEventType, selectedTriggerEventAction, triggerEventActionOptions, setValue]);
 
   const onSubmit = async (formData) => {
     const payload = {
@@ -95,9 +163,14 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
       targetBranch: formData.targetBranch.trim(),
       filePath: formData.filePath.trim(),
       content: formData.content.trim(),
+      commitMessage: formData.commitMessage.trim(),
       githubAccountId: selectedAccount?.external_id || '',
       githubAccountName: connectedUsername,
-      event: isTriggerNode ? formData.event : '',
+      event: isTriggerNode
+        ? formData.triggerEventType === 'push'
+          ? 'push'
+          : `${formData.triggerEventType}_${formData.triggerEventAction}`
+        : '',
       action: isTriggerNode ? '' : formData.event,
     };
 
@@ -127,7 +200,7 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
             </button>
           </div>
 
-          <div className="flex items-center justify-between rounded-xl border border-zinc-700 bg-zinc-900 p-3">
+          <div className="rounded-xl border border-zinc-700 bg-zinc-900 p-3 space-y-3">
             <div className="flex items-center gap-3">
               <img src={connectedAvatar} alt={connectedUsername} className="h-9 w-9 rounded-full" />
               <div>
@@ -135,13 +208,29 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
                 <p className="text-xs text-emerald-400">Connected</p>
               </div>
             </div>
-            <button
+            {/* <button
               type="button"
               // onClick={handleConnect}
               className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-800"
             >
               Change <PenLine size={12} />
-            </button>
+            </button> */}
+            <div className="relative">
+              <select
+                {...register('githubAccountId', { required: true })}
+                className={selectClass}
+              >
+                {data?.map((account) => {
+                  const label = account?.metadata?.login || account?.name || account?.email || account.external_id;
+                  return (
+                    <option key={account.external_id} value={account.external_id}>
+                      {label}
+                    </option>
+                  );
+                })}
+              </select>
+              <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
+            </div>
           </div>
         </section>
 
@@ -150,8 +239,11 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
             {isTriggerNode ? 'Select Trigger Event' : 'Select Action'}
           </label>
           <div className="relative">
-            <select {...register('event', { required: true })} className={selectClass}>
-              {(isTriggerNode ? GITHUB_TRIGGER_OPTIONS : GITHUB_ACTION_OPTIONS).map((option) => (
+            <select
+              {...register(isTriggerNode ? 'triggerEventType' : 'event', { required: true })}
+              className={selectClass}
+            >
+              {(isTriggerNode ? GITHUB_TRIGGER_EVENT_OPTIONS : GITHUB_ACTION_OPTIONS).map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -161,27 +253,59 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
           </div>
         </section>
 
+        {isTriggerNode && triggerEventActionOptions.length > 0 && (
+          <section className="space-y-3">
+            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Trigger Type</label>
+            <div className="relative">
+              <select {...register('triggerEventAction', { required: true })} className={selectClass}>
+                {triggerEventActionOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
+            </div>
+          </section>
+        )}
+
         <section className="space-y-3">
           <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Repository</label>
-          <input
-            {...register('repository', { required: 'Repository is required.' })}
-            placeholder="owner/repo"
-            className={inputClass}
-          />
+          <div className="relative">
+            <select {...register('repository', { required: 'Repository is required.' })} className={selectClass}>
+              {repositoryOptions.map((repo) => (
+                <option key={repo.name} value={repo.name}>
+                  {repo.name}
+                </option>
+              ))}
+            </select>
+            <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
+          </div>
           {errors.repository && <p className={errorClass}>{errors.repository.message}</p>}
         </section>
 
-        <section className="space-y-3">
-          <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Branch (Optional)</label>
-          <input {...register('branch')} placeholder="main" className={inputClass} />
-        </section>
+        {!['create_file', 'update_file'].includes(selectedEvent) && (
+          <section className="space-y-3">
+            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Branch</label>
+            <div className="relative">
+              <select {...register('branch')} className={selectClass}>
+                {branchOptions.map((branch) => (
+                  <option key={branch} value={branch}>
+                    {branch}
+                  </option>
+                ))}
+              </select>
+              <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
+            </div>
+          </section>
+        )}
 
-        {selectedEvent.startsWith('pull_request') && isTriggerNode && (
+        {/* {selectedEvent.startsWith('pull_request') && isTriggerNode && (
           <section className="space-y-3">
             <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Base Branch (Optional)</label>
             <input {...register('baseBranch')} placeholder="main" className={inputClass} />
           </section>
-        )}
+        )} */}
 
         {selectedEvent=== 'create_issue' && (
           <section className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900/30 p-4">
@@ -271,6 +395,11 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
               className={inputClass}
             />
             {errors.targetBranch && <p className={errorClass}>{errors.targetBranch.message}</p>}
+            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Draft Pull Request</label>
+            <label className="inline-flex items-center gap-2 text-sm text-zinc-300">
+              <input type="checkbox" {...register('isDraftPr')} className="h-4 w-4 rounded border-zinc-600 bg-zinc-900" />
+              Create as draft
+            </label>
             <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Description (Optional)</label>
             <textarea
               {...register('description')}
@@ -308,6 +437,29 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
               className={`${inputClass} resize-none`}
             />
             {errors.content && <p className={errorClass}>{errors.content.message}</p>}
+            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Commit Message</label>
+            <input
+              {...register('commitMessage', {
+                validate: (value) =>
+                  !['create_file', 'update_file'].includes(selectedEvent) || value.trim()
+                    ? true
+                    : 'Commit message is required.',
+              })}
+              placeholder="chore: update workflow config"
+              className={inputClass}
+            />
+            {errors.commitMessage && <p className={errorClass}>{errors.commitMessage.message}</p>}
+            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Branch</label>
+            <div className="relative">
+              <select {...register('branch', { required: true })} className={selectClass}>
+                {branchOptions.map((branch) => (
+                  <option key={`file-${branch}`} value={branch}>
+                    {branch}
+                  </option>
+                ))}
+              </select>
+              <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
+            </div>
           </section>
         )}
       </div>
