@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { ChevronRight, Plus } from 'lucide-react';
+import { ChevronRight, Plus, Braces } from 'lucide-react';
 
 import useEditorUIStore from '@/stores/workflowEditorStore';
 import {
@@ -46,7 +46,8 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
       isDraftPr: false,
       filePath: '',
       content: '',
-      commitMessage: ''
+      commitMessage: '',
+      variable: '',
     },
   });
 
@@ -80,12 +81,14 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
       filePath: safeConfig.filePath || '',
       content: safeConfig.content || '',
       commitMessage: safeConfig.commitMessage || '',
+      variable: safeConfig.variable || '',
     });
   } ,[reset, existingConfig, isTriggerNode, data])
 
   const selectedEvent = watch(isTriggerNode ? 'event' : 'action');
   const selectedGitHubAccountId = watch('githubAccountId');
   const selectedRepository = watch('repository');
+  const watchVariable = watch('variable') || '';
 
   const selectedAccount = useMemo(() => {
     if (!Array.isArray(data) || data.length === 0) return null;
@@ -156,6 +159,7 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
       githubAccountName: connectedUsername,
       event: isTriggerNode ? formData.event : '',
       action: isTriggerNode ? '' : formData.action,
+      variable: formData.variable.trim(),
     };
 
     const status = await setNodeConfig(payload);
@@ -192,13 +196,7 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
                 <p className="text-xs text-emerald-400">Connected</p>
               </div>
             </div>
-            {/* <button
-              type="button"
-              // onClick={handleConnect}
-              className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-800"
-            >
-              Change <PenLine size={12} />
-            </button> */}
+        
             <div className="relative">
               <select
                 {...register('githubAccountId', { required: true })}
@@ -216,6 +214,27 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
               <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
             </div>
           </div>
+        </section>
+
+        <section className="space-y-3">
+          <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
+            <Braces size={18} /> Variable
+          </label>
+          <input
+            {...register('variable', {
+              required: 'Variable name is required.',
+              minLength: { value: 3, message: 'Min 3 chars.' },
+              maxLength: { value: 15, message: 'Max 15 chars.' },
+              })}
+              placeholder="eg. myGmail"
+              className={inputClass}
+          />
+          <p className="text-[12px] mt-1 text-zinc-400">
+            Reference this node&apos;s output in other nodes:{' '}
+            <span className="text-white text-[13px]">{`{{${watchVariable.trim()}.output.data}}`}</span>
+            <span className="text-[12px] text-zinc-400"> {' '}← Copy this syntax</span>
+          </p>
+          {errors.variable && <p className={errorClass}>{errors.variable.message}</p>}
         </section>
 
         <section className="space-y-3">
@@ -270,146 +289,170 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
 
         {selectedEvent=== 'create_issue' && (
           <section className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900/30 p-4">
-            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Title</label>
-            <input
-              {...register('title', {
-                validate: (value) =>
-                  selectedEvent!== 'create_issue' || value.trim() ? true : 'Title is required.',
-              })}
-              placeholder="Issue title"
-              className={inputClass}
-            />
-            {errors.title && <p className={errorClass}>{errors.title.message}</p>}
-            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Description</label>
-            <textarea
-              {...register('description')}
-              rows={5}
-              placeholder="Describe the issue"
-              className={`${inputClass} resize-none`}
-            />
+            <div>
+              <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Title</label>
+              <input
+                {...register('title', {
+                  validate: (value) =>
+                    selectedEvent!== 'create_issue' || value.trim() ? true : 'Title is required.',
+                })}
+                placeholder="Issue title"
+                className={`${inputClass}`}
+              />
+              {errors.title && <p className={errorClass}>{errors.title.message}</p>}
+            </div>
+            <div>
+              <label className="text-sm font-bold uppercase tracking-wider mt-16 text-zinc-200">Description</label>
+              <textarea
+                {...register('description')}
+                rows={5}
+                placeholder="Describe the issue"
+                className={`${inputClass} resize-none`}
+              />
+            </div>
           </section>
         )}
 
         {selectedEvent=== 'comment_on_issue' && (
           <section className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900/30 p-4">
-            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Issue Number</label>
-            <input
-              {...register('issueNumber', {
-                validate: (value) =>
-                  selectedEvent!== 'comment_on_issue' || value.trim()
-                    ? true
-                    : 'Issue number is required.',
-              })}
-              placeholder="42"
-              className={inputClass}
-            />
-            {errors.issueNumber && <p className={errorClass}>{errors.issueNumber.message}</p>}
-            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Comment</label>
-            <textarea
-              {...register('comment', {
-                validate: (value) =>
-                  selectedEvent!== 'comment_on_issue' || value.trim() ? true : 'Comment is required.',
-              })}
-              rows={5}
-              placeholder="Write your comment"
-              className={`${inputClass} resize-none`}
-            />
-            {errors.comment && <p className={errorClass}>{errors.comment.message}</p>}
+            <div>
+              <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Issue Number</label>
+              <input
+                {...register('issueNumber', {
+                  validate: (value) =>
+                    selectedEvent!== 'comment_on_issue' || value.trim()
+                      ? true
+                      : 'Issue number is required.',
+                })}
+                placeholder="42"
+                className={inputClass}
+              />
+              {errors.issueNumber && <p className={errorClass}>{errors.issueNumber.message}</p>}
+            </div>
+            <div>
+              <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Comment</label>
+              <textarea
+                {...register('comment', {
+                  validate: (value) =>
+                    selectedEvent!== 'comment_on_issue' || value.trim() ? true : 'Comment is required.',
+                })}
+                rows={5}
+                placeholder="Write your comment"
+                className={`${inputClass} resize-none`}
+              />
+              {errors.comment && <p className={errorClass}>{errors.comment.message}</p>}
+            </div>
           </section>
         )}
 
         {selectedEvent=== 'create_pull_request' && (
           <section className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900/30 p-4">
-            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Title</label>
-            <input
-              {...register('title', {
-                validate: (value) =>
-                  selectedEvent!== 'create_pull_request' || value.trim()
-                    ? true
-                    : 'Title is required.',
-              })}
-              placeholder="PR title"
-              className={inputClass}
-            />
-            {errors.title && <p className={errorClass}>{errors.title.message}</p>}
-            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Source Branch</label>
-            <input
-              {...register('sourceBranch', {
-                validate: (value) =>
-                  selectedEvent!== 'create_pull_request' || value.trim()
-                    ? true
-                    : 'Source branch is required.',
-              })}
-              placeholder="feature/new-flow"
-              className={inputClass}
-            />
-            {errors.sourceBranch && <p className={errorClass}>{errors.sourceBranch.message}</p>}
-            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Target Branch</label>
-            <input
-              {...register('targetBranch', {
-                validate: (value) =>
-                  selectedEvent!== 'create_pull_request' || value.trim()
-                    ? true
-                    : 'Target branch is required.',
-              })}
-              placeholder="main"
-              className={inputClass}
-            />
-            {errors.targetBranch && <p className={errorClass}>{errors.targetBranch.message}</p>}
-            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Draft Pull Request</label>
-            <label className="inline-flex items-center gap-2 text-sm text-zinc-300">
-              <input type="checkbox" {...register('isDraftPr')} className="h-4 w-4 rounded border-zinc-600 bg-zinc-900" />
-              Create as draft
-            </label>
-            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Description (Optional)</label>
-            <textarea
-              {...register('description')}
-              rows={5}
-              placeholder="PR details"
-              className={`${inputClass} resize-none`}
-            />
+            <div>
+              <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Title</label>
+              <input
+                {...register('title', {
+                  validate: (value) =>
+                    selectedEvent!== 'create_pull_request' || value.trim()
+                      ? true
+                      : 'Title is required.',
+                })}
+                placeholder="PR title"
+                className={`${inputClass}`}
+              />
+              {errors.title && <p className={errorClass}>{errors.title.message}</p>}
+            </div>
+            <div>
+              <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Source Branch</label>
+              <input
+                {...register('sourceBranch', {
+                  validate: (value) =>
+                    selectedEvent!== 'create_pull_request' || value.trim()
+                      ? true
+                      : 'Source branch is required.',
+                })}
+                placeholder="feature/new-flow"
+                className={inputClass}
+              />
+              {errors.sourceBranch && <p className={errorClass}>{errors.sourceBranch.message}</p>}
+            </div>
+            <div>
+              <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Target Branch</label>
+              <input
+                {...register('targetBranch', {
+                  validate: (value) =>
+                    selectedEvent!== 'create_pull_request' || value.trim()
+                      ? true
+                      : 'Target branch is required.',
+                })}
+                placeholder="main"
+                className={inputClass}
+              />
+              {errors.targetBranch && <p className={errorClass}>{errors.targetBranch.message}</p>}
+            </div>
+            <div className='flex gap-4'>
+              <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Draft Pull Request -</label>
+              <label className="inline-flex items-center gap-2 text-sm text-zinc-300">
+                <input type="checkbox" {...register('isDraftPr')} className="h-4 w-4 rounded border-zinc-600 bg-zinc-900" />
+                Create as draft
+              </label>
+            </div>
+            <div>
+              <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Description (Optional)</label>
+              <textarea
+                {...register('description')}
+                rows={5}
+                placeholder="PR details"
+                className={`${inputClass} resize-none`}
+              />
+            </div>
           </section>
         )}
 
         {['create_file', 'update_file'].includes(selectedEvent) && (
           <section className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900/30 p-4">
-            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">File Path</label>
-            <input
-              {...register('filePath', {
-                validate: (value) =>
-                  !['create_file', 'update_file'].includes(selectedEvent) || value.trim()
-                    ? true
-                    : 'File path is required.',
-              })}
-              placeholder="src/workflows/config.json"
-              className={inputClass}
-            />
-            {errors.filePath && <p className={errorClass}>{errors.filePath.message}</p>}
-            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Content</label>
-            <textarea
-              {...register('content', {
-                validate: (value) =>
-                  !['create_file', 'update_file'].includes(selectedEvent) || value.trim()
-                    ? true
-                    : 'Content is required.',
-              })}
-              rows={8}
-              placeholder={`{\n  "key": "value"\n}`}
-              className={`${inputClass} resize-none`}
-            />
-            {errors.content && <p className={errorClass}>{errors.content.message}</p>}
-            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Commit Message</label>
-            <input
-              {...register('commitMessage', {
-                validate: (value) =>
-                  !['create_file', 'update_file'].includes(selectedEvent) || value.trim()
-                    ? true
-                    : 'Commit message is required.',
-              })}
-              placeholder="chore: update workflow config"
-              className={inputClass}
-            />
-            {errors.commitMessage && <p className={errorClass}>{errors.commitMessage.message}</p>}
+            <div>
+              <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">File Path</label>
+              <input
+                {...register('filePath', {
+                  validate: (value) =>
+                    !['create_file', 'update_file'].includes(selectedEvent) || value.trim()
+                      ? true
+                      : 'File path is required.',
+                })}
+                placeholder="src/workflows/config.json"
+                className={inputClass}
+              />
+              {errors.filePath && <p className={errorClass}>{errors.filePath.message}</p>}
+            </div>
+            <div>
+              <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Content</label>
+              <textarea
+                {...register('content', {
+                  validate: (value) =>
+                    !['create_file', 'update_file'].includes(selectedEvent) || value.trim()
+                      ? true
+                      : 'Content is required.',
+                })}
+                rows={8}
+                placeholder={`{\n  "key": "value"\n}`}
+                className={`${inputClass} resize-none`}
+              />
+              {errors.content && <p className={errorClass}>{errors.content.message}</p>}
+            </div>
+            <div>
+              <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Commit Message</label>
+              <input
+                {...register('commitMessage', {
+                  validate: (value) =>
+                    !['create_file', 'update_file'].includes(selectedEvent) || value.trim()
+                      ? true
+                      : 'Commit message is required.',
+                })}
+                placeholder="chore: update workflow config"
+                className={inputClass}
+              />
+              {errors.commitMessage && <p className={errorClass}>{errors.commitMessage.message}</p>}
+            </div>
             <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Branch</label>
             <div className="relative">
               <select {...register('branch', { required: true })} className={selectClass}>

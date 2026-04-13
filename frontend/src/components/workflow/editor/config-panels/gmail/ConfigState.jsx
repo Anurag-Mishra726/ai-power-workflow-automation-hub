@@ -78,6 +78,9 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
     [data, selectedGmailAccountId]
   );
 
+  const connectedUsername = selectedGmailAccount?.name || selectedGmailAccount?.metadata?.profile?.emailAddress || 'Gmail';
+  //const connectedAvatar = selectedGmailAccount?.metadata?.profile?.avatarUrl || '/gmail-avatar.png';
+
   const availableEmails = useMemo(
     () => selectedGmailAccount?.metadata?.recentMessages || [],
     [selectedGmailAccount]
@@ -128,6 +131,45 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col overflow-hidden">
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
+        <section className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900/30 p-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-300">Your Account</h3>
+            <button
+              type="button"
+              onClick={handleConnect}
+              className="inline-flex items-center gap-1 rounded-lg border border-zinc-700 px-2 py-1.5 text-xs font-medium
+              bg-[#EA4335] text-zinc-100 hover:bg-white hover:text-black"
+            >
+              <Plus size={13} /> Connect Other Gmail Account
+            </button>
+          </div>
+        
+          <div className="rounded-xl border border-zinc-700 bg-zinc-900 p-3 space-y-3">
+            <div className="flex items-center gap-3">
+              {/* <img src={connectedAvatar} alt={connectedUsername} className="h-9 w-9 rounded-full" /> */}
+              <div className='flex items-center justify-center text-2xl bg-zinc-800 h-12 w-12 border border-white rounded-full'>
+                {connectedUsername.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <p className="text-sm font-medium text-zinc-100">{connectedUsername}</p>
+                <p className="text-xs text-emerald-400">Connected</p>
+              </div>
+            </div>
+        
+            <div className="relative">
+              <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <select {...register('gmailAccountId', { required: true })} className={selectClass}>
+                {data.map((account) => (
+                  <option key={account.external_id} value={account.external_id}>
+                    {account.name || account.metadata?.profile?.emailAddress || 'Gmail Account'}
+                  </option>
+                ))}
+              </select>
+              <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
+            </div>
+          </div>
+        </section>
+
         <section className="space-y-3">
           <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
             <Braces size={18} /> Variable
@@ -147,23 +189,6 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
             <span className="text-[12px] text-zinc-400"> {' '}← Copy this syntax</span>
           </p>
           {errors.variable && <p className={errorClass}>{errors.variable.message}</p>}
-        </section>
-
-        <section className="space-y-3">
-          <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
-            <Mail size={16} /> Gmail Account
-          </label>
-          <div className="relative">
-            <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-            <select {...register('gmailAccountId', { required: true })} className={selectClass}>
-              {data.map((account) => (
-                <option key={account.external_id} value={account.external_id}>
-                  {account.name || account.metadata?.profile?.emailAddress || 'Gmail Account'}
-                </option>
-              ))}
-            </select>
-            <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
-          </div>
         </section>
 
         <section className="space-y-3">
@@ -307,17 +332,6 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
             {errors.emailId && <p className={errorClass}>{errors.emailId.message}</p>}
           </section>
         )}
-
-        <section>
-          <button
-            type="button"
-            onClick={handleConnect}
-            className="flex items-center justify-center gap-2 bg-[#EA4335] hover:bg-[#cb3a2d] text-white text-sm font-semibold py-3 px-4 rounded-xl transition-all active:scale-[0.98] disabled:opacity-50"
-          >
-            <Plus size={15} className="font-bold" />
-            Connect Gmail
-          </button>
-        </section>
       </div>
 
       <div className="border-t border-zinc-600 px-4 py-3 flex justify-end bg-zinc-900/50 sticky bottom-0">
