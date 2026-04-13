@@ -21,7 +21,7 @@ export const getGithubAuthUrl = (userId, workflowId, provider) => {
   const params = new URLSearchParams({
     client_id: process.env.GITHUB_CLIENT_ID,
     redirect_uri: process.env.GITHUB_REDIRECT_URI,
-    scope: getGithubScopes(),
+    scope: process.env.GITHUB_SCOPES,
     state,
   });
 
@@ -30,17 +30,6 @@ export const getGithubAuthUrl = (userId, workflowId, provider) => {
 
 export const handleGithubCallback = async (code, userId) => {
   try {
-    if (
-      !process.env.GITHUB_CLIENT_ID ||
-      !process.env.GITHUB_CLIENT_SECRET_KEY ||
-      !process.env.GITHUB_REDIRECT_URI
-    ) {
-      throw new AppError(
-        "Missing GitHub OAuth environment configuration.",
-        500,
-      );
-    }
-
     const formData = new URLSearchParams({
       client_id: process.env.GITHUB_CLIENT_ID,
       client_secret: process.env.GITHUB_CLIENT_SECRET_KEY,
@@ -74,13 +63,14 @@ export const handleGithubCallback = async (code, userId) => {
     });
 
     const profile = profileResponse.data;
-
+    console.log("Github token data : ", tokenData);
+    console.log("GitHub Profile:", profile);
     return {
       userId,
       provider: "github",
       externalId: String(profile.id),
       name: profile.name || profile.login,
-      scope: tokenData.scope || null,
+      scope: tokenData.scope || null,               // GitHub returns scopes as empty string, we can also strore the scopes from the .env variable.
       tokenType: tokenData.token_type || "bearer",
       accessToken: tokenData.access_token,
       refreshToken: tokenData.refresh_token || null,

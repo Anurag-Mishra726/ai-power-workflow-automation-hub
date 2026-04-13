@@ -151,7 +151,7 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
           handleOnClick("GitHub", "github");
          }}
          >
-            <img src="/github2.svg" alt="GitHub" height={35} width={35}  />
+            <img src="/github.svg" alt="GitHub" height={35} width={35}  />
             <div>
                 <h2 className="text-xl">GitHub</h2>
                 <p className="text-zinc-400 text-sm">Automate your development workflow.</p>

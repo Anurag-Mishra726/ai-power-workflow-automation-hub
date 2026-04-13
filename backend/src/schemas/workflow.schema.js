@@ -33,6 +33,7 @@ const BaseNodeSchema = z.object({
             "googleForm",
             "googleDrive",
             "gmail",
+            "github",
         ]).optional(),
         summary: z.string().optional().or(z.literal("")),
         config: z.any(),
