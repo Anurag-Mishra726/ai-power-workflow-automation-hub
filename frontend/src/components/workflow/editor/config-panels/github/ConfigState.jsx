@@ -19,7 +19,7 @@ const errorClass = 'text-[10px] text-red-500 font-medium mt-1';
 
 const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
   const { setIsConfigSidebarClose } = useEditorUIStore();
-  console.log("Data : ", data);
+  //console.log("Data : ", data);
   const isTriggerNode = selectedNode?.type === 'trigger';
   
   const {
@@ -33,12 +33,10 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
   } = useForm({
     defaultValues: {
       githubAccountId: '',
-      triggerEventType: 'push',
-      triggerEventAction: '',
       repository: '',
       branch: '',
-      baseBranch: '',
       event: '',
+      action: '',
       title: '',
       description: '',
       issueNumber: '',
@@ -61,21 +59,17 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
     const initialAccount = data.find((account) => account.external_id === safeConfig.githubAccountId) || data[0];
     const accountRepos = initialAccount?.metadata?.repos || [];
     const defaultRepo = accountRepos[0]?.name || '';
-    const defaultEvent = isTriggerNode ? 'push' : GITHUB_ACTION_OPTIONS[0].value;
-    const savedTriggerEvent = safeConfig.event || 'push';
-    const triggerEventType = savedTriggerEvent.split('_').slice(0, -1).join('_') || savedTriggerEvent;
-    const triggerEventAction = savedTriggerEvent.includes('_') ? savedTriggerEvent.split('_').at(-1) : '';
+    const defaultEvent = 'push';
+    const defaultAction = GITHUB_ACTION_OPTIONS[0].value;
     const hasBranches = Array.isArray(accountRepos[0]?.branches) && accountRepos[0].branches.length > 0;
     const defaultBranch = hasBranches ? accountRepos[0].branches[0] : 'main';
 
     reset({
       githubAccountId: safeConfig.githubAccountId || data[0].external_id || '',
-      triggerEventType: triggerEventType || 'push',
-      triggerEventAction: triggerEventAction || '',
       repository: safeConfig.repository || defaultRepo,
       branch: safeConfig.branch || defaultBranch,
-      baseBranch: safeConfig.baseBranch || 'main',
       event: safeConfig.event || defaultEvent,
+      action: safeConfig.action || defaultAction,
       title: safeConfig.title || '',
       description: safeConfig.description || '',
       issueNumber: safeConfig.issueNumber || '',
@@ -89,10 +83,8 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
     });
   } ,[reset, existingConfig, isTriggerNode, data])
 
-  const selectedEvent = watch('event');
+  const selectedEvent = watch(isTriggerNode ? 'event' : 'action');
   const selectedGitHubAccountId = watch('githubAccountId');
-  const selectedTriggerEventType = watch('triggerEventType');
-  const selectedTriggerEventAction = watch('triggerEventAction');
   const selectedRepository = watch('repository');
 
   const selectedAccount = useMemo(() => {
@@ -113,10 +105,19 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
     return repoBranches.length > 0 ? repoBranches : ['main'];
   }, [repositoryOptions, selectedRepository]);
   
-  const triggerEventActionOptions = useMemo(
-    () => GITHUB_TRIGGER_OPTIONS[selectedTriggerEventType] || [],
-    [selectedTriggerEventType],
-  );
+  const triggerEventOptions = useMemo(() => {
+    return GITHUB_TRIGGER_EVENT_OPTIONS.flatMap((triggerType) => {
+      const actions = GITHUB_TRIGGER_OPTIONS[triggerType.value] || [];
+      if (actions.length === 0) {
+        return [triggerType];
+      }
+
+      return actions.map((triggerAction) => ({
+        value: `${triggerType.value}_${triggerAction.value}`,
+        label: `${triggerType.label} - ${triggerAction.label}`,
+      }));
+    });
+  }, []);
 
   useEffect(() => {
     if (!selectedAccount) return;
@@ -135,26 +136,13 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
     setValue('targetBranch', getValues('targetBranch') || 'main');
   }, [selectedGitHubAccountId, selectedAccount, setValue, getValues]);
 
-  useEffect(() => {
-    if (!isTriggerNode) return;
-    if (selectedTriggerEventType === 'push') {
-      setValue('triggerEventAction', '');
-      setValue('event', 'push');
-      return;
-    }
 
-    const firstAction = triggerEventActionOptions[0]?.value || '';
-    const nextAction = selectedTriggerEventAction || firstAction;
-    setValue('triggerEventAction', nextAction);
-    setValue('event', nextAction ? `${selectedTriggerEventType}_${nextAction}` : selectedTriggerEventType);
-  }, [isTriggerNode, selectedTriggerEventType, selectedTriggerEventAction, triggerEventActionOptions, setValue]);
 
   const onSubmit = async (formData) => {
     const payload = {
       ...formData,
       repository: formData.repository.trim(),
       branch: formData.branch.trim(),
-      baseBranch: formData.baseBranch.trim(),
       title: formData.title.trim(),
       description: formData.description.trim(),
       issueNumber: formData.issueNumber.trim(),
@@ -166,12 +154,8 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
       commitMessage: formData.commitMessage.trim(),
       githubAccountId: selectedAccount?.external_id || '',
       githubAccountName: connectedUsername,
-      event: isTriggerNode
-        ? formData.triggerEventType === 'push'
-          ? 'push'
-          : `${formData.triggerEventType}_${formData.triggerEventAction}`
-        : '',
-      action: isTriggerNode ? '' : formData.event,
+      event: isTriggerNode ? formData.event : '',
+      action: isTriggerNode ? '' : formData.action,
     };
 
     const status = await setNodeConfig(payload);
@@ -240,10 +224,10 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
           </label>
           <div className="relative">
             <select
-              {...register(isTriggerNode ? 'triggerEventType' : 'event', { required: true })}
+              {...register(isTriggerNode ? 'event' : 'action', { required: true })}
               className={selectClass}
             >
-              {(isTriggerNode ? GITHUB_TRIGGER_EVENT_OPTIONS : GITHUB_ACTION_OPTIONS).map((option) => (
+              {(isTriggerNode ? triggerEventOptions : GITHUB_ACTION_OPTIONS).map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -252,22 +236,6 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
             <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
           </div>
         </section>
-
-        {isTriggerNode && triggerEventActionOptions.length > 0 && (
-          <section className="space-y-3">
-            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Trigger Type</label>
-            <div className="relative">
-              <select {...register('triggerEventAction', { required: true })} className={selectClass}>
-                {triggerEventActionOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
-            </div>
-          </section>
-        )}
 
         <section className="space-y-3">
           <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Repository</label>
@@ -299,13 +267,6 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
             </div>
           </section>
         )}
-
-        {/* {selectedEvent.startsWith('pull_request') && isTriggerNode && (
-          <section className="space-y-3">
-            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">Base Branch (Optional)</label>
-            <input {...register('baseBranch')} placeholder="main" className={inputClass} />
-          </section>
-        )} */}
 
         {selectedEvent=== 'create_issue' && (
           <section className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900/30 p-4">

@@ -63,8 +63,7 @@ export const handleGithubCallback = async (code, userId) => {
     });
 
     const profile = profileResponse.data;
-    console.log("Github token data : ", tokenData);
-    console.log("GitHub Profile:", profile);
+    
     return {
       userId,
       provider: "github",

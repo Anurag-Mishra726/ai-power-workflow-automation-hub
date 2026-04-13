@@ -28,9 +28,6 @@ const getGithubMetadata = async (accessToken) => {
   const profile = profileResponse.data;
   const repos = reposResponse.data || [];
 
-  console.log("Profile Data: ", profile);
-  console.log("Repo Data : ", repos);
-
   return {
     login: profile?.login || null,
     avatar_url: profile?.avatar_url || null,

@@ -77,24 +77,21 @@ export const ActionNode = ({ id, data, type }) => {
         }
       </div>
 
-      <div className="text-sm text-white/50 flex items-center gap-2 ">
+      <div className="text-sm text-white/50 flex items-center gap-2 min-w-0">
         {data.summary && (data.config || data.isConfigured) ? (
-          <>
-            <span className="flex items-center gap-2 truncate">
-              <CheckCircle size={12} className="self-center translate-y-0.5" />
+          <span className="flex items-center gap-2 min-w-0">
+            <CheckCircle size={12} className="flex-shrink-0" />
+            <span className="truncate">
               {data.summary}
             </span>
-          </>
-          ) : (
+          </span>
+        ) : (
           <>
-            <CircleDot 
-              size={12} 
-              className="self-center -translate-y-0.5 flex-shrink-0" 
-            />
+            <CircleDot size={12} className="flex-shrink-0" />
             <p>Select an event to trigger the Flow.</p>
           </>
         )}
-      </div> 
+      </div>
 
       <Handle type="source" position={Position.Right} />
       <Handle type="target" position={Position.Left}/>

@@ -82,16 +82,18 @@ export const TriggerNode = ({ id ,data, type }) => {
       <div className="text-sm text-white/50 flex items-center gap-2">
         { data.summary && data.isConfigured ? (
           <>
-            <span className="flex items-center gap-2">
-              <CheckCircle size={12} className="self-center translate-y-0.5" />
-              {data.summary}
+            <span className="flex items-center gap-2 min-w-0">
+              <CheckCircle size={12} className="flex-shrink-0" />
+              <span className="truncate">
+                {data.summary}
+              </span>
             </span>
           </>
           ) : (
           <>
             <CircleDot 
               size={12} 
-              className="self-center -translate-y-0.5 flex-shrink-0" 
+              className="flex-shrink-0" 
             />
             <p>Select an event to trigger the Flow.</p>
           </>
