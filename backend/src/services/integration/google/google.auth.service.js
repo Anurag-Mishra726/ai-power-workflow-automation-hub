@@ -32,7 +32,9 @@ const googleOauthScopes = {
         // Essential for "On Form Submit" triggers
         "https://www.googleapis.com/auth/forms.responses.readonly",
         // Allows FlowAI to read form structure/questions
-        "https://www.googleapis.com/auth/forms.body.readonly"
+        "https://www.googleapis.com/auth/forms.body.readonly",
+        "https://www.googleapis.com/auth/spreadsheets.readonly",
+      "https://www.googleapis.com/auth/spreadsheets"
   ],
 
   googleSheet: [
