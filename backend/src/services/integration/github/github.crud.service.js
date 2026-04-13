@@ -28,6 +28,9 @@ const getGithubMetadata = async (accessToken) => {
   const profile = profileResponse.data;
   const repos = reposResponse.data || [];
 
+  console.log("Profile Data: ", profile);
+  console.log("Repo Data : ", repos);
+
   return {
     login: profile?.login || null,
     avatar_url: profile?.avatar_url || null,
@@ -35,6 +38,7 @@ const getGithubMetadata = async (accessToken) => {
     repos: repos.map((repo) => ({
       id: repo.id,
       name: repo.name,
+      owner: repo.owner?.login || null,
       full_name: repo.full_name,
       private: repo.private,
       default_branch: repo.default_branch,
