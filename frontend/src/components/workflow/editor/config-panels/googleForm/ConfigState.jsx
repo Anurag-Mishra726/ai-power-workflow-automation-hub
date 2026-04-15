@@ -26,6 +26,7 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
     defaultValues: {
       variable: '',
       googleFormAccountId: '',
+      formId: '',
       event: 'new_response',
     },
   });
@@ -38,17 +39,32 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
     reset({
       variable: selectedConfig?.variable || '',
       googleFormAccountId: selectedConfig?.googleFormAccountId || data[0]?.external_id || '',
+      formId: selectedConfig?.formId || '',
       event: selectedConfig?.event || 'new_response',
     });
   }, [data, reset, selectedConfig]);
 
   const selectedGoogleFormAccountId = watch('googleFormAccountId');
   const watchVariable = watch('variable') || '';
+  const selectedFormId = watch('formId');
 
   const selectedGoogleFormAccount = useMemo(
     () => data.find((account) => account.external_id === selectedGoogleFormAccountId) || data[0],
     [data, selectedGoogleFormAccountId]
   );
+
+  const availableForms = useMemo(() => {
+    const forms = selectedGoogleFormAccount?.metadata?.forms || selectedGoogleFormAccount?.metadata?.form || [];
+
+    if (!Array.isArray(forms)) {
+      return [];
+    }
+
+    return forms.map((form) => ({
+      id: form.formId || form.id || '',
+      name: form.title || form.name || 'Untitled Form',
+    }));
+  }, [selectedGoogleFormAccount]);
 
   const connectedUsername =
     selectedGoogleFormAccount?.name ||
@@ -61,6 +77,20 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
     }
   }, [data, selectedGoogleFormAccountId, setValue]);
 
+  useEffect(() => {
+    const firstFormId = availableForms[0]?.id || '';
+    if (!firstFormId) {
+      setValue('formId', '');
+      return;
+    }
+
+    const hasCurrentForm = availableForms.some((form) => form.id === selectedFormId);
+    if (!hasCurrentForm) {
+      setValue('formId', firstFormId);
+    }
+  }, [availableForms, selectedFormId, setValue]);
+
+
   const onSubmit = async (formData) => {
     const status = await setNodeConfig({
       variable: formData.variable.trim(),
@@ -68,6 +98,8 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
       googleFormAccountName:
         selectedGoogleFormAccount?.name || selectedGoogleFormAccount?.metadata?.profile?.emailAddress || 'Google Form',
       event: formData.event,
+      formId: formData.formId,
+      formName: availableForms.find((form) => form.id === formData.formId)?.name || '',
     });
 
     if (status?.success) {
@@ -90,7 +122,7 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
               onClick={handleConnect}
               className="inline-flex items-center gap-1 rounded-lg border border-zinc-700 px-2 py-1.5 text-xs font-medium bg-[#7248B9] text-zinc-100 hover:bg-white hover:text-black"
             >
-              <Plus size={13} /> Connect Other Google Form Account
+              <Plus size={13} /> Connect Other Google Account
             </button>
           </div>
 
@@ -120,16 +152,40 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
         </section>
 
         <section className="space-y-3">
-          <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
-            <CalendarPlus size={16} /> Event
-          </label>
-
-          {isActionNode ? (
-            <div className="rounded-xl border border-zinc-700 bg-zinc-900 p-3 space-y-2">
-              <p className="text-sm text-red-300">No available event for action.</p>
-              <p className="text-xs text-zinc-400">Google Form can only be trigger or first node.</p>
+          {isActionNode && (
+            <div className="rounded-xl border border-zinc-700 bg-zinc-900 py-3 px-2 space-y-2">
+              <p className="text-base text-red-300">No available event for action.</p>
+              <p className="text-lg text-zinc-400">Google Form can only be trigger or first node.</p>
             </div>
-          ) : (
+          )}
+        </section>
+
+        {!isActionNode && (
+          <>
+            <section className="space-y-3">
+              <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
+                <Braces size={18} /> Variable
+              </label>
+              <input
+                {...register('variable', {
+                  required: 'Variable name is required.',
+                  minLength: { value: 3, message: 'Min 3 chars.' },
+                  maxLength: { value: 15, message: 'Max 15 chars.' },
+                })}
+                placeholder="eg. googleFormData"
+                className={inputClass}
+              />
+              <p className="text-[12px] mt-1 text-zinc-400">
+                Reference this node&apos;s output in other nodes:{' '}
+                <span className="text-white text-[13px]">{`{{${watchVariable.trim()}.response.data}}`}</span>
+                <span className="text-[12px] text-zinc-400"> {' '}← Copy this syntax</span>
+              </p>
+              {errors.variable && <p className="text-[10px] text-red-500 font-medium">{errors.variable.message}</p>}
+            </section>
+            <section className="space-y-3">
+              <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
+              <CalendarPlus size={16} /> Event
+            </label>    
             <div className="relative">
               <FileText className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
               <select {...register('event', { required: true })} className={selectClass}>
@@ -141,32 +197,34 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
               </select>
               <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
             </div>
-          )}
-        </section>
+            </section>
 
-        {!isActionNode && (
-          <section className="space-y-3">
+            <section className="space-y-3">
             <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
-              <Braces size={18} /> Variable
+              <FileText size={16} /> Form
             </label>
-            <input
-              {...register('variable', {
-                required: 'Variable name is required.',
-                minLength: { value: 3, message: 'Min 3 chars.' },
-                maxLength: { value: 15, message: 'Max 15 chars.' },
-              })}
-              placeholder="eg. googleFormData"
-              className={inputClass}
-            />
-            <p className="text-[12px] mt-1 text-zinc-400">
-              Reference this node&apos;s output in other nodes:{' '}
-              <span className="text-white text-[13px]">{`{{${watchVariable.trim()}.response.data}}`}</span>
-              <span className="text-[12px] text-zinc-400"> {' '}← Copy this syntax</span>
-            </p>
-            {errors.variable && <p className="text-[10px] text-red-500 font-medium">{errors.variable.message}</p>}
-          </section>
+            <div className="relative">
+              <FileText className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <select {...register('formId', { required: 'Please select a form.' })} className={selectClass}>
+                {availableForms.length > 0 ? (
+                  availableForms.map((form) => (
+                    <option key={form.id} value={form.id}>
+                      {form.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">No forms found</option>
+                )}
+              </select>
+              <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
+            </div>
+            {errors.formId && <p className="text-[10px] text-red-500 font-medium">{errors.formId.message}</p>}
+            </section>
+          </>
         )}
       </div>
+
+      
 
       {!isActionNode && (
         <div className="border-t border-zinc-600 px-4 py-3 flex justify-end bg-zinc-900/50">
