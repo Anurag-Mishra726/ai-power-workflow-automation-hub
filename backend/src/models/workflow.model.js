@@ -166,7 +166,7 @@ export const Workflow = {
             `SELECT id, user_id, workflow_id, node_id, trigger_type, page_token, config_json, poll_interval, last_checked
             FROM workflow_triggers
             WHERE is_active = TRUE
-                AND trigger_type IN ('gmail', 'googleDrive')
+                AND trigger_type IN ('gmail', 'googleDrive', 'googleForm')
                 AND (next_poll_at IS NULL OR next_poll_at <= NOW())
             ORDER BY next_poll_at ASC`,
             [],

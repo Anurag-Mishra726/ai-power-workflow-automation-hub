@@ -31,6 +31,6 @@ export const fetchGmailData = async (accessToken, lastChecked, senderEmail, labe
   console.log("Gmail Messages:", currentIds);
   return {
     ids: currentIds,
-    newLastChecked: new Date().toISOString(),
+    newLastChecked: new Date().toISOString(),   // Update last checked time to now to do something with it in future
   };
 };

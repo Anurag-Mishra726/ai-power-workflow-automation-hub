@@ -78,5 +78,8 @@ export const fetchDriveData = async (accessToken, lastCheckedTime, folderId, sav
 
   console.log(events);
   
-  return { events };
+  return { 
+    files: events,
+    newLastChecked: new Date().toISOString(),   // Update last checked time to now to do something with it in future
+  };
 };

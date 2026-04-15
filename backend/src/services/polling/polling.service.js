@@ -1,9 +1,9 @@
 import { inngest } from "../../inngest/client.js";
 import { Workflow } from "../../models/workflow.model.js";
 import { Integration } from "../../models/integration/integration.model.js";
-
 import { fetchGmailData } from "./gmail.polling.service.js";
 import { fetchDriveData } from "./googleDrive.polling.service.js";
+import { fetchGoogleFormData } from "./googleForm.polling.service.js";
 
 
 export const getSafeIsoDate = (value) => {
@@ -76,6 +76,12 @@ const runTriggerPolling = async (trigger) => {
     pollingResult = await fetchDriveData(accessToken, lastChecked, folderId, savedEvent);
   }
 
+  if (trigger.trigger_type === "googleForm") {
+    const formId = triggerConfig?.formId || null;
+    const savedEvent = triggerConfig?.event || null;
+    pollingResult = await fetchGoogleFormData(accessToken, lastChecked, formId, savedEvent);
+  }
+
   // if (pollingResult) {
   //   await inngest.send({
   //     name: "workflow/execute",
@@ -111,7 +117,7 @@ export const processWorkflowPolling = async () => {
         pollInterval: trigger.poll_interval || 600, 
       });
     } catch (error) {
-      console.error(`Polling failed for trigger ${trigger.id}:`, error.message);
+      console.error(`Polling failed for trigger ${trigger.id}: `, error.message);
       await Workflow.updatePollingCheckpoint({
         triggerId: trigger.id,
         pageToken: null,
