@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Integration } from "../../../models/integration/integration.model.js";
 import { AppError } from "../../../utils/AppErrors.js";
+import { googleOauthScopes } from "../utils/googleOAuthScopes.js";
 
 const googleApi = axios.create({
     baseURL: "https://www.googleapis.com",
@@ -145,11 +146,23 @@ const getProviderMetadata = async (provider, accessToken) => {
 
 export const getGoogleIntegration = async (userId, provider) => {
     const data = await Integration.getIntegration({ userId, provider: "google" });
+    const requiredScopes = googleOauthScopes[provider].join(" ") || null;
 
-    if (data.length === 0) {
+    if (data.length === 0 || !requiredScopes) {
         return {
             success: true,
             message: "No Integration exist.",
+            data: [],
+        };
+    }
+
+    const authorisedScopes = data[0].scope ? data[0].scope.split(" ") : [];
+    const hasRequiredScopes = requiredScopes.split(" ").every((scope) => authorisedScopes.includes(scope));
+
+    if (!hasRequiredScopes) {
+        return {
+            success: false,
+            message: "Insufficient permissions for the requested provider.",
             data: [],
         };
     }

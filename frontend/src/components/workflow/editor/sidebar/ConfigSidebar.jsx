@@ -28,21 +28,21 @@ const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
     
     case "http": 
         return <HTTPConfig selectedNode={selectedNode} onClose={onClose} nodeType={nodeType} setNodeConfig={setNodeConfig} />;
-
-    case "googleForm":
-        return <GoogleFormConfig onClose={onClose} />;
-
+        
     case "geminiAI":
-        return <GeminiConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
+      return <GeminiConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
 
     case "perplexityAI":
-        return <PerplexityConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
+      return <PerplexityConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
 
     case "openAI":
       return <OpenAiConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
 
     case "slack": 
       return <SlackConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} /> ;
+
+    case "googleForm":
+        return <GoogleFormConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
 
     case "googleDrive":
       return <GoogleDriveConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
