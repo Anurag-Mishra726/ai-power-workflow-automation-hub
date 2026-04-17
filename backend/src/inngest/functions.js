@@ -54,7 +54,7 @@ export const executeWorkflow = inngest.createFunction(
         });
       });          
       
-      context[node?.data?.config?.variable || node.id] = response;
+      context[node?.data?.config?.variable || node.id] = response;    // there is a possibility that variable name is same, in that case we need uinique variable names or override the previous one, for now we will override it.
     }
 
     //console.log(context);
@@ -76,7 +76,3 @@ export const pollWorkflowTriggers = inngest.createFunction(
     return result;
   }
 );
-
-
-
-

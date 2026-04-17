@@ -5,7 +5,7 @@ export const GMAIL_TRIGGER_EVENT_OPTIONS = [
 
 export const GMAIL_ACTION_EVENT_OPTIONS = [
   { value: 'send_email', label: 'Send Email' },
-  { value: 'delete_email', label: 'Delete Email' },
+  //{ value: 'delete_email', label: 'Delete Email' },
 ];
 
 export const GOOGLE_DRIVE_TRIGGER_EVENT_OPTIONS = [

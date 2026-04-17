@@ -153,7 +153,6 @@ export const Workflow = {
     },
 
     updateWorkflowTriggerTypes: async ({userId, workflowId, nodeId, triggerType, configJson, lastChecked}, client = pool) => {
-        console.log(configJson);
         const rows = await query(
             `UPDATE workflow_triggers SET trigger_type = ?, config_json = ?, last_checked = ? WHERE user_id = ? AND workflow_id = ? AND node_id = ?`,
             [triggerType, configJson, lastChecked, userId, workflowId, nodeId],

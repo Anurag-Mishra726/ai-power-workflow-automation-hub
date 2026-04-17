@@ -51,7 +51,6 @@ export const integrationOAuthGetUrl = async (provider, workflowId, userId) => {
 
 export const integrationHandleOAuthCallback = async (provider, code, userId) => {
     const fn = handleCallback[provider];
-    console.log(fn);
     if (!fn) throw new AppError("Unsupported Provider!", 400);
     return await fn(code, userId);
 }

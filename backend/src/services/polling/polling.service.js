@@ -64,11 +64,11 @@ const runTriggerPolling = async (trigger) => {
 
   let pollingResult;
 
-  if (trigger.trigger_type === "gmail") {
-    const senderEmail = triggerConfig?.senderEmail || null;
-    const label = triggerConfig?.label || "INBOX";
-    pollingResult = await fetchGmailData(accessToken, lastChecked, senderEmail, label);
-  }
+  // if (trigger.trigger_type === "gmail") {
+  //   const senderEmail = triggerConfig?.senderEmail || null;
+  //   const label = triggerConfig?.label || "INBOX";
+  //   pollingResult = await fetchGmailData(accessToken, lastChecked, senderEmail, label);
+  // }
 
   if (trigger.trigger_type === "googleDrive") {
     const folderId = triggerConfig?.folderId || null;
@@ -76,24 +76,32 @@ const runTriggerPolling = async (trigger) => {
     pollingResult = await fetchDriveData(accessToken, lastChecked, folderId, savedEvent);
   }
 
-  if (trigger.trigger_type === "googleForm") {
-    const formId = triggerConfig?.formId || null;
-    const savedEvent = triggerConfig?.event || null;
-    pollingResult = await fetchGoogleFormData(accessToken, lastChecked, formId, savedEvent);
+  // if (trigger.trigger_type === "googleForm") {
+  //   const formId = triggerConfig?.formId || null;
+  //   const savedEvent = triggerConfig?.event || null;
+  //   pollingResult = await fetchGoogleFormData(accessToken, lastChecked, formId, savedEvent);
+  // }
+
+  if (pollingResult?.payload?.length > 0) {
+    console.log("Inngest Payload : ", pollingResult?.payload);
+
+    await Promise.all(
+      pollingResult.payload.map((email) =>
+        inngest.send({
+          name: "workflow/execute",
+          data: {
+            workflowId: trigger.workflow_id,
+            initialData: {
+              triggerData: email,
+              triggerType: trigger.trigger_type,
+            },
+          },
+        })
+      )
+    );
   }
 
-  // if (pollingResult) {
-  //   await inngest.send({
-  //     name: "workflow/execute",
-  //     data: {
-  //       workflowId: trigger.workflow_id,
-  //       initialData: {
-  //         newData: pollingResult.payload,
-  //         triggerType: trigger.trigger_type,
-  //       },
-  //     },
-  //   });
-  // }
+  console.log(pollingResult?.payload);
 
   return {
     triggerId: trigger.id,
@@ -117,7 +125,7 @@ export const processWorkflowPolling = async () => {
         pollInterval: trigger.poll_interval || 600, 
       });
     } catch (error) {
-      console.error(`Polling failed for trigger ${trigger.id}: `, error.message);
+      console.error(`Polling failed for trigger ${trigger.id} and triggerType ${trigger.trigger_type} `, error);
       await Workflow.updatePollingCheckpoint({
         triggerId: trigger.id,
         pageToken: null,

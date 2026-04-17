@@ -7,7 +7,6 @@ const driveActivityApi = axios.create({
 
 
 export const fetchDriveData = async (accessToken, lastCheckedTime, folderId, savedEvent) => {
-    
   const filterTime =  new Date(lastCheckedTime).getTime(); /* new Date(getSafeIsoDate(`${lastCheckedTime}`)).getTime() // this returns 0 ??  */;
   const allActivities = [];
 
@@ -76,10 +75,10 @@ export const fetchDriveData = async (accessToken, lastCheckedTime, folderId, sav
     return allowedEvents.includes(event.eventType);
   });
 
-  console.log(events);
+  //console.log(events);
   
   return { 
-    files: events,
+    payload: events,
     newLastChecked: new Date().toISOString(),   // Update last checked time to now to do something with it in future
   };
 };

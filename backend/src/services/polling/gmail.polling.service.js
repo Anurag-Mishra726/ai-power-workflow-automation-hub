@@ -26,11 +26,11 @@ export const fetchGmailData = async (accessToken, lastChecked, senderEmail, labe
     headers: { Authorization: `Bearer ${accessToken}` },
     params: { maxResults: 10, q: searchQuery },
   });
-  console.log("Response Gmail : ", response.data);
+  //console.log("Response Gmail : ", response.data);
   const currentIds = (response.data.messages || []).map((m) => m.id);
   console.log("Gmail Messages:", currentIds);
   return {
-    ids: currentIds,
+    payload: currentIds,
     newLastChecked: new Date().toISOString(),   // Update last checked time to now to do something with it in future
   };
 };
