@@ -1,78 +1,90 @@
-import axios from 'axios';
-import { Integration } from '../../../models/integration/integration.model.js';
-import { AppError } from '../../../utils/AppErrors.js';
+import { Integration } from "../../../models/integration/integration.model.js";
+import { AppError } from "../../../utils/AppErrors.js";
+import {
+  exchangeInstallationToken,
+  fetchInstallationMetadata,
+  fetchInstallationRepositories,
+} from "./githubApp.service.js";
+import { upsertGithubInstallation } from "./githubWebhook.service.js";
 
-const githubApi = axios.create({
-  baseURL: 'https://api.github.com',
-  timeout: 10000,
-  headers: {
-    Accept: 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2022-11-28',
-  },
-});
+const isTokenUsable = (expiresAt) => {
+  if (!expiresAt) return false;
+  const bufferMs = 60 * 1000;
+  return new Date(expiresAt).getTime() - bufferMs > Date.now();
+};
 
-const getGithubMetadata = async (accessToken) => {
-  const headers = { Authorization: `Bearer ${accessToken}` };
+const getInstallationTokenForIntegration = async (userId, integration) => {
+  if (integration.access_token && isTokenUsable(integration.expires_at)) {
+    return {
+      token: integration.access_token,
+      expiresAt: new Date(integration.expires_at),
+    };
+  }
 
-  const [profileResponse, reposResponse] = await Promise.all([
-    githubApi.get('/user', { headers }),
-    githubApi.get('/user/repos', {
-      headers,
-      params: {
-        per_page: 100,
-        sort: 'updated',
-      },
-    }),
-  ]);
+  const { token, expiresAt } = await exchangeInstallationToken(integration.external_id);
 
-  const profile = profileResponse.data;
-  const repos = reposResponse.data || [];
+  await upsertGithubInstallation({
+    userId,
+    installationId: integration.external_id,
+    accountLogin: integration.name,
+    repositorySelection: integration.scope,
+    installationToken: token,
+    expiresAt,
+  });
 
-  return {
-    login: profile?.login || null,
-    avatar_url: profile?.avatar_url || null,
-    html_url: profile?.html_url || null,
-    repos: repos.map((repo) => ({
-      id: repo.id,
-      name: repo.name,
-      owner: repo.owner?.login || null,
-      full_name: repo.full_name,
-      private: repo.private,
-      default_branch: repo.default_branch,
-      html_url: repo.html_url,
-    })),
-  };
+  return { token, expiresAt };
 };
 
 export const getGithubIntegration = async (userId, provider) => {
-  const data = await Integration.getIntegration({ userId, provider });
+  const rows = await Integration.getIntegration({ userId, provider });
 
-  if (data.length === 0) {
+  if (rows.length === 0) {
     return {
       success: true,
-      message: 'No Integration exist.',
+      message: "No Integration exist.",
       data: [],
     };
   }
 
   try {
     const integrationsWithMetadata = await Promise.all(
-      data.map(async (integration) => ({
-        id: integration.id,
-        name: integration.name,
-        provider: integration.provider,
-        external_id: integration.external_id,
-        metadata: await getGithubMetadata(integration.access_token),
-      }))
+      rows.map(async (integration) => {
+        const { token } = await getInstallationTokenForIntegration(userId, integration);
+        const installationMetadata = await fetchInstallationMetadata(integration.external_id, token);
+        const repositories = await fetchInstallationRepositories(token);
+
+        await upsertGithubInstallation({
+          userId,
+          installationId: integration.external_id,
+          accountLogin: installationMetadata.account.login || integration.name,
+          repositorySelection: installationMetadata.repositorySelection,
+          installationToken: token,
+          expiresAt: integration.expires_at,
+        });
+
+        return {
+          id: integration.id,
+          name: integration.name,
+          provider: integration.provider,
+          installation_id: integration.external_id,
+          metadata: {
+            login: installationMetadata.account.login,
+            account_type: installationMetadata.account.type,
+            avatar_url: installationMetadata.account.avatarUrl,
+            repository_selection: installationMetadata.repositorySelection,
+            repositories,
+          },
+        };
+      }),
     );
 
     return {
       success: true,
-      message: 'All Integration Fetched.',
+      message: "All Integration Fetched.",
       data: integrationsWithMetadata,
     };
   } catch (error) {
-    console.error('GitHub Integration CRUD Error:', error.response?.data || error.message);
-    throw new AppError('Failed to fetch GitHub integration metadata', 500);
+    console.error("GitHub Integration CRUD Error:", error.response?.data || error.message);
+    throw new AppError("Failed to fetch GitHub integration metadata", 500);
   }
 };

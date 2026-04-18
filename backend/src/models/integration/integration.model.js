@@ -11,44 +11,45 @@ const query = async (sql, params = [], client = pool) => {
   }
 };
 
-export const Integration = {        // external_id == team.id for slack
+export const Integration = {
+  sameIntegrationExists: async ({ userId, provider, externalId }, client = pool) => {
+    const rows = await query(
+      "SELECT EXISTS (SELECT 1 FROM integrations WHERE user_id = ? AND provider = ? AND external_id = ?) AS sameIntegrationExists",
+      [userId, provider, externalId],
+      client,
+    );
+    return Number(rows[0].sameIntegrationExists) === 1;
+  },
 
-    sameIntegrationExists: async({userId, provider, externalId}, client = pool) => {
-        const rows = await query(
-            "SELECT EXISTS (SELECT 1 FROM integrations WHERE user_id = ? AND provider = ? AND external_id = ?) AS sameIntegrationExists",
-            [userId, provider, externalId], 
-            client
-        );
-        return Number(rows[0].sameIntegrationExists) === 1;
-    },
-
-    insertTokenProvider: async({userId, provider, externalId, name}, client = pool) => {
-        const rows = await query(
-            `INSERT INTO integrations (user_id, provider, external_id, name) VALUES (?, ?, ?, ?) 
-            ON DUPLICATE KEY UPDATE 
+  insertTokenProvider: async ({ userId, provider, externalId, name }, client = pool) => {
+    const rows = await query(
+      `INSERT INTO integrations (user_id, provider, external_id, name) VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
             name = VALUES(name),
             id = LAST_INSERT_ID(id) `,
-            [userId, provider, externalId, name], 
-            client
-        );
+      [userId, provider, externalId, name],
+      client,
+    );
 
-        return rows;
+    return rows;
+  },
+
+  insertOAuthToken: async (
+    {
+      integrationId,
+      accessToken,
+      refreshToken,
+      tokenType,
+      scope,
+      expiresAt,
+      last_refreshed_at,
     },
-
-    insertOAuthToken: async ({ 
-            integrationId, 
-            accessToken, 
-            refreshToken, 
-            tokenType, 
-            scope, 
-            expiresAt, 
-            last_refreshed_at 
-        }, client = pool) => {
-
-        const rows = await query(
-            `INSERT INTO integration_accounts (integration_id, access_token, refresh_token, token_type, scope, expires_at, last_refreshed_at)
+    client = pool,
+  ) => {
+    const rows = await query(
+      `INSERT INTO integration_accounts (integration_id, access_token, refresh_token, token_type, scope, expires_at, last_refreshed_at)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE 
+            ON DUPLICATE KEY UPDATE
             access_token = VALUES(access_token),
             refresh_token = COALESCE(VALUES(refresh_token), refresh_token),
             token_type = VALUES(token_type),
@@ -56,16 +57,16 @@ export const Integration = {        // external_id == team.id for slack
             expires_at = VALUES(expires_at),
             last_refreshed_at = VALUES(last_refreshed_at)
             `,
-            [integrationId, accessToken, refreshToken, tokenType, scope, expiresAt, last_refreshed_at], 
-            client
-        );
+      [integrationId, accessToken, refreshToken, tokenType, scope, expiresAt, last_refreshed_at],
+      client,
+    );
 
-        return rows[0];
-    },
+    return rows[0];
+  },
 
-    getIntegration: async({userId, provider}, client = pool) => {
-        const rows = await query(
-            `SELECT
+  getIntegration: async ({ userId, provider }, client = pool) => {
+    const rows = await query(
+      `SELECT
                 i.id,
                 i.name,
                 i.provider,
@@ -79,39 +80,52 @@ export const Integration = {        // external_id == team.id for slack
             FROM integrations AS i
             INNER JOIN integration_accounts AS ia ON i.id = ia.integration_id
             WHERE i.user_id = ? AND i.provider = ?`,
-            [userId, provider],
-            client
-        );
-        
-        return rows;
-    },
+      [userId, provider],
+      client,
+    );
 
-    getIntegrationAccountToken: async ({ userId, provider, externalId }, client = pool) => {
-        const rows = await query(
-            `SELECT ia.access_token
+    return rows;
+  },
+
+  getIntegrationByProviderAndExternalId: async ({ provider, externalId }, client = pool) => {
+    const rows = await query(
+      `SELECT i.id, i.user_id, i.provider, i.external_id, i.name
+       FROM integrations AS i
+       WHERE i.provider = ? AND i.external_id = ?
+       LIMIT 1`,
+      [provider, externalId],
+      client,
+    );
+
+    return rows[0] || null;
+  },
+
+  getIntegrationAccountToken: async ({ userId, provider, externalId }, client = pool) => {
+    const rows = await query(
+      `SELECT ia.access_token
             FROM integrations AS i
             INNER JOIN integration_accounts AS ia ON i.id = ia.integration_id
             WHERE i.user_id = ? AND i.provider = ? AND i.external_id = ?
             LIMIT 1`,
-            [userId, provider, externalId],
-            client
-        );
+      [userId, provider, externalId],
+      client,
+    );
 
-        return rows[0]?.access_token || null;
-    },
+    return rows[0]?.access_token || null;
+  },
 
-    getScopes: async ({userId, provider}, client = pool) => {
-        const rows = await query(
-            `SELECT i.id, i.user_id, i.provider, ia.scope
+  getScopes: async ({ userId, provider }, client = pool) => {
+    const rows = await query(
+      `SELECT i.id, i.user_id, i.provider, ia.scope
             FROM integrations AS i
             INNER JOIN integration_accounts AS ia ON i.id = ia.integration_id
             WHERE i.user_id = ? AND i.provider = ?
             LIMIT 1
             `,
-            [userId, provider],
-            client
-        );
+      [userId, provider],
+      client,
+    );
 
-        return rows[0] || null;
-    }
-}
+    return rows[0] || null;
+  },
+};
