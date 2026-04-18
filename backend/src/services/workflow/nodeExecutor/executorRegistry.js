@@ -5,20 +5,20 @@ import { geminiAIExecutor } from "./geminiAIExecutor.js";
 import { perplexityAIExecutor } from "./perplexityAIExecutor.js";
 import { openAIExecutor } from "./openAIExecutor.js";
 import { slackExecutor } from "./slackExecutor.js";
-import { googleFormExecutor } from "./googleFormExecutor.js";
 import { gmailExecutor } from "./gmail/gmailExecutor.js";
 import { googleDriveExecutor } from "./googleDrive/googleDriveExecutor.js";
+import { handleGoogleForm } from "./googleForm/getResponse.js";
 
 export const executorRegistry =  {
     manual: manualExecutor,
     http: httpExecutor,
-    googleForm: googleFormExecutor,
     geminiAI: geminiAIExecutor,
     perplexityAI: perplexityAIExecutor,
     openAI: openAIExecutor,
     slack: slackExecutor,
     gmail: gmailExecutor,
     googleDrive: googleDriveExecutor,
+    googleForm: handleGoogleForm,
 }
 
 export const getNodeExecutor = (type) => {

@@ -70,17 +70,17 @@ const runTriggerPolling = async (trigger) => {
   //   pollingResult = await fetchGmailData(accessToken, lastChecked, senderEmail, label);
   // }
 
-  if (trigger.trigger_type === "googleDrive") {
-    const folderId = triggerConfig?.folderId || null;
-    const savedEvent = triggerConfig?.event || null;
-    pollingResult = await fetchDriveData(accessToken, lastChecked, folderId, savedEvent);
-  }
-
-  // if (trigger.trigger_type === "googleForm") {
-  //   const formId = triggerConfig?.formId || null;
+  // if (trigger.trigger_type === "googleDrive") {
+  //   const folderId = triggerConfig?.folderId || null;
   //   const savedEvent = triggerConfig?.event || null;
-  //   pollingResult = await fetchGoogleFormData(accessToken, lastChecked, formId, savedEvent);
+  //   pollingResult = await fetchDriveData(accessToken, lastChecked, folderId, savedEvent);
   // }
+
+  if (trigger.trigger_type === "googleForm") {
+    const formId = triggerConfig?.formId || null;
+    const savedEvent = triggerConfig?.event || null;
+    pollingResult = await fetchGoogleFormData(accessToken, lastChecked, formId, savedEvent);
+  }
 
   if (pollingResult?.payload?.length > 0) {
     console.log("Inngest Payload : ", pollingResult?.payload);

@@ -69,8 +69,8 @@ export const pollWorkflowTriggers = inngest.createFunction(
   async ({ step }) => {
     const result = await step.run("poll-gmail-drive-triggers", async () => {
       console.log("Polling workflow triggers...");
-      //return processWorkflowPolling();
-      return;
+      return processWorkflowPolling();
+      //return;
     });
 
     return result;

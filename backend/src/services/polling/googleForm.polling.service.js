@@ -23,11 +23,10 @@ export const fetchGoogleFormData = async (accessToken, lastCheckedTime, formId, 
         }
     });
 
-    console.log("Form Data : ", response.data);
     const responseData = response.data.responses || []
 
     return {
-        responseData,
+        payload: responseData,
         newLastChecked: new Date().toISOString(),   // Update last checked time to now to do something with it in future
     }         
 };
