@@ -1,5 +1,5 @@
 import CloseBtn from '@/components/common/CloseBtn';
-import useWorkflowData from '@/stores/workflowDataStore';
+//import useWorkflowData from '@/stores/workflowDataStore';
 import { useGetIntegration } from '@/hooks/useIntegration';
 import { CircleX, Loader2 } from 'lucide-react';
 
@@ -7,12 +7,12 @@ import AuthState from './AuthState';
 import ConfigState from './ConfigState';
 
 const GitHubConfig = ({ selectedNode, onClose, setNodeConfig }) => {
-  const { workflowId } = useWorkflowData();
+  //const { workflowId } = useWorkflowData();
   const { data, isLoading, isError, isFetching, refetch } = useGetIntegration('github');
 
   const handleConnect = () => {
     window.open(
-      `http://localhost:5000/api/integration/oauth/github/connect?workflowId=${workflowId}`,
+      `https://github.com/apps/flowai-app/installations/new`,
       '_blank'
     );
   };

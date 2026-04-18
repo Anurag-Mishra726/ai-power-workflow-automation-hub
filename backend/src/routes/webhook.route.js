@@ -3,12 +3,14 @@ import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { 
     manualExecuteWorkflow, 
     googleFormExecuteWorkflow,
+    handleGithubWebhook,
 } from "../controllers/webhook.controllers.js";
 
 const router = express.Router();
 
 router.post("/:workflowId/execute", authMiddleware, manualExecuteWorkflow)
 router.post("/google-form/:workflowId/", googleFormExecuteWorkflow);
+router.post("/github", handleGithubWebhook);
 
 export default router
 
