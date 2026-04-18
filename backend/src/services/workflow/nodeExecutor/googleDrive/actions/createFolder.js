@@ -12,8 +12,8 @@ const getAccessToken = async (userId, accountId) => {
 };
 
 export const handleCreateFolder = async ({ data, nodeId, context, userId }) => {
-  const { fileName, driveId } = data.config;
-
+  const { folderName, driveId } = data.config;
+  console.log("Folder Name : ", folderName);
   const accessToken = await getAccessToken(
     userId,
     driveId
@@ -22,7 +22,7 @@ export const handleCreateFolder = async ({ data, nodeId, context, userId }) => {
   const response = await axios.post(
     "https://www.googleapis.com/drive/v3/files",
     {
-      filename: fileName,
+      name: folderName,
       mimeType: "application/vnd.google-apps.folder",
     },
     {

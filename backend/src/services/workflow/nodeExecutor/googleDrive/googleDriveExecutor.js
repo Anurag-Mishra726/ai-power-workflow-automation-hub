@@ -1,5 +1,9 @@
 import { NonRetriableError } from "inngest";
-import { handleDriveTrigger } from "./triggers/newFile.js";
+// triggers
+import { handleNewFileTrigger } from "./triggers/newFile.js";
+import { handleDeleteFileTrigger } from "./triggers/deleteFile.js";
+
+// actions
 import { handleCreateFile } from "./actions/createFile.js";
 import { handleDeleteFile } from "./actions/deleteFile.js";
 import { handleCreateFolder } from "./actions/createFolder.js";
@@ -7,11 +11,11 @@ import { handleDeleteFolder } from "./actions/deleteFolder.js";
 import { createExecutionResult } from "../../../../utils/executionResult.js";
 
 const TRIGGER_MAP = {
-  file_created: handleDriveTrigger,
-  file_updated: handleDriveTrigger,
-  file_deleted: handleDriveTrigger,
-  folder_created: handleDriveTrigger,
-  folder_deleted: handleDriveTrigger,
+  file_created: handleNewFileTrigger,
+  file_updated: handleNewFileTrigger,
+  file_deleted: handleDeleteFileTrigger,
+  folder_created: handleNewFileTrigger,
+  folder_deleted: handleDeleteFileTrigger,
 };
 
 const ACTION_MAP = {

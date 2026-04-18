@@ -61,7 +61,7 @@ const fetchFileContent = async (fileId, mimeType, accessToken, size) => {
   }
 };
 
-export const handleDriveTrigger = async ({
+export const handleNewFileTrigger = async ({
   data,
   nodeId,
   context,
