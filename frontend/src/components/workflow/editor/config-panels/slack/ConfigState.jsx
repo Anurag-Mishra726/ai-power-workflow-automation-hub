@@ -1,0 +1,202 @@
+import React, { useMemo, useEffect } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
+import {
+  Plus, 
+  Hash, 
+  ChevronRight,
+  LayoutGrid,
+  Send,
+  Braces,
+  CircleDot
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+import useEditorUIStore from "@/stores/workflowEditorStore";
+
+
+const ConfigState = ({handleConnect, selectedNode, setNodeConfig, data}) => {    
+    
+    const {setIsConfigSidebarClose} = useEditorUIStore();
+    
+    const { 
+        register, 
+        handleSubmit, 
+        watch,
+        control,
+        setValue,
+        reset,
+        formState: { errors } 
+    } = useForm({
+        defaultValues: {
+            variable: '',
+            workspaceId: '',
+            channelId: '',
+            message: ''
+        }
+    });
+
+    useEffect(() => {
+        if (!data || data.length === 0) return;
+
+        const prefilledWorkspaceId = selectedNode?.data?.config?.workspaceId || data[0].external_id;
+        const selectedWorkspace = data.find((workspace) => workspace.external_id === prefilledWorkspaceId) || data[0];
+        const prefilledChannelId = selectedNode?.data?.config?.channelId || selectedWorkspace?.channels?.[0]?.channelId || "";
+
+        reset({
+            workspaceId: prefilledWorkspaceId,
+            channelId: prefilledChannelId,
+            variable: selectedNode?.data?.config?.variable || "",
+            message: selectedNode?.data?.config?.message || ""
+        });
+    }, [data, reset, selectedNode?.data?.config?.channelId, selectedNode?.data?.config?.message, selectedNode?.data?.config?.variable, selectedNode?.data?.config?.workspaceId]);
+
+    const selectedWorkspaceId = watch('workspaceId');
+    const selectedChannelId = watch("channelId");
+
+    const watchMyVariableName = useWatch({control, name: 'variable'}) || '' ;
+
+    const currentWorkspace = useMemo(() => 
+        data.find((workspace) => workspace.external_id === selectedWorkspaceId),
+        [data, selectedWorkspaceId]
+    );
+
+    useEffect(() => {
+        if (!currentWorkspace?.channels?.length) return;
+
+        const selectedChannelExists = currentWorkspace.channels.some(
+            (channel) => channel.channelId === selectedChannelId
+        );
+
+        if (!selectedChannelExists) {
+            setValue("channelId", currentWorkspace.channels[0].channelId);
+        }
+    }, [currentWorkspace, selectedChannelId, setValue]);
+
+    const onSubmit = async (data) => {
+        console.log('Form Submitted:', data);
+        const status = await setNodeConfig(data); 
+
+        if(status.success) toast.success("Slack Node Configured Successfully");
+        else toast.error("Something went Wrong!");
+
+        setIsConfigSidebarClose();
+    };
+
+  return (
+    <>
+        <form 
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex-1 flex flex-col overflow-hidden"
+            >
+            <div className='flex-1 overflow-y-auto px-4 py-4 space-y-6'>
+                <section>
+                    <div className="space-y-3">
+                        <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
+                            <Braces size={18} /> Variable
+                        </label>
+                        <input 
+                        {...register('variable', { required: 'Variable name is required.',
+                            minLength: {value: 3, message: "Min 3 chars."},
+                            maxLength: {value:15, message: "Max 15 chars"}
+                            })}
+                        placeholder="eg.  mySlack"
+                        className={`flex rounded-md w-full bg-zinc-900 border border-zinc-700 px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#E01E5A]/50 `}
+                        />
+                        <p className="text-[12px] mt-1 text-zinc-400">Reference this node's output in other nodes: {" "}
+                            <span className='text-white text-[13px]'>{`{{${watchMyVariableName.trim()}.output.data}}`}</span>
+                            <span className="text-[12px] text-zinc-400"> {" "} ← Copy this syntax</span>  
+                        </p>
+                        {errors.variable && (
+                            <p className="text-[10px] text-red-500 font-medium">{errors.variable.message}</p>
+                        )}
+                    </div>
+                </section>
+                {/* Workspace Selection */}
+                <section>
+                    <div className="space-y-3">
+                        <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
+                            <LayoutGrid size={15} /> Workspace
+                        </label>
+                        <div className="relative">
+                            <CircleDot className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500' />
+                            <select 
+                            {...register('workspaceId', { required: true })}
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#E01E5A]/50 appearance-none transition-all cursor-pointer hover:bg-zinc-800/50"
+                            >
+                                <option value="" disabled>Select Workspace</option>
+                            {data.map(ws => (
+                                <option key={ws.external_id} value={ws.external_id}>{ws.name}</option>
+                            ))}
+                            </select>
+                            <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
+                        </div>
+                    </div>
+                </section>
+
+                {/* Channel Selection */}
+                <section>
+                    <div className="space-y-3">
+                        <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
+                            <Hash size={15} /> Channel
+                        </label>
+                        <div className="relative">
+                            <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                            <select 
+                            {...register('channelId', { required: true })}
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#E01E5A]/50 appearance-none transition-all cursor-pointer hover:bg-zinc-800/50"
+                            >
+                            {currentWorkspace?.channels?.map((channel) => (
+                                <option key={channel.channelId} value={channel.channelId}>{channel.channelName}</option>
+                            ))}
+                            </select>
+                            <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 rotate-90 pointer-events-none" />
+                        </div>
+                    </div>
+                </section>         
+
+            {/* Message Content */}
+                <section>
+                    <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
+                                <Send size={15} /> Message Content
+                            </label>
+                            <span className="text-[10px] text-zinc-500 font-mono">Markdown OK</span>
+                        </div>
+                        <textarea 
+                            placeholder="Write your message here..."
+                            rows={8}
+                            {...register('message', { required: 'Message cannot be empty' })}
+                            className={`w-full bg-zinc-900 border ${errors.message ? 'border-red-500' : 'border-zinc-800'} rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#E01E5A]/50 resize-none transition-all`}
+                        />
+                        {errors.message && (
+                            <p className="text-[10px] text-red-500 font-medium">{errors.message.message}</p>
+                        )}
+                    </div>
+                </section>
+                <section>
+                <button 
+                type='button'
+                  onClick={handleConnect}
+                  className=" flex items-center justify-center gap-2 bg-[#E01E5A] hover:bg-[#c2184d] text-white text-sm font-semibold py-3 px-4 rounded-xl transition-all active:scale-[0.98] disabled:opacity-50"
+                >
+                    <Plus size={15} className='font-bold' />
+                    Add Workspace
+                </button>
+            </section>
+            </div>
+
+            {/* Submit Button */}
+            <div className="border-t border-zinc-600 px-4 py-3 flex justify-end bg-zinc-900/50">
+                <button
+                    type="submit"
+                    className="w-full flex items-center justify-center gap-2 bg-white text-black font-bold py-3 rounded-xl hover:bg-zinc-200 transition-colors"
+                >
+                    Save Configuration
+                </button>
+            </div>
+        </form>
+    </>
+  );
+}
+
+export default ConfigState;

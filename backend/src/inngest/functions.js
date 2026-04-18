@@ -1,56 +1,78 @@
 import { inngest } from "./client.js";
-import {gemini, perplexity} from "../ai/generateText.js";
-import { generateText } from "ai"; 
-import { perplexitySonar } from "../ai/perplexity.js";
+import { NonRetriableError } from "inngest";
+import { Workflow } from "../models/workflow.model.js";
+import { sortWorkflowNodes } from "../utils/toposortNodes.js";
+import { getNodeExecutor } from "../services/workflow/nodeExecutor/executorRegistry.js";
+import { httpRequestChannel } from "./workflowStatus.js";
+//import { processWorkflowPolling } from "../services/pollingService.js";
+import { processWorkflowPolling } from "../services/polling/polling.service.js";
 
+export const executeWorkflow = inngest.createFunction(
+  { id: "execute-workflow" },
+  { event: "workflow/execute",
+    channel: [httpRequestChannel()],
+  },
 
-
-export const helloWorld = inngest.createFunction(
-    {id: "hello-world"},
-    {event: "test/hello"},
-    async({event, step}) => {
-        console.log("Hello, World!", event);
-        console.log("Event data:", event.data);
-
-        const greeting = await step.run("greet", async () => {
-            const name  = event.data.name || "Guest";
-            const greetMsg = `Hello, ${name}! Welcome to AI Power Workflow Automation Hub.`;
-            console.log("this is the first step of the GRRETING FUNCTION ---> ", greetMsg);
-            return greetMsg;
-        });
-
-        await step.sleep("wait-5-seconds", 5000);
-
-        await step.run("log-completed", async () => {
-            console.log("Logs completed");
-            return {message: "Greeting process completed.", completed: true};
-        });
-
-        return{
-            message: "Function execution finished.",
-            timestamp: new Date().toISOString(),
-            eventId: event.id,
-        }
+  async ({ event, step, publish }) => {
+    const workflowId = event.data.workflowId;
+    if (!workflowId) {
+      throw new NonRetriableError("Workflow Id is missing!");
     }
+
+    const sortedNodes = await step.run("prepare-workflow", async () => {
+
+      const workflowGraph = await Workflow.getWorkflowGraph({ workflowId });
+
+      try {
+        const executableNodes = await sortWorkflowNodes(workflowGraph);
+        return executableNodes;
+      } catch (error) {
+        throw new NonRetriableError(error.message || "Invalid workflow!");
+      }
+
+    });
+
+    const userId = await step.run("find-userId", async () =>{
+      const userId = await Workflow.getUserId({workflowId});
+      return userId.user_id;
+    });
+
+    let context = event.data.initialData || {};
+
+    for (const node of sortedNodes) {
+      const triggerType = node?.data?.triggerType;
+
+      const nodeExecutor = getNodeExecutor(triggerType);
+      const response = await step.run(`node-${node.id}`, async () => {
+       
+        return await nodeExecutor({
+          data: node.data,
+          nodeId: node.id,
+          context,
+          userId,
+          publish
+        });
+      });          
+      
+      context[node?.data?.config?.variable || node.id] = response;    // there is a possibility that variable name is same, in that case we need uinique variable names or override the previous one, for now we will override it.
+    }
+
+    //console.log(context);
+    return { workflowId, result: context };
+  },
 );
 
 
-
-export const aiTest = inngest.createFunction(
-  { id: "test-ai" },
-  { event: "test/ai" },
+export const pollWorkflowTriggers = inngest.createFunction(
+  { id: "poll-workflow-triggers" },
+  { cron: "*/1 * * * *" },
   async ({ step }) => {
-    const { steps } = await step.ai.wrap(
-      "Test-AI-Step",
-      generateText,  
-      {
-        model: perplexitySonar,     
-        prompt: "What is the capital of India? List 2 more facts."
-      }
-    );
-    console.log("Printingin the funtion Inngest : ", steps);
-    return {
-      aiResponse: steps
-    };
+    const result = await step.run("poll-gmail-drive-triggers", async () => {
+      console.log("Polling workflow triggers...");
+      //return processWorkflowPolling();
+      return;
+    });
+
+    return result;
   }
 );

@@ -23,7 +23,18 @@ const BaseNodeSchema = z.object({
         isTrigger: z.boolean(),
         isConfigured: z.boolean(),
         label: z.string().optional(),
-        triggerType: z.enum(["manual", "http"]).optional(),
+        triggerType: z.enum([
+            "manual", 
+            "http", 
+            "geminiAI",
+            "openAI",
+            "perplexityAI",
+            "slack",
+            "googleForm",
+            "googleDrive",
+            "gmail",
+            "github",
+        ]).optional(),
         summary: z.string().optional().or(z.literal("")),
         config: z.any(),
     }),
@@ -35,10 +46,13 @@ const ManualTriggerConfig = z.object({
 
 const HttpConfig = z.object({
     method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
+    variable: z.string().min(2, "Variable name is too small.").regex( 
+        /^[a-zA-Z0-9-_]+$/, 
+        "Special characters are not allowed. Please use only letters, numbers, hypen: (-) and underscore: (_)."
+    ),
     url: z.string(),
-    //triggerName: z.string().optional(),
-    headers: z.string().optional(),
-    body: z.string().optional(),
+    headers: z.object().optional(),
+    body: z.object().optional(),
     }).superRefine((val, ctx) => {
     if (val.method === "GET" && val.body) {
         ctx.addIssue({
@@ -50,9 +64,34 @@ const HttpConfig = z.object({
     if (["POST", "PUT", "PATCH"].includes(val.method) && !val.body) {
         ctx.addIssue({
         path: ["body"],
-        message: "Body and Header is required for this HTTP method",
+        message: "Body is required for this HTTP method",
         });
     }
+    if (["POST", "PUT", "PATCH"].includes(val.method) && !val.headers) {
+        ctx.addIssue({
+        path: ["headers"],
+        message: "Headers is required for this HTTP method",
+        });
+    }
+});
+
+const AI = z.object({
+    variable: z.string().min(2, "Variable name is too small.").max(15, "Variable name is too big").regex( 
+        /^[a-zA-Z0-9-_]+$/, 
+        "Special characters are not allowed. Please use only letters, numbers, hypen: (-) and underscore: (_)."
+    ),
+    systemPrompt: z.string().optional(),
+    userPrompt: z.string(),
+});
+
+const Slack = z.object({
+    variable: z.string().min(2, "Variable name is too small.").max(15, "Variable name is too big").regex( 
+        /^[a-zA-Z0-9-_]+$/, 
+        "Special characters are not allowed. Please use only letters, numbers, hypen: (-) and underscore: (_)."
+    ),
+    workspaceId: z.string(),
+    channelId: z.string(),
+    message: z.string(),
 });
 
 
@@ -82,6 +121,30 @@ const workflowNodeSchema = BaseNodeSchema.superRefine((node, ctx) => {
                     code: issue.code,
                     message: issue.message,
                     path: ["data", "config", ...issue.path],
+                })
+            });
+        }
+    }
+
+    if(["geminiAI", "perplexityAI"].includes(node.data.triggerType)){
+        const result = AI.safeParse(node.data.config);
+        if (!result.success) {
+            result.error.issues.forEach(issue => {
+                ctx.addIssue({
+                    code: issue.code,
+                    message: issue.message,
+                })
+            });
+        }
+    }
+
+    if (node.data.triggerType === "slack") {
+        const result = Slack.safeParse(node.data.config);
+        if (!result.success) {
+            result.error.issues.forEach(issue => {
+                ctx.addIssue({
+                    code: issue.code,
+                    message: issue.message,
                 })
             });
         }

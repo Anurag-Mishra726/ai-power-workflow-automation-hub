@@ -8,6 +8,7 @@ const useEditorUIStore = create(
         isSidebarOpen: false,
         isConfigSidebarOpen: false,
         deleteNodeRequestId: null,
+        nodeType: null,
 
         setActiveNode: (id) =>{
             set({ activeNodeId: id });
@@ -34,6 +35,10 @@ const useEditorUIStore = create(
 
         setIsConfigSidebarClose: () => {
             set({isConfigSidebarOpen: false});
+        },
+
+        setNodeType: (type) => {
+            set({nodeType: type});
         },
 
         requestDeleteNode: (nodeId) => set({ deleteNodeRequestId: nodeId }),

@@ -3,16 +3,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { MdOutlineAccountTree, MdErrorOutline } from "react-icons/md";
 import { FaArrowRight } from "react-icons/fa6";
 import { GoZap } from "react-icons/go";
-import {faBell, faMagnifyingGlass, faPlus} from "@fortawesome/free-solid-svg-icons";
+import { faPlus} from "@fortawesome/free-solid-svg-icons";
 import useAuthStore from "@/stores/authStore";
-import { useNavigate } from "react-router-dom";
-import { useGenerateWorkflowId } from "@/hooks/useWorkflowApi ";
+import { NavLink } from "react-router-dom";
+import { useGenerateWorkflowId } from "@/hooks/useWorkflowApi";
 import React from "react";
 
 const Main = () => {
 
-  const navigate = useNavigate();
-  const { mutate, isPending } = useGenerateWorkflowId();
+  const { mutate } = useGenerateWorkflowId();
   const username = useAuthStore( (state) => state.username ) || "Effortlessly";
   const isAuthenticated  = useAuthStore( (state) => state.isAuthenticated ) || false;
 
@@ -60,12 +59,18 @@ const Main = () => {
                       </p>
                     </div>
                     <div className="flex-shrink-0">
-                      <button onClick={() => navigate("/auth/login")} className="group inline-flex items-center justify-center px-6 py-3 border border-white/10 hover:border-[#06b6d4]/50 text-sm font-medium rounded-full shadow-[0_0_20px_-5px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_-5px_rgba(6,182,212,0.4)] text-white bg-white/5 hover:bg-[#06b6d4]/10 transition-all duration-300 backdrop-blur-sm">
-                        <span className="material-symbols-outlined mr-2 group-hover:text-[#06b6d4] transition-colors">
-                          <FontAwesomeIcon icon={faPlus} />
-                        </span>
-                        Create Workflow
-                      </button>
+                      <NavLink
+                        to="/auth/login"
+                      >
+                        <button 
+                        // onClick={() => navigate("/auth/login")} 
+                          className="group inline-flex items-center justify-center px-6 py-3 border border-white/10 hover:border-[#06b6d4]/50 text-sm font-medium rounded-full shadow-[0_0_20px_-5px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_-5px_rgba(6,182,212,0.4)] text-white bg-white/5 hover:bg-[#06b6d4]/10 transition-all duration-300 backdrop-blur-sm">
+                          <span className="material-symbols-outlined mr-2 group-hover:text-[#06b6d4] transition-colors">
+                            <FontAwesomeIcon icon={faPlus} />
+                          </span>
+                          Create Workflow
+                        </button>
+                      </NavLink>
                     </div>
                 </>
                 )}

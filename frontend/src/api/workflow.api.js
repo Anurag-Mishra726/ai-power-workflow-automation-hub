@@ -23,7 +23,12 @@ export const generateWorkflowId = async () => {
 }
 
 export const deleteWorkflow = async (workflowId) => {
-    const res = await api.delete('/workflows/delete-workflow', {
+    await api.delete('/workflows/delete-workflow', {
         params: {workflowId}
     });
 }
+
+export const executeWorkflow = async (workflowId) => {
+  const res = await api.post(`/webhook/${workflowId}/execute`);
+  return res.data;
+};

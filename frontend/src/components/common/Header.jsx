@@ -7,7 +7,7 @@ import { Save, ChevronRight, Trash2 } from "lucide-react";
 import { FaGreaterThan } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import useWorkflowData from "@/stores/workflowDataStore";
-import { useDeleteWorkflow, useWorkflowSave } from "@/hooks/useWorkflowApi ";
+import { useDeleteWorkflow, useWorkflowSave } from "@/hooks/useWorkflowApi";
 import { WorkflowName } from "@/schemas/workflowSchema";
 
 const Header = () => {
@@ -26,6 +26,8 @@ const Header = () => {
     pageTitle = "Home";
   }else if(path.startsWith("/workflow")){
     pageTitle = "Workflow";
+  }else if (path.startsWith("/integrations")) {
+    pageTitle = "Integrations";
   }else{
     pageTitle = "FlowAI";
   }

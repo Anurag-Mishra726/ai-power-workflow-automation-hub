@@ -2,9 +2,11 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const requiredEnvVars = ["JWT_SECRET_KEY",
-    "PORT","NODE_ENV", 
-    "SENTRY_DNS",
+const requiredEnvVars = [
+    "PORT",
+    "NODE_ENV", 
+    "JWT_SECRET_KEY",
+    "ENCRYPTION_SECRET",
     "DB_HOST",
     "DB_USER",
     "DB_PORT",

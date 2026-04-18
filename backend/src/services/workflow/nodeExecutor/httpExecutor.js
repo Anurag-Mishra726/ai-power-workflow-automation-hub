@@ -1,0 +1,127 @@
+import { NonRetriableError } from "inngest";
+import { httpRequestChannel } from "../../../inngest/workflowStatus.js";
+import axios from "axios";
+import Handlebars from 'handlebars';
+import { createExecutionResult } from "../../../utils/executionResult.js";
+
+export const httpExecutor = async ({data, nodeId, context, publish}) => {
+
+    await publish(
+        httpRequestChannel().status({
+            nodeId,
+            status: "loading",
+        })
+    );
+
+    if (!data.isConfigured || !["GET", "POST", "PUT", "PATCH", "DELETE"].includes(data?.config?.method) || !data.config.variable ) {
+        await publish(
+            httpRequestChannel().status({
+                nodeId,
+                status: "error",
+            })
+        );
+        throw new NonRetriableError("Node is not configured.")
+    }
+
+    const method = data.config.method;
+    
+    if (["POST", "PUT", "PATCH"].includes(method) && !data.config.body && !data.config.headers) {
+        await publish(
+            httpRequestChannel().status({
+                nodeId,
+                status: "error",
+            })
+        );
+        throw new NonRetriableError("Node is not configured.");
+    }
+    
+    const endpoint = Handlebars.compile(data.config.url)(context); 
+    
+    if (!endpoint) {
+        await publish(
+            httpRequestChannel().status({
+                nodeId,
+                status: "error",
+            })
+        );
+        throw new NonRetriableError(
+            "Resolved HTTP URL is empty. Check your URL template and referenced variables."
+        );
+    }
+
+    // try {
+    //     new URL(endpoint);
+    // } catch (error) {
+    //     await publish(
+    //         httpRequestChannel().status({
+    //             nodeId,
+    //             status: "error",
+    //         })
+    //     );
+    //     throw new NonRetriableError(
+    //         `Invalid HTTP URL after template rendering: "${endpoint}".`
+    //     );
+    // }
+
+    const startTime = Date.now();
+
+    let result;
+    let error = null;
+    let executionStatus = true;
+    
+    try {
+        const config = {
+            method: method,
+            url: endpoint,
+        };
+
+        if (["POST", "PUT", "PATCH"].includes(method) ) {
+            const body = JSON.parse(Handlebars.compile(JSON.stringify(data.config.body))(context));
+
+            config.data = body;
+            config.headers = data.config.headers;
+
+        }else if (method == "DELETE"){
+            config.headers = data.config.headers;
+        }
+
+        result = await axios(config);
+
+        await publish(
+            httpRequestChannel().status({
+                nodeId,
+                status: "success",
+            })
+        );
+    } catch (err) {
+        await publish(
+            httpRequestChannel().status({
+                nodeId,
+                status: "error",
+            })
+        );
+        console.log(err);
+        executionStatus = false;
+        error = {
+            message: err.message,
+            response: err.response?.data,
+            status: err.response?.status,
+            stack: err.stack
+        };
+        result = { data: null }; 
+    }
+
+    return createExecutionResult({
+        output:{
+            nodeId,
+            triggered: true,
+            startTime: startTime,
+            endTime: Date.now(), 
+            data: result.data,
+            statusCode: result.status || error?.status,
+            status: executionStatus, 
+            //headers: result.headers 
+        },
+        error: error
+    });
+}

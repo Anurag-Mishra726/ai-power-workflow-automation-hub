@@ -46,6 +46,14 @@ export const Workflow = {
         return Number(rows[0].workflowExists) === 1;
     },
 
+    getUserId: async({workflowId}) => {
+        const rows = await query(
+            "SELECT user_id FROM workflows WHERE id = ?",
+            [workflowId]
+        );
+        return rows[0];
+    },
+
     getWorkflowMetadata: async ({userId}, client = pool) => {
         const rows = await query(
             "SELECT * FROM workflows WHERE user_id = ?",
@@ -58,7 +66,7 @@ export const Workflow = {
 
     getWorkflowGraph: async ({workflowId}, client = pool) => {
         const rows = await query(
-            "SELECT * FROM workflow_graphs WHERE id =?",
+            "SELECT * FROM workflow_graphs WHERE workflow_id = ?",
             [workflowId],
             client
         );
@@ -94,13 +102,13 @@ export const Workflow = {
         
         const { setClause, values } = genericQueryGenerator(updatableFields, { workflowId, userId });
 
-        const result = await query(
+        const rows = await query(
             `UPDATE workflows SET ${setClause} WHERE id = ? AND user_id = ?`,
             values,
             client
         );
 
-        return result;
+        return rows;
     },
 
     insertWorkflowGraphData: async ({workflowId, nodes, edges}, client = pool) => {
@@ -115,13 +123,13 @@ export const Workflow = {
 
         const { setClause, values } = genericQueryGenerator(updatableFields, { workflowId });
 
-        const result = await query(
+        const rows = await query(
             `UPDATE workflow_graphs SET ${setClause} WHERE workflow_id = ? `,
             values,
             client
         );
 
-        return result;
+        return rows;
     },
 
     deleteWorkflow: async ({ userId, workflowId }, client = pool) => {
@@ -132,5 +140,52 @@ export const Workflow = {
             client
         );
         return;
-    }
+    },
+
+    insertWorkflowTriggerTypes: async ({userId, workflowId, nodeId, triggerType, configJson, lastChecked}, client = pool) => {
+        const rows = await query(
+            `INSERT INTO workflow_triggers (user_id, workflow_id, node_id, trigger_type, config_json, last_checked) 
+            VALUES (?, ?, ?, ?, ?, ?)
+            `,
+            [userId, workflowId, nodeId, triggerType, configJson, lastChecked],
+            client
+        );
+    },
+
+    updateWorkflowTriggerTypes: async ({userId, workflowId, nodeId, triggerType, configJson, lastChecked}, client = pool) => {
+        const rows = await query(
+            `UPDATE workflow_triggers SET trigger_type = ?, config_json = ?, last_checked = ? WHERE user_id = ? AND workflow_id = ? AND node_id = ?`,
+            [triggerType, configJson, lastChecked, userId, workflowId, nodeId],
+            client
+        );
+    },
+
+    getPollingTriggers: async (client = pool) => {
+        const rows = await query(
+            `SELECT id, user_id, workflow_id, node_id, trigger_type, page_token, config_json, poll_interval, last_checked
+            FROM workflow_triggers
+            WHERE is_active = TRUE
+                AND trigger_type IN ('gmail', 'googleDrive', 'googleForm')
+                AND (next_poll_at IS NULL OR next_poll_at <= NOW())
+            ORDER BY next_poll_at ASC`,
+            [],
+            client
+        );
+
+        return rows;
+    },
+
+    updatePollingCheckpoint: async ({ triggerId, pageToken, lastChecked, pollInterval }, client = pool) => {
+        const rows = await query(
+            `UPDATE workflow_triggers
+            SET page_Token = ?,
+                last_checked = ?,
+                next_poll_at = DATE_ADD(?, INTERVAL ? SECOND)
+            WHERE id = ?`,
+            [pageToken, lastChecked, lastChecked, pollInterval, triggerId],
+            client
+        );
+
+        return rows;
+    },
 }

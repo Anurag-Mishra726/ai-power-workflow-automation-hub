@@ -6,19 +6,25 @@ import cors from "cors";
 
 import {serve} from "inngest/express";
 import {inngest} from "./src/inngest/client.js";
-import { helloWorld, aiTest } from "./src/inngest/functions.js";
+import { executeWorkflow, pollWorkflowTriggers } from "./src/inngest/functions.js";
+import { getSubscriptionToken } from "@inngest/realtime";
+import { httpRequestChannel } from "./src/inngest/workflowStatus.js";
 
 import {gemini, perplexity} from "./src/ai/generateText.js";
 
 import authRoutes from "./src/routes/auth.routes.js";
 import profileRoutes from "./src/routes/profile.routes.js";
 import workflowRoutes from "./src/routes/workflows.routes.js";
+import webhooks from "./src/routes/webhook.route.js";
+import aiIntegrationRoutes from "./src/routes/aiIntegration.routes.js";
+
+import integrationRoutes from "./src/routes/integration/integration.auth.routes.js"
 
 const app = express();
 await connectDB();
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173'],  
+  origin: ['http://localhost:5173', 'https://linus-terrible-murray.ngrok-free.dev'],  
   credentials: true,  
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -31,68 +37,30 @@ app.use(cookieParser());
 
 app.use("/api/inngest", serve({
     client: inngest,
-    functions : [helloWorld, aiTest]
+    functions : [executeWorkflow, pollWorkflowTriggers ]
 }));
 
 app.get("/", (req, res) => {
-     res.send("Welcome to the AI Power Workflow Automation Hub!");
-    
+    res.send("Welcome to the AI Power Workflow Automation Hub!");
+    // res.redirect("http://localhost:5173/workflow")
 });
 
-// TODOs : validate the data of workflow comming form frontend make DB than make proper service and store.
+app.get("/api/realtime/token", async (req, res) => {
+  const token = await getSubscriptionToken(inngest, {
+    channel: httpRequestChannel(),
+    topics: ["status"],
+  });
 
-app.post("/api/test", async (req, res) => {
-
-    try {
-        console.log("Starting Inngest................");
-        const {ids} = await inngest.send({
-            name: "test/hello",
-            data: {
-                name: req.body.name || "Anurag",
-                timestamp: new Date().toISOString()
-            }
-        })
-
-        console.log("IDS ------>   ", ids[0]);
-
-        res.json({
-            message: "Inngest event sent successfully",
-            eventId: ids[0],
-        })
-    } catch (error) {
-        console.log("Error : " , error);
-    }
-
+  res.json(token);
 });
-
-app.post("/api/test-ai", async (req, res) => {
-    try {
-        const {ids} = await inngest.send({
-            name: "test/ai", 
-        })
-        console.log(ids);
-        return res.json({
-            message: "AI Test event sent successfully",
-            eventId: ids[0],
-        })
-    } catch (error) {
-        console.log(error);
-    }
-})
-
-app.get("/api/test-ai", async (req, res) => {
-    const text = await perplexity("what is the capital of india?");
-    console.log(text);
-    res.json({
-        message: "Perplexity Test Successful",
-        response: text,
-    })
-})
-
 
 app.use("/api/auth", authRoutes);
 app.use("/api/workflows", workflowRoutes);
+app.use("/api/webhook", webhooks);
+app.use("/api/ai/integration", aiIntegrationRoutes);
+app.use("/api/integration", integrationRoutes);
 app.use("/api/user", profileRoutes);
+
 
 app.use((err, req, res, next) => {
     console.log("app.js --> ", err.message);
@@ -107,4 +75,4 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log("Server is running on http://localhost:" + PORT);
-})
+});

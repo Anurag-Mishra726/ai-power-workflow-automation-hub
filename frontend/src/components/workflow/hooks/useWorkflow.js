@@ -47,29 +47,29 @@ export const useWorkflow = () => {
 
     const {isSidebarOpen, setIsSidebarOpen, setIsSidebarClose} = useEditorUIStore();
 
-    const openSidebar = () => {
+    const openSidebar = useCallback(() => {
         setIsSidebarOpen()
-    }
+    }, [setIsSidebarOpen]);
 
-    const closeSideBar = () => {
+    const closeSideBar = useCallback(() => {
         setIsSidebarClose()
-    }
+    }, [setIsSidebarClose]);
 
     const { setIsConfigSidebarOpen, setIsConfigSidebarClose } = useEditorUIStore();
 
-    const openConfigSidebar = () => {
+    const openConfigSidebar = useCallback(() => {
         console.log("Opening Config Sidebar");
         setIsConfigSidebarOpen();
-    }
+    }, [setIsConfigSidebarOpen]);
 
-    const closeConfigSidebar = () => {
+    const closeConfigSidebar = useCallback(() => {
         setIsConfigSidebarClose();
-    }
+    }, [setIsConfigSidebarClose]);
 
     const addNode = useCallback((placeholderId) => {
 
         const actionNodeId = crypto.randomUUID();
-        const nextPlaceholderId = crypto.randomUUID();
+        const nextPlaceholderId = "lastNode";
         let updatedNodes = null;
         let updatedEdges = null;
 
@@ -206,7 +206,7 @@ export const useWorkflow = () => {
     };
 
     const setNodeConfig = ( data ) => {
-
+        //console.log(data.variable);
         try {
             let updatedNodes = null;
 
@@ -218,7 +218,7 @@ export const useWorkflow = () => {
                     if (!configHandler) return node;
 
                     const mergedConfig = {
-                        ...configHandler.defaultConfig,
+                        ...configHandler.defaultConfig,         // to set default data
                         ...node.data.config,
                         ...data
                     }
@@ -233,9 +233,7 @@ export const useWorkflow = () => {
                         }
                     }
                 }); 
-
                 return updatedNodes;
-
             });
 
             if (updatedNodes) {

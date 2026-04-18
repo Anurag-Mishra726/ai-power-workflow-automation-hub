@@ -9,16 +9,16 @@ const api = axios.create({
     withCredentials: true,
 });
 
-api.interceptors.request.use( config => {
-    const token = Cookies.get('token');
+// api.interceptors.request.use( config => {
+//     const token = Cookies.get('token');
     
-    if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
-        return config;
-    }
+//     if (token) {
+//         config.headers['Authorization'] = `Bearer ${token}`;
+//         return config;
+//     }
 
-    return config;
-});
+//     return config;
+// });
 
 api.interceptors.response.use(
     response => response,

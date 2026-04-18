@@ -2,15 +2,16 @@ import {
   Zap,
   Globe,
   MousePointer,
-  EllipsisVertical,
 } from "lucide-react";
+import { TiFlowChildren } from "react-icons/ti";
+import { SiGoogleforms } from "react-icons/si";
 
 const WorkflowCard = ({data, onClick}) => {
 
   const iconMap = {
     http: Globe,
     manual: MousePointer,
-    Gloaaa: <Globe/>
+    googleForm: SiGoogleforms,
   }
   const Icon = iconMap[data.trigger_type] || TiFlowChildren ;
   const workflow = {
@@ -123,10 +124,3 @@ const WorkflowCard = ({data, onClick}) => {
 };
 
 export default WorkflowCard;
-/* bg-gradient-to-br from-white/20 via-white/10 to-black/40 
-  rounded-xl flex items-center justify-center 
-  shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.3)]
-  backdrop-blur-xl border border-white/20 border-opacity-50
-  hover:shadow-[0_12px_40px_rgba(0,0,0,0.8),inset_0_2px_0_rgba(255,255,255,0.4)]
-  active:shadow-[0_4px_20px_rgba(0,0,0,0.7)] active:scale-95
-  transition-all duration-300 */

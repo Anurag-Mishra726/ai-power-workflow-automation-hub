@@ -1,31 +1,25 @@
 import useEditorUIStore from "@/stores/workflowEditorStore";
-import { X } from 'lucide-react';
-import ManualTriggerConfig from "../config-panels/ManualTriggerConfig";
-import HTTPConfig from "../config-panels/HTTPConfig";
-import CloseBtn from "@/components/common/CloseBtn";
+import DefaultConfig from "../config-panels/defaultConfig/DefaultConfig";
+import ManualTriggerConfig from "../config-panels/manualTrigger/ManualTriggerConfig";
+import HTTPConfig from "../config-panels/http/HTTPConfig";
+import GoogleFormConfig from "../config-panels/googleForm/GoogleFormConfig";
+import GeminiConfig from "../config-panels/ai/gemini/GeminiConfig";
+import PerplexityConfig from "../config-panels/ai/perplexity/PerplexityConfig";
+import OpenAiConfig from "../config-panels/ai/openai/OpenAiConfig";
+import SlackConfig from "../config-panels/slack/SlackConfig";
+import GoogleDriveConfig from "../config-panels/googleDrive/GoogleDriveConfig";
+import GmailConfigState from "../config-panels/gmail/GmailConfigState";
+import GitHubConfig from "../config-panels/github/GitHubConfig";
 
 const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
 
     const { activeNodeId } = useEditorUIStore();
-    const { setIsConfigSidebarClose } = useEditorUIStore();
 
     const selectedNode = nodes.find((node) => node.id === activeNodeId);
     const nodeType = selectedNode ? selectedNode.type : null;
 
   if (!selectedNode || !selectedNode.data.isTrigger || activeNodeId === null) {
-    return (
-        <div className="absolute top-0 right-0 h-full w-1/3 m-1 bg-[#000000] border border-zinc-700 rounded-lg text-white z-50 flex flex-col"
-        >
-            <CloseBtn onClose={onClose} />
-
-            <div>
-                <h2 className="text-3xl font-semibold  text-zinc-100 font-mono p-4">
-                    Select a node to Configure
-                </h2>
-                
-            </div>
-        </div>
-    );
+    onClose();
   }
 
   switch (selectedNode.data.triggerType) {
@@ -34,26 +28,32 @@ const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
     
     case "http": 
         return <HTTPConfig selectedNode={selectedNode} onClose={onClose} nodeType={nodeType} setNodeConfig={setNodeConfig} />;
+        
+    case "geminiAI":
+      return <GeminiConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
 
-    default: return ;
-    //   return (
-    //     <>
-    //         <div className="absolute top-0 right-0 h-full w-1/3  m-1  bg-[#000000] border border-zinc-700 rounded-lg text-white z-50 flex flex-col">
+    case "perplexityAI":
+      return <PerplexityConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
 
-                
-    //             <CloseBtn onClose={onClose} />
+    case "openAI":
+      return <OpenAiConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
 
-    //             <div className="">
-    //                 <h2 className="text-3xl font-semibold  text-zinc-100 font-mono p-4">
-    //                     {selectedNode.data.label} Configuration
-    //                 </h2>
-    //                 <div className="p-4">
-    //                     Configuration panel for {selectedNode.data.label} is not yet implemented.
-    //                 </div>
-    //             </div>
-    //         </div>
-    //     </>
-    //   );
+    case "slack": 
+      return <SlackConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} /> ;
+
+    case "googleForm":
+        return <GoogleFormConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
+
+    case "googleDrive":
+      return <GoogleDriveConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
+
+    case "gmail":
+      return <GmailConfigState selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
+
+    case "github": 
+      return <GitHubConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
+
+    default: return <DefaultConfig onClose={onClose} />;
   }
 };
 
