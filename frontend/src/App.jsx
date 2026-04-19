@@ -29,7 +29,7 @@ import EditIntegrationForm from './components/aiIntegrations/EditIntegrationForm
 
 
 // Test Route
-import Test from './pages/Test'
+// import Test from './pages/Test'
 import ExecutionMain from './components/executions/ExecutionMain';
 
 function App() {
@@ -70,7 +70,7 @@ function App() {
 
                 <Route path="/executions" element={<ExecutionMain />} />
 
-                <Route path="/test" element={<Test />} />
+                {/* <Route path="/test" element={<Test />} /> */}
 
               </Route>
         </Routes>
