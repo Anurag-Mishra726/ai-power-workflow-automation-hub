@@ -30,6 +30,7 @@ import EditIntegrationForm from './components/aiIntegrations/EditIntegrationForm
 
 // Test Route
 import Test from './pages/Test'
+import ExecutionMain from './components/executions/ExecutionMain';
 
 function App() {
 
@@ -66,6 +67,8 @@ function App() {
                   <Route path="add/new/apikey" element={<AddIntegrationForm />} />
                   <Route path="edit/:provider/apikey" element={<EditIntegrationForm />} />
                 </Route>
+
+                <Route path="/executions" element={<ExecutionMain />} />
 
                 <Route path="/test" element={<Test />} />
 

@@ -27,7 +27,7 @@ const Sidebar = () => {
     {name: "Home", to: "/home", icon: faHouse},
     {name: "Workflow", to: "/workflow", icon: faMicrochip},
     {name: "AI-Integrations", to: "/ai/integrations", icon: faCodeMerge}, 
-    {name: "Runs", to: "/runs", icon: faCirclePlay},
+    {name: "Executions", to: "/executions", icon: faCirclePlay},
     {name: "Logs", to: "/logs", icon: faBook},
     {name: "Webhooks", to: "/webhooks", icon: faCircleNodes},
     {name: "test", to: "/test", icon: faRobot},

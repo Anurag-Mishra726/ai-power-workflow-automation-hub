@@ -6,21 +6,81 @@ import { getNodeExecutor } from "../services/workflow/nodeExecutor/executorRegis
 import { httpRequestChannel } from "./workflowStatus.js";
 //import { processWorkflowPolling } from "../services/pollingService.js";
 import { processWorkflowPolling } from "../services/polling/polling.service.js";
+import { Execution } from "../models/execution.model.js";
 
 export const executeWorkflow = inngest.createFunction(
-  { id: "execute-workflow" },
-  { event: "workflow/execute",
+  {
+    id: "execute-workflow",
+    onFailure: async ({ event, error }) => {
+      const workflowId = event?.data?.workflowId;
+      const inngestId = event?.id;
+
+      if (!workflowId || !inngestId) {
+        return;
+      }
+
+      try {
+        const userRecord = await Workflow.getUserId({ workflowId });
+        const outputData = event?.data?.initialData || null;
+
+        const result = await Execution.markFailure({
+          inngestId,
+          workflowId,
+          errorMsg: error?.message || "Execution failed after retries",
+          output: outputData,
+        });
+
+        if (result?.affectedRows === 0 && userRecord?.user_id) {
+          await Execution.create({
+            inngestId,
+            userId: userRecord.user_id,
+            workflowId,
+            status: "failed",
+            output: outputData,
+          });
+
+          await Execution.markFailure({
+            inngestId,
+            workflowId,
+            errorMsg: error?.message || "Execution failed after retries",
+            output: outputData,
+          });
+        }
+      } catch (failureError) {
+        console.error("Failed to persist execution failure", failureError);
+      }
+    },
+  },
+  {
+    event: "workflow/execute",
     channel: [httpRequestChannel()],
   },
 
   async ({ event, step, publish }) => {
     const workflowId = event.data.workflowId;
+    const inngestId = event.id;
+
     if (!workflowId) {
       throw new NonRetriableError("Workflow Id is missing!");
     }
 
-    const sortedNodes = await step.run("prepare-workflow", async () => {
+    const userId = await step.run("find-userId", async () => {
+      const user = await Workflow.getUserId({ workflowId });
+      return user.user_id;
+    });
 
+    await step.run("store-execution-start", async () => {
+      await Execution.create({
+        inngestId,
+        userId,
+        workflowId,
+        status: "running",
+        output: event.data.initialData || {},
+      });
+      return true;
+    });
+
+    const sortedNodes = await step.run("prepare-workflow", async () => {
       const workflowGraph = await Workflow.getWorkflowGraph({ workflowId });
 
       try {
@@ -29,12 +89,6 @@ export const executeWorkflow = inngest.createFunction(
       } catch (error) {
         throw new NonRetriableError(error.message || "Invalid workflow!");
       }
-
-    });
-
-    const userId = await step.run("find-userId", async () =>{
-      const userId = await Workflow.getUserId({workflowId});
-      return userId.user_id;
     });
 
     let context = event.data.initialData || {};
@@ -44,24 +98,30 @@ export const executeWorkflow = inngest.createFunction(
 
       const nodeExecutor = getNodeExecutor(triggerType);
       const response = await step.run(`node-${node.id}`, async () => {
-       
         return await nodeExecutor({
           data: node.data,
           nodeId: node.id,
           context,
           userId,
-          publish
+          publish,
         });
-      });          
-      
-      context[node?.data?.config?.variable || node.id] = response;    // there is a possibility that variable name is same, in that case we need uinique variable names or override the previous one, for now we will override it.
+      });
+
+      context[node?.data?.config?.variable || node.id] = response;
     }
 
-    //console.log(context);
+    await step.run("store-execution-success", async () => {
+      await Execution.markSuccess({
+        inngestId,
+        workflowId,
+        output: context,
+      });
+      return true;
+    });
+
     return { workflowId, result: context };
   },
 );
-
 
 export const pollWorkflowTriggers = inngest.createFunction(
   { id: "poll-workflow-triggers" },
@@ -74,5 +134,5 @@ export const pollWorkflowTriggers = inngest.createFunction(
     });
 
     return result;
-  }
+  },
 );
