@@ -128,3 +128,55 @@ export const saveGoogleIntegration = async (data) => {
         connection.release();
     }    
 }
+
+export const refreshGoogleToken = async (userId, externalId) => {
+    try {
+
+        const refreshToken = await Integration.getIntegrationAccountRefreshToken({userId, provider: "google", externalId});
+
+        if (!refreshToken) {
+            throw new AppError("Google integration not found for the user.", 404);
+        }
+
+        const formData = new URLSearchParams({
+            client_id: process.env.GOOGLE_CLIENT_ID,
+            client_secret: process.env.GOOGLE_CLIENT_SECRET_KEY,
+            refresh_token: refreshToken,
+            grant_type: "refresh_token",
+        });
+
+        const response = await axios.post(
+            "https://oauth2.googleapis.com/token",
+            formData.toString(),
+            {
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            }
+        );
+
+        const { access_token, expires_in, scope } = response.data;
+        const expiresAt = new Date(Date.now() + expires_in * 1000);
+
+
+        const connection = await pool.getConnection();
+        try {
+            await Integration.insertOAuthToken(integrationId, {
+                accessToken: access_token,
+                expiresAt: expiresAt,
+                last_refreshed_at: new Date(),
+                scope: scope 
+            }, connection);
+        } finally {
+            connection.release();
+        }
+
+        return access_token;
+    } catch (err) {
+        console.error("Token Refresh Error:", err.response?.data || err.message);
+        
+        if (err.response?.data?.error === "invalid_grant") {
+            console.warn("Refresh token is invalid. User must re-authenticate.");
+        }
+        
+        throw new AppError("Failed to refresh Google token", 401);
+    }
+};

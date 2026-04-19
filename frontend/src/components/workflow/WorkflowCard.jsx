@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { TiFlowChildren } from "react-icons/ti";
 import { SiGoogleforms } from "react-icons/si";
+import { triggerNameMap } from "./utils/mapTriggerName";
 
 const WorkflowCard = ({data, onClick}) => {
 
@@ -20,7 +21,7 @@ const WorkflowCard = ({data, onClick}) => {
     status: data.status || "Active",
     icon: <Zap className="text-white w-6 h-6" />,
     trigger: {
-      name: data.trigger_type || "New Gmail Email",
+      name: triggerNameMap[data.trigger_type] || "New Gmail Email",
       color: "bg-orange-500",
     },
     createdAt: data.created_at,

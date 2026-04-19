@@ -113,5 +113,19 @@ export const Integration = {        // external_id == team.id for slack
         );
 
         return rows[0] || null;
-    }
+    },
+
+    getIntegrationAccountRefreshToken: async ({ userId, provider, externalId }, client = pool) => {
+        const rows = await query(
+            `SELECT ia.refresh_token
+            FROM integrations AS i
+            INNER JOIN integration_accounts AS ia ON i.id = ia.integration_id
+            WHERE i.user_id = ? AND i.provider = ? AND i.external_id = ?
+            LIMIT 1`,
+            [userId, provider, externalId],
+            client
+        );
+
+        return rows[0]?.refresh_token || null;
+    },
 }
