@@ -101,7 +101,7 @@ const runTriggerPolling = async (trigger) => {
     );
   }
 
-  console.log(pollingResult?.payload);
+  //console.log(pollingResult?.payload);
 
   return {
     triggerId: trigger.id,

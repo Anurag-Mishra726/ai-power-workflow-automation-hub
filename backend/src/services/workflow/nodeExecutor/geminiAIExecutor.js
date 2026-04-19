@@ -77,7 +77,10 @@ export const geminiAIExecutor = async ({data, nodeId, context, userId, publish})
                 startTime,
                 endTime: Date.now(),
                 status: true,
-                text: result.text,
+                data: {
+                    text: result.text,
+                    prompt: compiledUserPrompt,
+                }
             }
         });
     } catch (error) {

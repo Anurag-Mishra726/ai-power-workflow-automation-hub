@@ -33,9 +33,9 @@ export const handleGoogleForm = async ({
       throw new NonRetriableError("Google access token not found.");
     }
 
-    const rawResponses = context.triggerData?.payload || [];
+    const rawResponses = Array.isArray(context.triggerData) ? context.triggerData : [context.triggerData];
 
-    if (!rawResponses.length) {
+    if (!rawResponses) {
       return createExecutionResult({
         output: {
           nodeId,
@@ -45,7 +45,6 @@ export const handleGoogleForm = async ({
       });
     }
 
-    // 1. Fetch form schema
     const formSchemaRes = await axios.get(
       `https://forms.googleapis.com/v1/forms/${formId}`,
       {
@@ -57,14 +56,12 @@ export const handleGoogleForm = async ({
 
     const formItems = formSchemaRes.data.items || [];
 
-    // 2. Build question map (questionId → readable question text)
     const questionMap = {};
 
     formItems.forEach((item) => {
       if (item.questionItem) {
         const qId = item.questionItem.question.questionId;
 
-        // Better fallback chain for question text
         const questionText =
           item.title ||
           item.description ||
@@ -74,7 +71,6 @@ export const handleGoogleForm = async ({
       }
     });
 
-    // 3. Map responses into readable format
     const mappedResponses = rawResponses.map((response) => {
       const answers = {};
 
@@ -85,7 +81,6 @@ export const handleGoogleForm = async ({
 
           let value = "";
 
-          // Handle different Google Forms answer types safely
           if (answerObj?.textAnswers?.answers?.length) {
             value = answerObj.textAnswers.answers
               .map((a) => a.value)
@@ -109,11 +104,7 @@ export const handleGoogleForm = async ({
       return {
         responseId: response.responseId,
         submittedAt: response.createTime,
-
-        // 👇 human readable output (for workflow)
-        answers,
-
-        // 👇 raw fallback (debugging / advanced nodes)
+        response: answers,
         raw: response.answers,
       };
     });
@@ -124,7 +115,12 @@ export const handleGoogleForm = async ({
       output: {
         nodeId,
         success: true,
-        data: mappedResponses,
+        data: {
+          responseId: mappedResponses[0]?.responseId || null,
+          submittedAt: mappedResponses[0]?.submittedAt || null,
+          response: mappedResponses[0]?.response || {}, 
+          //allResponses: mappedResponses, 
+        },
       },
     });
 

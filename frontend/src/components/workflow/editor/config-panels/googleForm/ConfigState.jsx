@@ -176,8 +176,8 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
                 className={inputClass}
               />
               <p className="text-[12px] mt-1 text-zinc-400">
-                Reference this node&apos;s output in other nodes:{' '}
-                <span className="text-white text-[13px]">{`{{${watchVariable.trim()}.response.data}}`}</span>
+                Reference this node&apos;s output in other nodes:{' '} {/* {{myApiCall1.output.data.response.[What is your name ?]}} */}
+                <span className="text-white text-[13px]">{`{{${watchVariable.trim()}.output.data.response.[your question]}}`}</span>
                 <span className="text-[12px] text-zinc-400"> {' '}← Copy this syntax</span>
               </p>
               {errors.variable && <p className="text-[10px] text-red-500 font-medium">{errors.variable.message}</p>}
