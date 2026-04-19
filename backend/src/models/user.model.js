@@ -40,6 +40,22 @@ export const User = {
       [id]
     );
     return rows[0] || null;
+  },
+
+  findProfileById: async (id) => {
+    const rows = await query(
+      "SELECT id, username, email, created_at, updated_at FROM users WHERE id = ?",
+      [id]
+    );
+
+    return rows[0] || null;
+  },
+
+  deleteById: async (id) => {
+    await query(
+      "DELETE FROM users WHERE id = ?",
+      [id]
+    );
   }
 
 }

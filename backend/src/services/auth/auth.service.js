@@ -39,8 +39,6 @@ export const loginService = async (userData) => {
 
     const {email, password} = userData;
 
-    // const user = await User.findOne({email}).select("+password");
-
     const user = await User.findByEmail(email);
     
     if(!user){
@@ -49,7 +47,7 @@ export const loginService = async (userData) => {
 
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
     if(!isPasswordValid){
-        throw new Error("INVALID_CREDENTIALS", 401);
+        throw new AppError("INVALID_CREDENTIALS", 401);
     }
 
     const token = jwt.sign(
@@ -66,3 +64,13 @@ export const loginService = async (userData) => {
         token,
     };
 }
+
+export const getSessionUserService = async (userId) => {
+    const user = await User.findById(userId);
+
+    if (!user) {
+        throw new AppError("USER_NOT_FOUND", 404);
+    }
+
+    return user;
+};
