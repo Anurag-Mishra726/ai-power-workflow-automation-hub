@@ -1,20 +1,11 @@
-import {
-  Zap,
-  Globe,
-  MousePointer,
-} from "lucide-react";
+import { Zap } from "lucide-react";
 import { TiFlowChildren } from "react-icons/ti";
-import { SiGoogleforms } from "react-icons/si";
 import { triggerNameMap } from "./utils/mapTriggerName";
+import IconMap from "./utils/nodeIcon";
 
 const WorkflowCard = ({data, onClick}) => {
 
-  const iconMap = {
-    http: Globe,
-    manual: MousePointer,
-    googleForm: SiGoogleforms,
-  }
-  const Icon = iconMap[data.trigger_type] || TiFlowChildren ;
+  const Icon = IconMap[data.trigger_type] || TiFlowChildren ;
   const workflow = {
     id: data.id || "wf_1",
     name: data.name || "Email Automation",
