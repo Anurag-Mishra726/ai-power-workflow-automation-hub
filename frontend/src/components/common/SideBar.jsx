@@ -1,12 +1,13 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHouse, faMicrochip, faCodeMerge, faCirclePlay, faBook, faCircleNodes, faRobot, faClock, faGear } from '@fortawesome/free-solid-svg-icons'
+import { faHouse, faMicrochip, faCodeMerge, faClock, faGear } from '@fortawesome/free-solid-svg-icons'
 import { FaRegUser } from "react-icons/fa";
 import { LuLogIn, LuLogOut} from "react-icons/lu";
 import useAuthStore from '@/stores/authStore'
 import Logo from "@/assets/logo.png"
 import useWorkflowData from '@/stores/workflowDataStore';
-
+import { logoutApi } from '@/api/auth.api';
+import { toast } from 'react-hot-toast';
 
 const Sidebar = () => {
 
@@ -14,10 +15,18 @@ const Sidebar = () => {
   const isAuthenticated  = useAuthStore( (state) => state.isAuthenticated ) || false;
   const logout = useAuthStore( (state) => state.logout );
   const clearData = useWorkflowData( (state) => state.clearData );
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    clearData();
+  const handleLogout = async () => {
+    try {
+      await logoutApi();
+    } catch (error) {
+      toast.error(error || 'Logout failed');
+    } finally {
+      logout();
+      clearData();
+      navigate('/auth/login');
+    }
   };
 
 
@@ -28,9 +37,6 @@ const Sidebar = () => {
     {name: "Workflow", to: "/workflow", icon: faMicrochip},
     {name: "AI-Integrations", to: "/ai/integrations", icon: faCodeMerge}, 
     {name: "Executions", to: "/executions", icon: faClock},
-    // {name: "Logs", to: "/logs", icon: faBook},
-    // {name: "Webhooks", to: "/webhooks", icon: faCircleNodes},
-    // {name: "test", to: "/test", icon: faRobot},
   ]
 
   return (
@@ -87,7 +93,7 @@ const Sidebar = () => {
             ` ${basicStyle} ${isActive ? " text-white bg-zinc-800 shadow-lg ":  "text-zinc-400 hover:bg-zinc-900 hover:text-white" }
             `}
           >
-            <div className='w-8 h-8 rounded-full border border-emerald-50 flex items-center justify-center font-bold mr-2'>{/* {username[0]} */} <FaRegUser /></div>
+            <div className='w-8 h-8 rounded-full border border-emerald-50 flex items-center justify-center font-bold mr-2'><FaRegUser /></div>
             <span className="font-medium text-white">{username}</span>
 
           </NavLink>          

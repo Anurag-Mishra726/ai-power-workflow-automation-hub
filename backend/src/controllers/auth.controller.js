@@ -1,4 +1,4 @@
-import { signupService, loginService } from '../services/auth/auth.service.js';
+import { signupService, loginService, getSessionUserService } from '../services/auth/auth.service.js';
 
 export const signup = async (req, res) => {
     try {
@@ -48,4 +48,35 @@ export const login = async (req, res) => {
             message: error.message || "Internal Server Error"
         });
     }
-}; 
+};
+
+export const me = async (req, res) => {
+    try {
+        const user = await getSessionUserService(req.user.userId);
+
+        res.status(200).json({
+            userId: user.id,
+            username: user.username,
+            email: user.email,
+        });
+    } catch (error) {
+        console.error("Session Error --> : ", error.message);
+        res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message || "Internal Server Error"
+        });
+    }
+};
+
+export const logout = async (req, res) => {
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: "lax"
+    });
+
+    res.status(200).json({
+        success: true,
+        message: "Logged out successfully"
+    });
+};

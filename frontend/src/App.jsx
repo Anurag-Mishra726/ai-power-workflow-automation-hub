@@ -31,6 +31,7 @@ import EditIntegrationForm from './components/aiIntegrations/EditIntegrationForm
 // Test Route
 // import Test from './pages/Test'
 import ExecutionMain from './components/executions/ExecutionMain';
+import Profile from './pages/profile/Profile';
 
 function App() {
 
@@ -69,6 +70,7 @@ function App() {
                 </Route>
 
                 <Route path="/executions" element={<ExecutionMain />} />
+                <Route path="/profile" element={<Profile />} />
 
                 {/* <Route path="/test" element={<Test />} /> */}
 
