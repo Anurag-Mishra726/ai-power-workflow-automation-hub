@@ -56,7 +56,23 @@ export const Workflow = {
 
     getWorkflowMetadata: async ({userId}, client = pool) => {
         const rows = await query(
-            "SELECT * FROM workflows WHERE user_id = ?",
+            `SELECT 
+                w.*,
+                COALESCE(exec_stats.success_runs, 0) AS success_runs,
+                CASE 
+                    WHEN w.runs = 0 THEN NULL
+                    ELSE ROUND((COALESCE(exec_stats.success_runs, 0) / w.runs) * 100, 0)
+                END AS success_rate
+            FROM workflows w
+            LEFT JOIN (
+                SELECT workflow_id, user_id, COUNT(*) AS success_runs
+                FROM executions
+                WHERE status = 'success'
+                GROUP BY workflow_id, user_id
+            ) exec_stats
+                ON exec_stats.workflow_id = w.id
+                AND exec_stats.user_id = w.user_id
+            WHERE w.user_id = ?`,
             [userId],
             client
         );
@@ -158,6 +174,19 @@ export const Workflow = {
             [triggerType, configJson, lastChecked, userId, workflowId, nodeId],
             client
         );
+    },
+
+    incrementWorkflowRuns: async ({ workflowId }, client = pool) => {
+        const rows = await query(
+            `UPDATE workflows
+            SET runs = COALESCE(runs, 0) + 1,
+                last_runs_time = NOW()
+            WHERE id = ?`,
+            [workflowId],
+            client
+        );
+
+        return rows;
     },
 
     getPollingTriggers: async (client = pool) => {

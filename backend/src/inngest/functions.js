@@ -77,6 +77,8 @@ export const executeWorkflow = inngest.createFunction(
         status: "running",
         output: event.data.initialData || {},
       });
+
+      await Workflow.incrementWorkflowRuns({ workflowId });
       return true;
     });
 

@@ -26,9 +26,9 @@ const WorkflowCard = ({data, onClick}) => {
     },
     createdAt: data.created_at,
     updatedAt: data.updated_at,
-    runs: 127,
-    success: "98%",
-    lastRun: "2h ago",
+    runs: Number(data.runs ?? 0),
+    success: data.success_rate === null || data.success_rate === undefined ? "-" : `${data.success_rate}%`,
+    lastRun: data.last_runs_time,
   };
 
   const STATUS_STYLES = {
@@ -50,6 +50,35 @@ const WorkflowCard = ({data, onClick}) => {
       hour: "2-digit",
       minute: "2-digit",
     }).format(date);
+  };
+
+  const formatRelativeTime = (isoString) => {
+    if (!isoString) return "-";
+
+    const lastRunDate = new Date(isoString);
+    if (isNaN(lastRunDate.getTime())) return "-";
+
+    const now = new Date();
+    const diffMs = now.getTime() - lastRunDate.getTime();
+
+    if (diffMs < 0) return "-";
+
+    const totalMinutes = Math.floor(diffMs / (1000 * 60));
+    const days = Math.floor(totalMinutes / (60 * 24));
+    const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+    const minutes = totalMinutes % 60;
+
+    if (days > 0) {
+      return hours > 0 ? `${days}d ${hours}h ago` : `${days}d ago`;
+    }
+
+    if (hours > 0) {
+      return minutes > 0 ? `${hours}h ${minutes}m ago` : `${hours}h ago`;
+    }
+
+    if (minutes <= 0) return "just now";
+
+    return `${minutes}m ago`;
   };
 
 
@@ -115,7 +144,7 @@ const WorkflowCard = ({data, onClick}) => {
             <div className="text-[9px] text-gray-600 uppercase font-black"> Success </div>
           </div>
           <div className="text-center">
-            <div className="text-sm font-bold text-gray-400">{workflow.lastRun}</div>
+            <div className="text-sm font-bold text-gray-400">{workflow.runs === 0 ? "-" : formatRelativeTime(workflow.lastRun)}</div>
             <div className="text-[9px] text-gray-600 uppercase font-black">Last Run</div>
           </div>
         </div>
