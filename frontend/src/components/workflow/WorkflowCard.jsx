@@ -88,11 +88,11 @@ const WorkflowCard = ({data, onClick}) => {
                 <h3 className="font-bold text-lg text-white group-hover:text-blue-400 transition-colors"> {workflow.name} </h3>
               </div>
             </div>
-            <div className="flex justify-center items-center ">
+            {/* <div className="flex justify-center items-center ">
               <span className={`mr-5 px-2 py-0.5 rounded-md text-[12px] font-bold lowercase first-letter:uppercase  ${STATUS_STYLES[workflow.status]}`}>
                   {workflow.status}
               </span>
-            </div>
+            </div> */}
           </div>
 
           <div className="space-y-4 mb-4">

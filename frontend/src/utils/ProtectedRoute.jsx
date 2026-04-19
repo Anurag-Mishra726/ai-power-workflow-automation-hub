@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import useAuthStore from "../stores/authStore";
 import { meApi } from "../api/auth.api";
+import LoadingState from "@/components/common/LoadingState";
 
 export const ProtectedRoute = ({ children }) => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -33,8 +34,8 @@ export const ProtectedRoute = ({ children }) => {
 
   if (!hasHydrated || isCheckingSession) {
     return (
-      <div className="flex justify-center items-center text-3xl h-screen">
-        Loading...
+      <div className="flex justify-center items-center text-3xl h-screen bg-black text-white">
+        <LoadingState text={"Loading * Flow * AI"} />
       </div>
     );
   }

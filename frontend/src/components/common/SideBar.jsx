@@ -63,7 +63,7 @@ const Sidebar = () => {
           }
         </nav>
         <div className='flex flex-col px-5 py-6 border-t border-zinc-700'>
-          <NavLink 
+          {/* <NavLink 
             to="/settings"
             className={({isActive}) => 
             ` ${basicStyle} ${isActive ? " text-white bg-zinc-800 shadow-lg ":  "text-zinc-400 hover:bg-zinc-900 hover:text-white" }
@@ -72,7 +72,7 @@ const Sidebar = () => {
             <FontAwesomeIcon icon={faGear} className="mr-2" />
             <span className="font-medium">Settings</span>
 
-          </NavLink>
+          </NavLink> */}
 
           {
             isAuthenticated  ? (

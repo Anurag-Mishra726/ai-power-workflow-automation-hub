@@ -73,7 +73,7 @@ const Profile = () => {
         <p className="text-zinc-400 mb-8">Manage your account details and security settings.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          <InfoBlock label="User ID" value={data?.id} />
+          {/* <InfoBlock label="User ID" value={data?.id} /> */}
           <InfoBlock label="Username" value={data?.username} />
           <InfoBlock label="Email" value={data?.email} />
           <InfoBlock
