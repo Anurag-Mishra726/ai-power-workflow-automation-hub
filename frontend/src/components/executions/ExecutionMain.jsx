@@ -35,7 +35,7 @@ const ExecutionMain = () => {
   const [selectedId, setSelectedId] = useState(null);
   const { data, isPending, isError } = useExecutions();
 
-  const executions = data?.executions || [];
+  const executions = useMemo(() => data?.executions || [], [data]);
   const selectedFallback = useMemo(() => {
     if (!selectedId) return executions[0]?.id || null;
     return selectedId;
@@ -64,7 +64,7 @@ const ExecutionMain = () => {
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 h-full">
-      <div className="xl:col-span-1 rounded-2xl border border-white/10 bg-[#0b0b0b] p-4 space-y-3 overflow-y-auto max-h-[calc(100vh-170px)]">
+      <div className="xl:col-span-1 rounded-2xl border border-white/10 bg-[#0b0b0b] p-4 space-y-3 overflow-y-auto ">
         <h2 className="text-lg font-bold text-white">Execution History</h2>
         {executions.map((item) => {
           const active = selectedFallback === item.id;
@@ -91,7 +91,7 @@ const ExecutionMain = () => {
         })}
       </div>
 
-      <div className="xl:col-span-2 rounded-2xl border border-white/10 bg-[#0b0b0b] p-6 overflow-y-auto max-h-[calc(100vh-170px)]">
+      <div className="xl:col-span-2 rounded-2xl border border-white/10 bg-[#0b0b0b] p-6 overflow-y-auto ">
         {detailPending ? (
           <p className="text-zinc-400">Loading execution detail...</p>
         ) : (
