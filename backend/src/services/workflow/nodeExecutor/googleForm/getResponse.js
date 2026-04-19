@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Integration } from "../../../../models/integration/integration.model.js";
 import { createExecutionResult } from "../../../../utils/executionResult.js";
+import { executeGoogleRequestWithAutoRefresh } from "../../../integration/google/google.auth.service.js";
 import { NonRetriableError } from "inngest";
 
 const getGoogleAccessToken = async (userId, accountId) => {
@@ -45,14 +46,21 @@ export const handleGoogleForm = async ({
       });
     }
 
-    const formSchemaRes = await axios.get(
-      `https://forms.googleapis.com/v1/forms/${formId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
+    const formSchemaRes = await executeGoogleRequestWithAutoRefresh({
+      userId,
+      externalId: googleFormAccountId,
+      requestFn: async (overrideToken) => {
+        const token = overrideToken || accessToken;
+        return await axios.get(
+          `https://forms.googleapis.com/v1/forms/${formId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      },
+    });
 
     const formItems = formSchemaRes.data.items || [];
 

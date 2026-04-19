@@ -131,8 +131,8 @@ export const saveGoogleIntegration = async (data) => {
 
 export const refreshGoogleToken = async (userId, externalId) => {
     try {
-
-        const refreshToken = await Integration.getIntegrationAccountRefreshToken({userId, provider: "google", externalId});
+        console.log("userid : ", userId, " External id : ", externalId);
+        const refreshToken = await Integration.getIntegrationAccountRefreshToken({ userId, provider: "google", externalId });
 
         if (!refreshToken) {
             throw new AppError("Google integration not found for the user.", 404);
@@ -153,23 +153,22 @@ export const refreshGoogleToken = async (userId, externalId) => {
             }
         );
 
-        const { access_token, expires_in, scope } = response.data;
+        const { access_token, refresh_token, expires_in, scope } = response.data;
         const expiresAt = new Date(Date.now() + expires_in * 1000);
 
+        await Integration.updateOAuthTokenByExternalId({
+            userId,
+            provider: "google",
+            externalId,
+            accessToken: access_token,
+            refreshToken: refresh_token ?? null,
+            expiresAt: expiresAt,
+            last_refreshed_at: new Date(),
+            scope,
+        });
+        console.log("Access Token : ", access_token);
 
-        const connection = await pool.getConnection();
-        try {
-            await Integration.insertOAuthToken(integrationId, {
-                accessToken: access_token,
-                expiresAt: expiresAt,
-                last_refreshed_at: new Date(),
-                scope: scope 
-            }, connection);
-        } finally {
-            connection.release();
-        }
-
-        return access_token;
+        return { accessToken: access_token };
     } catch (err) {
         console.error("Token Refresh Error:", err.response?.data || err.message);
         
@@ -178,5 +177,21 @@ export const refreshGoogleToken = async (userId, externalId) => {
         }
         
         throw new AppError("Failed to refresh Google token", 401);
+    }
+};
+
+export const executeGoogleRequestWithAutoRefresh = async ({ userId, externalId, requestFn }) => {
+    try {
+        return await requestFn();
+    } catch (error) {
+        const status = error?.response?.status;
+        const errorCode = error?.response?.data?.error;
+
+        if (status !== 401 && errorCode !== "invalid_token") {
+            throw error;
+        }
+
+        const refreshed = await refreshGoogleToken(userId, externalId);
+        return await requestFn(refreshed.accessToken);
     }
 };

@@ -4,7 +4,7 @@ import { Integration } from "../../models/integration/integration.model.js";
 import { fetchGmailData } from "./gmail.polling.service.js";
 import { fetchDriveData } from "./googleDrive.polling.service.js";
 import { fetchGoogleFormData } from "./googleForm.polling.service.js";
-
+import { executeGoogleRequestWithAutoRefresh } from "../integration/google/google.auth.service.js";
 
 export const getSafeIsoDate = (value) => {
 
@@ -64,22 +64,43 @@ const runTriggerPolling = async (trigger) => {
 
   let pollingResult;
 
-  // if (trigger.trigger_type === "gmail") {
-  //   const senderEmail = triggerConfig?.senderEmail || null;
-  //   const label = triggerConfig?.label || "INBOX";
-  //   pollingResult = await fetchGmailData(accessToken, lastChecked, senderEmail, label);
-  // }
+  if (trigger.trigger_type === "gmail") {
+    const senderEmail = triggerConfig?.senderEmail || null;
+    const label = triggerConfig?.label || "INBOX";
+    pollingResult = await executeGoogleRequestWithAutoRefresh({
+      userId: trigger.user_id,
+      externalId: triggerConfig.googleAccountId,
+      requestFn: async (overrideToken) => {
+        const token = overrideToken || accessToken;
+        return await fetchGmailData(token, lastChecked, senderEmail, label);
+      },
+    });;
+  }
 
-  // if (trigger.trigger_type === "googleDrive") {
-  //   const folderId = triggerConfig?.folderId || null;
-  //   const savedEvent = triggerConfig?.event || null;
-  //   pollingResult = await fetchDriveData(accessToken, lastChecked, folderId, savedEvent);
-  // }
+  if (trigger.trigger_type === "googleDrive") {
+    const folderId = triggerConfig?.folderId || null;
+    const savedEvent = triggerConfig?.event || null;
+    pollingResult = await executeGoogleRequestWithAutoRefresh({
+      userId: trigger.user_id,
+      externalId: triggerConfig.driveId,
+      requestFn: async (overrideToken) => {
+        const token = overrideToken || accessToken;
+        return await fetchDriveData(token, lastChecked, folderId, savedEvent);
+      },
+    });
+  }
 
   if (trigger.trigger_type === "googleForm") {
     const formId = triggerConfig?.formId || null;
-    const savedEvent = triggerConfig?.event || null;
-    pollingResult = await fetchGoogleFormData(accessToken, lastChecked, formId, savedEvent);
+    //const savedEvent = triggerConfig?.event || null;
+    pollingResult = await executeGoogleRequestWithAutoRefresh({
+      userId: trigger.user_id,
+      externalId: triggerConfig.googleFormAccountId,
+      requestFn: async (overrideToken) => {
+        const token = overrideToken || accessToken;
+        return await fetchGoogleFormData(token, lastChecked, formId);
+      },
+    });
   }
 
   if (pollingResult?.payload?.length > 0) {

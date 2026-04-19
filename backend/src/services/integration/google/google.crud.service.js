@@ -2,6 +2,7 @@ import axios from "axios";
 import { Integration } from "../../../models/integration/integration.model.js";
 import { AppError } from "../../../utils/AppErrors.js";
 import { googleOauthScopes } from "../utils/googleOAuthScopes.js";
+import { executeGoogleRequestWithAutoRefresh } from "./google.auth.service.js";
 
 const googleApi = axios.create({
     baseURL: "https://www.googleapis.com",
@@ -169,13 +170,24 @@ export const getGoogleIntegration = async (userId, provider) => {
 
     try {
         const integrationsWithMetadata = await Promise.all(
-            data.map(async (integration) => ({
-                id: integration.id,
-                name: integration.name,
-                provider: integration.provider,
-                external_id: integration.external_id,
-                metadata: await getProviderMetadata(provider, integration.access_token),
-            }))
+            data.map(async (integration) => {
+                const metadata = await executeGoogleRequestWithAutoRefresh({
+                    userId,
+                    externalId: integration.external_id,
+                    requestFn: async (overrideToken) => {
+                        const token = overrideToken || integration.access_token;
+                        return await getProviderMetadata(provider, token);
+                    },
+                });
+
+                return {
+                    id: integration.id,
+                    name: integration.name,
+                    provider: integration.provider,
+                    external_id: integration.external_id,
+                    metadata,
+                };
+            })
         );
 
         return {

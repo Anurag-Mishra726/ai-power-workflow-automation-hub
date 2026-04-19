@@ -5,7 +5,7 @@ const googleFormsApi = axios.create({
   timeout: 15000,
 });
 
-export const fetchGoogleFormData = async (accessToken, lastCheckedTime, formId, savedEvent) => {
+export const fetchGoogleFormData = async (accessToken, lastCheckedTime, formId) => {
     const filterTime = lastCheckedTime 
         ? new Date(lastCheckedTime).toISOString() 
         : new Date(Date.now() - 5 * 60000).toISOString();

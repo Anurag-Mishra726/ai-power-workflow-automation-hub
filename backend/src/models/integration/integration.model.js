@@ -128,4 +128,30 @@ export const Integration = {        // external_id == team.id for slack
 
         return rows[0]?.refresh_token || null;
     },
+
+    updateOAuthTokenByExternalId: async ({
+        userId,
+        provider,
+        externalId,
+        accessToken,
+        refreshToken,
+        expiresAt,
+        scope,
+    }, client = pool) => {
+        const rows = await query(
+            `UPDATE integration_accounts AS ia
+            INNER JOIN integrations AS i ON i.id = ia.integration_id
+            SET
+                ia.access_token = ?,
+                ia.refresh_token = COALESCE(?, ia.refresh_token),
+                ia.expires_at = ?,
+                ia.scope = COALESCE(?, ia.scope),
+                ia.last_refreshed_at = NOW()
+            WHERE i.user_id = ? AND i.provider = ? AND i.external_id = ?`,
+            [accessToken, refreshToken ?? null, expiresAt ?? null, scope ?? null, userId, provider, externalId],
+            client
+        );
+
+        return rows;
+    },
 }
