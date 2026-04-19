@@ -19,6 +19,7 @@ import webhooks from "./src/routes/webhook.route.js";
 import aiIntegrationRoutes from "./src/routes/aiIntegration.routes.js";
 
 import integrationRoutes from "./src/routes/integration/integration.auth.routes.js"
+import executionRoutes from "./src/routes/executions.routes.js"
 
 const app = express();
 await connectDB();
@@ -60,6 +61,7 @@ app.use("/api/webhook", webhooks);
 app.use("/api/ai/integration", aiIntegrationRoutes);
 app.use("/api/integration", integrationRoutes);
 app.use("/api/user", profileRoutes);
+app.use("/api/executions", executionRoutes);
 
 
 app.use((err, req, res, next) => {
