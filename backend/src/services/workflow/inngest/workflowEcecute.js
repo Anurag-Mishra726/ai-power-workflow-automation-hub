@@ -33,6 +33,7 @@ export const manualExecuteWorkflowService = async (userData, workflowId) => {
 
 export const httpWebhookExecuteWorkflowService = async (workflowId, payload) => {
     try {
+        console.log("Workflow : ", workflowId, "Paylad : ", payload);
         await inngest.send({
             name: "workflow/execute",
             data: {

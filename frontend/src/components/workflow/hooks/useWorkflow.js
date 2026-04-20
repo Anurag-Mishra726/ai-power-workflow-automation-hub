@@ -173,7 +173,26 @@ export const useWorkflow = () => {
                 }
                 
                 const configHandler = nodeConfigMap[triggerType];
-                const initialConfig = { ...(configHandler?.defaultConfig || {}) };
+                let initialConfig = { ...(configHandler?.defaultConfig || {}) };
+
+                // Webhook config is system-generated. Persist it immediately so save/refresh
+                // does not lose values even if config panel closes before its effect runs.
+                // Change this later.
+                if (triggerType === "httpWebhook") {
+                    const { workflowId } = useWorkflowData.getState();
+                    const nodeSuffix = String(activeNodeId || "").replace(/[^a-zA-Z0-9_]/g, "").slice(0, 8);
+                    const variable = `webhook_${nodeSuffix || "payload"}`;
+                    const url = workflowId
+                        ? `https://linus-terrible-murray.ngrok-free.dev/api/webhook/${workflowId}/http-webhook`
+                        : "";
+
+                    initialConfig = {
+                        ...initialConfig,
+                        method: "ANY",
+                        variable,
+                        url,
+                    };
+                }
 
                 updatedNodes = nds.map((node) =>
                     node.id === activeNodeId

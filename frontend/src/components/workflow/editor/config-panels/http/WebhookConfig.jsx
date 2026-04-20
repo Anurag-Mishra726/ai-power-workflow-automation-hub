@@ -16,7 +16,7 @@ const WebhookConfig = ({ selectedNode, onClose, setNodeConfig }) => {
 
   const webhookUrl = useMemo(() => {
     if (!workflowId) return "";
-    return ` https://linus-terrible-murray.ngrok-free.dev/api/webhook/${workflowId}/http-webhook`;
+    return `https://linus-terrible-murray.ngrok-free.dev/api/webhook/${workflowId}/http-webhook`;
   }, [workflowId]);
 
   useEffect(() => {

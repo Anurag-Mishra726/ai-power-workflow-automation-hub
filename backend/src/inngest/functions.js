@@ -66,6 +66,9 @@ export const executeWorkflow = inngest.createFunction(
 
     const userId = await step.run("find-userId", async () => {
       const user = await Workflow.getUserId({ workflowId });
+      if (!user?.user_id) {
+        throw new NonRetriableError("User not found!");
+      }
       return user.user_id;
     });
 
