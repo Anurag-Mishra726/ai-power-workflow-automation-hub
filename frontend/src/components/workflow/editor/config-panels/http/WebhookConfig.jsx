@@ -83,9 +83,11 @@ const WebhookConfig = ({ selectedNode, onClose, setNodeConfig }) => {
         </section>
 
         <section className="rounded-lg border border-zinc-700 bg-zinc-900/40 p-3">
-          <h4 className="text-sm font-semibold flex items-center gap-2"><Globe size={14} /> How to use</h4>
-          <p className="text-xs text-zinc-300 mt-2 leading-relaxed">
-            1) Copy the webhook URL above. 2) From your app/server/client, send an HTTP request with any method (GET/POST/PUT/PATCH/DELETE) to this URL. 3) The incoming request details are available in downstream nodes via the variable shown above.
+          <h4 className="text-base font-semibold flex items-center gap-2"><Webhook size={14} /> How to use</h4>
+          <p className="text-sm text-zinc-300 mt-2 leading-relaxed flex flex-col gap-2">
+            <span>1. Copy the webhook URL above.</span> 
+            <span>2. From your app/server/client, send an HTTP request with any method (GET/POST/PUT/PATCH/DELETE) to this URL.</span> 
+            <span>3. The incoming request details are available in downstream nodes via the variable shown above.</span>
           </p>
         </section>
       </div>
