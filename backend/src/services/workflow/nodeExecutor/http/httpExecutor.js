@@ -1,8 +1,8 @@
 import { NonRetriableError } from "inngest";
-import { httpRequestChannel } from "../../../inngest/workflowStatus.js";
+import { httpRequestChannel } from "../../../../inngest/workflowStatus.js";
 import axios from "axios";
 import Handlebars from 'handlebars';
-import { createExecutionResult } from "../../../utils/executionResult.js";
+import { createExecutionResult } from "../../../../utils/executionResult.js";
 
 export const httpExecutor = async ({data, nodeId, context, publish}) => {
 

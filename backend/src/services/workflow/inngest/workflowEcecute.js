@@ -31,18 +31,17 @@ export const manualExecuteWorkflowService = async (userData, workflowId) => {
    }
 }
 
-export const googleFormExecuteWorkflowService = async (workflowId, formData) => {
+export const httpWebhookExecuteWorkflowService = async (workflowId, payload) => {
     try {
-        //console.log("workflowId and formData : ", workflowId, formData);
         await inngest.send({
             name: "workflow/execute",
             data: {
                 workflowId: workflowId,
-                initialData : {
-                    googleFormData: formData,
+                initialData: {
+                    httpWebhook: payload
                 }
             }
-        })
+        });
     } catch (error) {
         console.log(error);
         throw new AppError(error.message || "Something went worong!", 500);

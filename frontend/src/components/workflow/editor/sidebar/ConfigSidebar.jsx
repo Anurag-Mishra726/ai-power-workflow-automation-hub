@@ -28,6 +28,9 @@ const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
     
     case "http": 
         return <HTTPConfig selectedNode={selectedNode} onClose={onClose} nodeType={nodeType} setNodeConfig={setNodeConfig} />;
+
+    case "httpWebhook": 
+        return <HTTPConfig selectedNode={selectedNode} onClose={onClose} nodeType={nodeType} setNodeConfig={setNodeConfig} />;
         
     case "geminiAI":
       return <GeminiConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;

@@ -5,7 +5,8 @@ import CloseBtn from "@/components/common/CloseBtn";
 
 const WorkflowSidebar = ({ onClose, setTriggerType }) => {
 
-  const {setIsConfigSidebarOpen, /* nodeType */} = useEditorUIStore();
+  const {setIsConfigSidebarOpen, nodeType} = useEditorUIStore();
+  const triggerType = nodeType === "trigger" ? "trigger" : "action";
 
   const handleOnClick = (label, triggerType) => {
     // console.log("NodeTypes:: " ,nodeType)
@@ -52,31 +53,12 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
             </div>
         </div>
 
-        {/* <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
-         hover:bg-zinc-800 cursor-pointer"
-         onClick={()=> {
-          handleOnClick("HTTP Webhook", "http");
-         }}
-         >
-            <Globe size={28} className="text-blue-600" />
-            <div>
-                <h2 className="text-xl">HTTP Webhook</h2>
-                <p className="text-zinc-400 text-sm ">Start this workflow when an HTTP request is received.</p>
-            </div>
-        </div> */}
-
-         {/* Action Nodes */}
-
-        {/* <div className="mt-8 pb-1 border-b border-gray-300">
-          <h2 className="text-2xl">Actions Nodes</h2>
-        </div> */}
-
         {/* HTTP Request */}
 
         <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
          hover:bg-zinc-800 cursor-pointer"
          onClick={()=> {
-          handleOnClick("HTTP Request", "http");
+          handleOnClick("HTTP Request", `${triggerType === "trigger" ? "httpWebhook" : "http"}`);
          }}
          >
             <Globe size={28} className="text-blue-600" />

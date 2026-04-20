@@ -1,6 +1,6 @@
 import { AppError } from "../../../utils/AppErrors.js";
 import { manualExecutor } from "./manualExecutor.js";
-import { httpExecutor } from "./httpExecutor.js";
+import { httpExecutor } from "./http/httpExecutor.js";
 import { geminiAIExecutor } from "./geminiAIExecutor.js";
 import { perplexityAIExecutor } from "./perplexityAIExecutor.js";
 import { openAIExecutor } from "./openAIExecutor.js";

@@ -25,7 +25,8 @@ const BaseNodeSchema = z.object({
         label: z.string().optional(),
         triggerType: z.enum([
             "manual", 
-            "http", 
+            "http",
+            "httpWebhook",
             "geminiAI",
             "openAI",
             "perplexityAI",

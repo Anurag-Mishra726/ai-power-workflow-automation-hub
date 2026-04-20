@@ -1,6 +1,6 @@
 import { 
     manualExecuteWorkflowService,
-    googleFormExecuteWorkflowService
+    httpWebhookExecuteWorkflowService,
  } from "../services/workflow/inngest/workflowEcecute.js";
 
 export const manualExecuteWorkflow = async (req, res) => {
@@ -22,35 +22,38 @@ export const manualExecuteWorkflow = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-                message: error.message || "Bad Request",
-                success: false
-            })
+            message: error.message || "Bad Request",
+            success: false
+        });
     }
 }
 
-export const googleFormExecuteWorkflow = async (req, res) => {
+export const handleHttpWebhook = async (req, res) => {
     try {
-        const {workflowId} = req.params;
+        const { workflowId } = req.params;
 
-        if (!workflowId) {
-            return res.status(400).json({
-                message: "WorkflowId not found! Bad request.",
-                success: false
-            });
-        }
+        const payload = {
+            method: req.method,
+            headers: req.headers || {},
+            query: req.query || {},
+            body: req.body || {}
+        };
 
-        await googleFormExecuteWorkflowService(workflowId, req.body);
-        return res.status(200).json({
-            recived: true,
+        await httpWebhookExecuteWorkflowService(workflowId, payload);
+
+        res.status(200).json({
             success: true,
-        })
+            message: "Workflow triggered"
+        });
     } catch (error) {
         console.log(error);
-        res.status(500).json({
-            success: false,
-        })
+        return res.status(500).json({
+            message: error.message || "Bad Request",
+            success: false
+        });
     }
 }
+
 
 export const handleGithubWebhook = async (req, res) => {
     try {

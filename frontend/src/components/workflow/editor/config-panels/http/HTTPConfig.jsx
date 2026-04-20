@@ -3,17 +3,19 @@ import { useForm, useWatch } from 'react-hook-form';
 import { Globe, MoveLeft } from "lucide-react";
 import CloseBtn from "@/components/common/CloseBtn";
 import useEditorUIStore from "@/stores/workflowEditorStore";
+import useWorkflowData from '@/stores/workflowDataStore';
 import toast from 'react-hot-toast';
 
 const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
 
   const {setIsConfigSidebarClose} = useEditorUIStore();
+  const {workflowId} = useWorkflowData();
 
   const { register, handleSubmit, setValue, control, formState: { errors }, setError } = useForm({
       defaultValues: {
         method: selectedNode?.data?.config?.method || 'GET',
         variable: selectedNode?.data?.config?.variable || null,
-        url: selectedNode?.data?.config?.url || 'https://api.flowai.com/webhook',
+        url: selectedNode?.data?.config?.url || `https://linus-terrible-murray.ngrok-free.dev/api/webhook/${workflowId}/http-webhook`,
         headers: JSON.stringify(selectedNode?.data?.config?.headers) || {
   "Content-Type": "application/json"
 },
