@@ -35,6 +35,7 @@ export const TriggerNode = ({ id ,data, type }) => {
         <div className="text-white bg-white/10 text-xs border border-zinc-500 rounded-md p-1 flex items-center gap-1 cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
+            setNodeType("trigger");
             setActiveNode(id);
             setIsSidebarOpen();
           }}

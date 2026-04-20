@@ -129,10 +129,10 @@ export const pollWorkflowTriggers = inngest.createFunction(
   { id: "poll-workflow-triggers" },
   { cron: "*/1 * * * *" },
   async ({ step }) => {
-    const result = await step.run("poll-gmail-drive-triggers", async () => {
+    const result = await step.run("polling-system", async () => {
       console.log("Polling workflow triggers...");
-      return processWorkflowPolling();
-      //return;
+      //return processWorkflowPolling();
+      return;
     });
 
     return result;

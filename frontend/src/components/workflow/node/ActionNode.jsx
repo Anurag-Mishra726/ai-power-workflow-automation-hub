@@ -33,6 +33,7 @@ export const ActionNode = ({ id, data, type }) => {
         <div className="text-white/80 bg-white/10 text-xs border border-zinc-500 rounded-md p-1 flex items-center gap-1 cursor-pointer"
            onClick={(e) => {
             e.stopPropagation();
+            setNodeType("action");
             setActiveNode(id);
             setIsSidebarOpen();
           }}
