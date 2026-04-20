@@ -76,6 +76,16 @@ const HttpConfig = z.object({
     }
 });
 
+
+const HttpWebhookConfig = z.object({
+    method: z.enum(["ANY", "GET", "POST", "PUT", "PATCH", "DELETE"]),
+    variable: z.string().min(2, "Variable name is too small.").regex(
+        /^[a-zA-Z0-9-_]+$/,
+        "Special characters are not allowed. Please use only letters, numbers, hypen: (-) and underscore: (_)."
+    ),
+    url: z.string(),
+});
+
 const AI = z.object({
     variable: z.string().min(2, "Variable name is too small.").max(15, "Variable name is too big").regex( 
         /^[a-zA-Z0-9-_]+$/, 
@@ -123,6 +133,20 @@ const workflowNodeSchema = BaseNodeSchema.superRefine((node, ctx) => {
                     message: issue.message,
                     path: ["data", "config", ...issue.path],
                 })
+            });
+        }
+    }
+
+
+    if (node.data.triggerType === "httpWebhook") {
+        const result = HttpWebhookConfig.safeParse(node.data.config);
+        if (!result.success) {
+            result.error.issues.forEach(issue => {
+                ctx.addIssue({
+                    code: issue.code,
+                    message: issue.message,
+                    path: ["data", "config", ...issue.path],
+                });
             });
         }
     }

@@ -2,6 +2,7 @@ import useEditorUIStore from "@/stores/workflowEditorStore";
 import DefaultConfig from "../config-panels/defaultConfig/DefaultConfig";
 import ManualTriggerConfig from "../config-panels/manualTrigger/ManualTriggerConfig";
 import HTTPConfig from "../config-panels/http/HTTPConfig";
+import WebhookConfig from "../config-panels/http/WebhookConfig";
 import GoogleFormConfig from "../config-panels/googleForm/GoogleFormConfig";
 import GeminiConfig from "../config-panels/ai/gemini/GeminiConfig";
 import PerplexityConfig from "../config-panels/ai/perplexity/PerplexityConfig";
@@ -30,7 +31,7 @@ const ConfigSidebar = ({ nodes, onClose, setNodeConfig }) => {
         return <HTTPConfig selectedNode={selectedNode} onClose={onClose} nodeType={nodeType} setNodeConfig={setNodeConfig} />;
 
     case "httpWebhook": 
-        return <HTTPConfig selectedNode={selectedNode} onClose={onClose} nodeType={nodeType} setNodeConfig={setNodeConfig} />;
+        return <WebhookConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;
         
     case "geminiAI":
       return <GeminiConfig selectedNode={selectedNode} onClose={onClose} setNodeConfig={setNodeConfig} />;

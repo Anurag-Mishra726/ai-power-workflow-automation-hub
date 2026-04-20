@@ -1,6 +1,7 @@
 import { AppError } from "../../../utils/AppErrors.js";
 import { manualExecutor } from "./manualExecutor.js";
 import { httpExecutor } from "./http/httpExecutor.js";
+import { httpWebhookExecutor } from "./http/httpWebhookExecutor.js";
 import { geminiAIExecutor } from "./geminiAIExecutor.js";
 import { perplexityAIExecutor } from "./perplexityAIExecutor.js";
 import { openAIExecutor } from "./openAIExecutor.js";
@@ -12,6 +13,7 @@ import { handleGoogleForm } from "./googleForm/getResponse.js";
 export const executorRegistry =  {
     manual: manualExecutor,
     http: httpExecutor,
+    httpWebhook: httpWebhookExecutor,
     geminiAI: geminiAIExecutor,
     perplexityAI: perplexityAIExecutor,
     openAI: openAIExecutor,

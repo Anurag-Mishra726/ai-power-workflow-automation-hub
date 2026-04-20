@@ -38,29 +38,26 @@ export const nodeConfigMap = {
 
     httpWebhook: {
         defaultConfig: {
-            method: "GET",
+            method: "ANY",
             variable: "",
             url: "",
-            headers: "",
-            body: "",
         },
 
-        buildSummary: (config) =>
-        {
+        buildSummary: (config) => {
             try {
                 return config?.url
-                ? `${config.method} ${new URL(config.url).pathname}`
-                : "HTTP Request"
+                    ? `Webhook (${config.method || "ANY"}) ${new URL(config.url).pathname}`
+                    : "Webhook";
             } catch (error) {
                 console.log(error);
-                return "HTTP Request";
+                return "Webhook";
             }
-        }// TODOs : Fix this build summary for the url (When user enters only the variable name in the url field, it breaks the summary because of URL constructor. We need to handle that case.)
-        , 
+        },
 
         isComplete: (config) =>
-            Boolean(config?.url && config?.method),
+            Boolean(config?.url && config?.variable && config?.method),
     },
+
 
     googleForm: {
         defaultConfig: {},
