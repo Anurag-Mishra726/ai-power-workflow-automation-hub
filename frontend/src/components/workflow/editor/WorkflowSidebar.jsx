@@ -1,4 +1,4 @@
-import {MousePointer, Globe,X} from "lucide-react"
+import { MousePointer, Globe, Webhook } from "lucide-react"
 import useEditorUIStore from "@/stores/workflowEditorStore";
 import CloseBtn from "@/components/common/CloseBtn";
 //import toast from "react-hot-toast";
@@ -53,20 +53,33 @@ const WorkflowSidebar = ({ onClose, setTriggerType }) => {
             </div>
         </div>
 
-        {/* HTTP Request */}
-
-        <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500
-         hover:bg-zinc-800 cursor-pointer"
-         onClick={()=> {
-          handleOnClick("HTTP Request", `${triggerType === "trigger" ? "httpWebhook" : "http"}`);
-         }}
-         >
+        {triggerType === "trigger" ? (
+          <div
+            className="flex items-center gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500 hover:bg-zinc-800 cursor-pointer"
+            onClick={() => {
+              handleOnClick("Webhook", "httpWebhook");
+            }}
+          >
+            <Webhook size={28} className="text-violet-400" />
+            <div>
+              <h2 className="text-xl">Webhook</h2>
+              <p className="text-zinc-400 text-sm ">Trigger this flow from any external HTTP request.</p>
+            </div>
+          </div>
+        ) : (
+          <div
+            className="flex items-center gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500 hover:bg-zinc-800 cursor-pointer"
+            onClick={() => {
+              handleOnClick("HTTP Request", "http");
+            }}
+          >
             <Globe size={28} className="text-blue-600" />
             <div>
-                <h2 className="text-xl">HTTP Request</h2>
-                <p className="text-zinc-400 text-sm ">Send data to or fetch data from an API.</p>
+              <h2 className="text-xl">HTTP Request</h2>
+              <p className="text-zinc-400 text-sm ">Send data to or fetch data from an API.</p>
             </div>
-        </div>
+          </div>
+        )}
 
          {/* Google Form */}
         <div className="flex items-center  gap-4 mt-5 px-5 py-2 border border-zinc-600 rounded-xl hover:border-zinc-500

@@ -1,21 +1,19 @@
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { Globe, MoveLeft } from "lucide-react";
+import { Globe } from "lucide-react";
 import CloseBtn from "@/components/common/CloseBtn";
 import useEditorUIStore from "@/stores/workflowEditorStore";
-import useWorkflowData from '@/stores/workflowDataStore';
 import toast from 'react-hot-toast';
 
 const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
 
   const {setIsConfigSidebarClose} = useEditorUIStore();
-  const {workflowId} = useWorkflowData();
 
   const { register, handleSubmit, setValue, control, formState: { errors }, setError } = useForm({
       defaultValues: {
         method: selectedNode?.data?.config?.method || 'GET',
-        variable: selectedNode?.data?.config?.variable || null,
-        url: selectedNode?.data?.config?.url || `https://linus-terrible-murray.ngrok-free.dev/api/webhook/${workflowId}/http-webhook`,
+        variable: selectedNode?.data?.config?.variable || '',
+        url: selectedNode?.data?.config?.url || '',
         headers: JSON.stringify(selectedNode?.data?.config?.headers) || {
   "Content-Type": "application/json"
 },
@@ -38,7 +36,6 @@ const HTTPConfig = ({ selectedNode, nodeType, onClose, setNodeConfig }) => {
   const isDeleteMethod = method === 'DELETE'
 
   const onSubmit = async (data) => {
-    console.log(data.variable)
     try {
 
       if(["POST", "PUT", "PATCH"].includes(data.method) && (!data.body || !data.headers)){

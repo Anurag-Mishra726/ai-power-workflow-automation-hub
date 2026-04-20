@@ -173,6 +173,7 @@ export const useWorkflow = () => {
                 }
                 
                 const configHandler = nodeConfigMap[triggerType];
+                const initialConfig = { ...(configHandler?.defaultConfig || {}) };
 
                 updatedNodes = nds.map((node) =>
                     node.id === activeNodeId
@@ -181,9 +182,10 @@ export const useWorkflow = () => {
                             data: {
                                 label,
                                 isTrigger: true,
-                                isConfigured: configHandler.isComplete(),
+                                isConfigured: configHandler.isComplete(initialConfig),
                                 triggerType,
-                                summary: configHandler.buildSummary(),
+                                config: initialConfig,
+                                summary: configHandler.buildSummary(initialConfig),
                             },
                         } : 
                     node
