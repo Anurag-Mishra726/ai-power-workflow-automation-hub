@@ -47,6 +47,7 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
       targetId: config.targetId || '',
       fileUrl: config.fileUrl || '',
       fileName: config.fileName || '',
+      content: config.content || '',
       folderName: config.folderName || '',
       fileUpload: null,
     },
@@ -70,6 +71,7 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
       targetId: config.targetId || '',
       fileUrl: config.fileUrl || '',
       fileName: config.fileName || '',
+      content: config.content || '',
       folderName: config.folderName || '',
       fileUpload: null,
     });
@@ -144,6 +146,7 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
       targetId: formData.targetId,
       fileUrl: formData.fileUrl,
       fileName: formData.fileName.trim(),
+      content: formData.content,
       folderName: formData.folderName.trim(),
       fileUpload: formData.fileUpload?.name || '',
     });
@@ -313,6 +316,23 @@ const ConfigState = ({ data, handleConnect, selectedNode, setNodeConfig }) => {
               className={inputClass}
             />
             {errors.fileName && <p className={errorClass}>{errors.fileName.message}</p>}
+
+            <label className="text-sm font-bold uppercase tracking-wider text-zinc-200">
+              File Content
+            </label>
+            <textarea
+              {...register('content', {
+                validate: (val) =>
+                  event !== 'create_file' || !!val?.trim() || 'File content is required',
+              })}
+              rows={6}
+              placeholder="Enter file content (supports variables like {{webhook.body.name}})"
+              className={inputClass}
+            />
+            <p className="text-[12px] text-zinc-400">
+              This content will be written inside the file in Google Drive.
+            </p>
+            {errors.content && <p className={errorClass}>{errors.content.message}</p>}
           </section>
         )}
 
