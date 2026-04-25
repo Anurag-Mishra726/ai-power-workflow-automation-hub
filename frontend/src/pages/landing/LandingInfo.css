@@ -1,0 +1,46 @@
+.info-page {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  color: #ffffff;
+}
+
+.info-content {
+  position: relative;
+  z-index: 2;
+  max-width: 960px;
+  margin: 40px auto 0;
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  background: rgba(11, 11, 25, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.info-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.info-subtitle {
+  color: #cdd0ff;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.info-list {
+  display: grid;
+  gap: 14px;
+  padding-left: 20px;
+  line-height: 1.6;
+}
+
+.info-list li {
+  color: #f0f2ff;
+}
+
+.info-link {
+  color: #88b6ff;
+  text-decoration: underline;
+}

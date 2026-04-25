@@ -10,6 +10,10 @@ import AppLayout from "./layouts/AppLayout";
 
 // Landing
 import Landing from './pages/landing/Landing'
+import Features from './pages/landing/Features'
+import Integrations from './pages/landing/Integrations'
+import Developer from './pages/landing/Developer'
+import About from './pages/landing/About'
 import Home from "./components/home/Main";
 
 // Auth Routes
@@ -41,6 +45,10 @@ function App() {
         <Routes>
 
           <Route path="/" element={<Landing />} />
+          <Route path="/features" element={<Features />} />
+          <Route path="/integrations" element={<Integrations />} />
+          <Route path="/developer" element={<Developer />} />
+          <Route path="/about" element={<About />} />
 
           <Route path='/auth/login' element={
             <GuestRoute>
