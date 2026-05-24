@@ -1,14 +1,10 @@
 import Navbar from '@/components/landing/Navbar'
-import StarPattern from '@/components/common/StarPattern'
 import './LandingInfo.css'
 
 const About = () => {
   return (
     <div className="info-page">
-      <StarPattern />
-      <div className="stars1"></div>
-      <div className="stars2"></div>
-      <div className="stars3"></div>
+
       <Navbar />
 
       <section className="info-content">

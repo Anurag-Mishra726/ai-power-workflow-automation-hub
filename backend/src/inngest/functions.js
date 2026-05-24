@@ -4,7 +4,6 @@ import { Workflow } from "../models/workflow.model.js";
 import { sortWorkflowNodes } from "../utils/toposortNodes.js";
 import { getNodeExecutor } from "../services/workflow/nodeExecutor/executorRegistry.js";
 import { httpRequestChannel } from "./workflowStatus.js";
-//import { processWorkflowPolling } from "../services/pollingService.js";
 import { processWorkflowPolling } from "../services/polling/polling.service.js";
 import { Execution } from "../models/execution.model.js";
 
@@ -134,8 +133,8 @@ export const pollWorkflowTriggers = inngest.createFunction(
   async ({ step }) => {
     const result = await step.run("polling-system", async () => {
       console.log("Polling workflow triggers...");
-      //return processWorkflowPolling();
-      return;
+      return processWorkflowPolling();
+      //return;
     });
 
     return result;

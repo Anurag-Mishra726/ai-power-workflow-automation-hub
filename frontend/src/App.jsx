@@ -64,6 +64,10 @@ function App() {
               <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
               
                 <Route path="/home" element={<Home />}  />
+                <Route path="/features" element={<Features />} />
+                <Route path="/developer" element={<Developer />} />
+                <Route path="/integrations" element={<Integrations />} />
+                <Route path="/about" element={<About />} />
 
                 <Route path="/workflow" element={<WorkflowLayout />} >
                   <Route index element={<WorkflowMain />}  />
