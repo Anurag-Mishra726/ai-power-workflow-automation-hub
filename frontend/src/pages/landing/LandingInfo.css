@@ -2,7 +2,7 @@
   color: #ffffff;
   /* background: radial-gradient(circle at top, rgba(98, 114, 255, 0.18), transparent 28%),
               linear-gradient(180deg, #05050f 0%, #090918 42%, #0e1022 100%); */
-              background-color: black;
+  background-color: black;
   min-height: 100vh;
   padding-top: 130px  ;
   display: flex;
@@ -11,14 +11,38 @@
 }
 
 .info-content {
-  width: min(100%, 980px);
+  width: min(100%, 1040px);
   padding: 20px 42px;
+  margin: 0 20px 40px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 24px;
   /* background: rgba(10, 12, 30, 0.82); */
   background: rgba(0, 0, 0, 0.82);
   backdrop-filter: blur(14px);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  max-height: calc(100vh - 170px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #313131 rgba(255, 255, 255, 0.1);
+}
+
+.info-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.info-content::-webkit-scrollbar-track {
+  background: rgba(224, 4, 4, 0.08);
+  border-radius: 999px;
+}
+
+.info-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #7c9dff 0%, #5cf0d3 100%);
+  border-radius: 999px;
+  border: 2px solid rgba(0, 0, 0, 0.82);
+}
+
+.info-content::-webkit-scrollbar-thumb:hover {
+  filter: brightness(1.08);
 }
 
 .info-title {
@@ -30,21 +54,21 @@
 
 .info-subtitle {
   color: #d1d7ff;
+  font-size: large;
   margin-bottom: 26px;
   line-height: 1.75;
-  max-width: 720px;
 }
 
 .info-list {
   display: grid;
-  gap: 16px;
+  gap: 10px;
   padding-left: 0;
   list-style: none;
 }
 
 .info-list li {
   position: relative;
-  padding-left: 32px;
+  padding-left: 25px;
   color: #edf0ff;
   line-height: 1.8;
 }
@@ -53,9 +77,9 @@
   content: "";
   position: absolute;
   left: 0;
-  top: 0.85em;
-  width: 10px;
-  height: 10px;
+  top: 0.75em;
+  width: 8px;
+  height: 8px;
   border-radius: 999px;
   background: linear-gradient(135deg, #7c9dff, #5cf0d3);
 }
@@ -73,6 +97,8 @@
   .info-content {
     padding: 28px 22px;
     border-radius: 20px;
+    max-height: calc(100vh - 150px);
+    margin: 0 12px 28px;
   }
 
   .info-title {

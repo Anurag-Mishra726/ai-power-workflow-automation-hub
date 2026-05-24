@@ -10,14 +10,19 @@ const About = () => {
       <section className="info-content">
         <h1 className="info-title">About FlowAI</h1>
         <p className="info-subtitle">
-          FlowAI is a workflow automation project that combines AI and productivity integrations to help users build
-          intelligent, event-driven workflows from a single platform.
+          FlowAI is a modern workflow automation platform that helps users transform repetitive tasks into reliable,
+          intelligent automation pipelines. It combines AI reasoning, trigger-based execution, and app integrations so
+          teams can move faster with less manual effort.
         </p>
         <ul className="info-list">
-          <li>Design custom automations with a visual workflow editor.</li>
-          <li>Connect AI providers and productivity tools in one place.</li>
-          <li>Use trigger-action logic to automate repetitive tasks.</li>
-          <li>Scale routine operations with reliable, reusable workflow pipelines.</li>
+          <li>Our mission is to make workflow automation accessible without sacrificing power.</li>
+          <li>Users can orchestrate business logic, AI prompts, and app actions in a unified flow.</li>
+          <li>FlowAI supports iterative building so workflows can be improved safely over time.</li>
+          <li>The platform is designed for productivity, operations, support, and developer workflows.</li>
+          <li>Event-driven architecture enables fast response to external app updates and triggers.</li>
+          <li>Observability tools help teams understand run quality and optimize process performance.</li>
+          <li>Integration-first design allows organizations to connect existing tools instead of replacing them.</li>
+          <li>FlowAI grows with your team, from quick internal automations to mission-critical processes.</li>
         </ul>
       </section>
     </div>

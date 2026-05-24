@@ -10,18 +10,24 @@ const Features = () => {
       <section className="info-content">
         <h1 className="info-title">Project Features</h1>
         <p className="info-subtitle">
-          FlowAI is focused on creating smart workflow automation with AI-assisted actions and trigger-based execution.
+          FlowAI is built to simplify advanced automation for both technical and non-technical teams. It combines a
+          visual workflow system with intelligent AI nodes so you can design, test, and operate production-ready
+          workflows in one place.
         </p>
 
         <ul className="info-list">
-          <li>Visual workflow builder to create automation flows quickly.</li>
-          <li>AI node support with Gemini, OpenAI, and Perplexity integrations.</li>
-          <li>Trigger and action-based automation for tools like Gmail and Google Drive.</li>
-          <li>Manual and webhook execution support for custom workflow runs.</li>
-          <li>Real-time workflow execution tracking and status visibility.</li>
-          <li>Workflow management with create, update, and execute capabilities.</li>
-          <li>GitHub integration is currently under development.</li>
-          <li>Jira integration is planned and currently pending.</li>
+          <li>Drag-and-drop visual builder to design complete workflows in minutes.</li>
+          <li>Multi-step workflow graph with trigger, action, and AI decision nodes.</li>
+          <li>AI provider support for Gemini, OpenAI, and Perplexity based use-cases.</li>
+          <li>Reusable workflow templates to speed up common automation scenarios.</li>
+          <li>Execution options for manual run, event trigger, and incoming webhooks.</li>
+          <li>Live execution timeline with per-step status, runtime, and error visibility.</li>
+          <li>Retry support and safer step-level control for failed workflow operations.</li>
+          <li>Integration-ready actions for tools like Gmail, Slack, and Google Drive.</li>
+          <li>Secure credential handling so API keys and tokens stay isolated.</li>
+          <li>Workflow lifecycle controls for creating, updating, and managing versions.</li>
+          <li>Scalable architecture designed for adding more integrations over time.</li>
+          <li>Roadmap includes deeper GitHub and Jira automation capabilities.</li>
         </ul>
       </section>
     </div>
