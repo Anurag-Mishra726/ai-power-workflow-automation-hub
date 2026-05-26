@@ -6,7 +6,7 @@ import { getSlackIntegration } from "../slack/slack.crud.service.js";
 import { getGoogleAuthUrl, handleGoogleCallback, saveGoogleIntegration } from "../google/google.auth.service.js";
 import { getGoogleIntegration } from "../google/google.crud.service.js";
 
-import { getGithubAuthUrl, handleGithubCallback, saveGithubIntegration } from "../github/github.auth.service.js";
+import { getGithubAuthUrl } from "../github/github.auth.service.js";
 import { getGithubIntegration } from "../github/github.crud.service.js";
 
 const getProviderUrl = {
@@ -22,7 +22,6 @@ const handleCallback = {
     googleDrive: handleGoogleCallback,
     gmail: handleGoogleCallback,
     googleForm: handleGoogleCallback,
-    github: handleGithubCallback,
 }
 
 const handleInsertToken = {
@@ -30,7 +29,6 @@ const handleInsertToken = {
     googleDrive: saveGoogleIntegration,
     gmail: saveGoogleIntegration,
     googleForm: saveGoogleIntegration,
-    github: saveGithubIntegration,
 }
 
 const handleCRUD = {

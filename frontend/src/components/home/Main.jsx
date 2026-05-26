@@ -144,8 +144,10 @@ const Main = () => {
       totalRuns,
       errorRate,
       errorCount,
-      workflowDelta: getDelta(workflowsLast30, workflowsPrev30),
-      runsDelta: getDelta(runsLast30, runsPrev30),
+      workflowDelta:
+        workflowsLast30 === 0 && totalWorkflows > 0 ? 0 : getDelta(workflowsLast30, workflowsPrev30),
+      runsDelta:
+        runsLast30 === 0 && totalRuns > 0 ? 0 : getDelta(runsLast30, runsPrev30),
       recentRunsLabel: `${runsLast30} in last 30d`,
     };
   }, [workflows, executions]);

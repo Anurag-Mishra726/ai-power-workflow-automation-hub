@@ -3,6 +3,7 @@ import {
     integrationHandleOAuthCallback, 
     integrationInsertOAuthToken
  } from "../../../services/integration/utils/integration.service.js";
+import { handleGithubCallback } from "../../../services/integration/github/github.auth.service.js";
 
 export const startOAuth = async (req, res) => {
     try {
@@ -18,7 +19,6 @@ export const startOAuth = async (req, res) => {
         }
 
         const url = await integrationOAuthGetUrl(provider, workflowId, userId);
-        //console.log("Controller: ", url);
         return res.redirect(url);
 
     } catch (error) {
@@ -43,7 +43,7 @@ export const handleOAuthCallback = async (req, res) => {
 
         if (!code) {
             console.error("Code is missing.......");
-            return res.redirect(`http://localhost:5173/workflow/`);
+            return res.redirect(`http://localhost:5173/workflow/${workflowId}`);
         }
         
         const data = await integrationHandleOAuthCallback(provider, code, userId);
@@ -57,6 +57,46 @@ export const handleOAuthCallback = async (req, res) => {
         res.status( error.statusCode || 500).json({
             success: false,
             message: error.message || "Internal Server Error!"
+        });
+    }
+};
+
+
+export const handleGithubSetupCallback = async (req, res) => {
+
+    try {
+        const {
+            installation_id,
+            state
+        } = req.query;
+
+        const decoded = JSON.parse(
+            Buffer.from(state, "base64").toString("utf-8")
+        );
+
+        const { workflowId, userId } = decoded;
+
+        if (!installation_id) {
+            return res.redirect(
+              `http://localhost:5173/workflow/`
+            );
+        }
+
+        await handleGithubCallback(
+            userId,
+            installation_id,
+        );
+
+        return res.redirect(
+          `http://localhost:5173/workflow/${workflowId}`
+        );
+
+    } catch (error) {
+        console.log("GitHub Setup Callback Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
         });
     }
 };

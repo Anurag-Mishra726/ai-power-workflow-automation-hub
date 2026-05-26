@@ -1,37 +1,32 @@
-import axios from 'axios';
 import { Integration } from '../../../models/integration/integration.model.js';
 import { AppError } from '../../../utils/AppErrors.js';
+import { githubApp } from '../../../utils/githubApp.js';
 
-const githubApi = axios.create({
-  baseURL: 'https://api.github.com',
-  timeout: 10000,
-  headers: {
-    Accept: 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2022-11-28',
-  },
-});
+const getGithubMetadata = async (installationId) => {
+  const parsedId = Number(installationId);
+  
+  if (!parsedId || isNaN(parsedId)) {
+    throw new Error(`Invalid installationId: ${installationId}`);
+  }
 
-const getGithubMetadata = async (accessToken) => {
-  const headers = { Authorization: `Bearer ${accessToken}` };
+  const octokit = await githubApp.getInstallationOctokit(parsedId);
 
-  const [profileResponse, reposResponse] = await Promise.all([
-    githubApi.get('/user', { headers }),
-    githubApi.get('/user/repos', {
-      headers,
-      params: {
-        per_page: 100,
-        sort: 'updated',
-      },
-    }),
+  const [installationResponse, reposResponse] = await Promise.all([
+    octokit.rest.apps.getInstallation({ installation_id: parsedId }),
+    octokit.rest.apps.listReposAccessibleToInstallation({ per_page: 100 }),
   ]);
 
-  const profile = profileResponse.data;
-  const repos = reposResponse.data || [];
+  const account = installationResponse.data.account;
+  const repos = reposResponse.data.repositories || [];
 
   return {
-    login: profile?.login || null,
-    avatar_url: profile?.avatar_url || null,
-    html_url: profile?.html_url || null,
+    login: account?.login || null,
+    avatar_url: account?.avatar_url || null,
+    html_url: account?.html_url || null,
+    type: account?.type || null, 
+    
+    total_repository_count: reposResponse.data.total_count,
+    
     repos: repos.map((repo) => ({
       id: repo.id,
       name: repo.name,
@@ -45,8 +40,9 @@ const getGithubMetadata = async (accessToken) => {
 };
 
 export const getGithubIntegration = async (userId, provider) => {
-  const data = await Integration.getIntegration({ userId, provider });
-
+  
+  const data = await Integration.getIntegrationProvider({ userId, provider });
+  
   if (data.length === 0) {
     return {
       success: true,
@@ -61,8 +57,8 @@ export const getGithubIntegration = async (userId, provider) => {
         id: integration.id,
         name: integration.name,
         provider: integration.provider,
-        external_id: integration.external_id,
-        metadata: await getGithubMetadata(integration.access_token),
+        external_id: integration.external_id, // This is installationId provided by GitHub
+        metadata: await getGithubMetadata(integration.external_id),
       }))
     );
 
@@ -72,7 +68,10 @@ export const getGithubIntegration = async (userId, provider) => {
       data: integrationsWithMetadata,
     };
   } catch (error) {
-    console.error('GitHub Integration CRUD Error:', error.response?.data || error.message);
-    throw new AppError('Failed to fetch GitHub integration metadata', 500);
+    return {
+      success: false,
+      message: 'Failed to fetch GitHub integration metadata via Octokit',
+      data: [],
+    }
   }
 };
