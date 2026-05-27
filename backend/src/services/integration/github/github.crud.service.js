@@ -19,23 +19,34 @@ const getGithubMetadata = async (installationId) => {
   const account = installationResponse.data.account;
   const repos = reposResponse.data.repositories || [];
 
+  const reposWithBranches = await Promise.all(
+    repos.map(async (repo) => {
+      const branchesResponse = await octokit.rest.repos.listBranches({
+        owner: repo.owner.login,
+        repo: repo.name,
+        per_page: 100,
+      });
+
+      return {
+        id: repo.id,
+        name: repo.name,
+        owner: repo.owner?.login || null,
+        full_name: repo.full_name,
+        private: repo.private,
+        default_branch: repo.default_branch,
+        html_url: repo.html_url,
+        branches: branchesResponse.data.map(b => b.name)
+      };
+    })
+  );
+
   return {
     login: account?.login || null,
     avatar_url: account?.avatar_url || null,
     html_url: account?.html_url || null,
     type: account?.type || null, 
-    
     total_repository_count: reposResponse.data.total_count,
-    
-    repos: repos.map((repo) => ({
-      id: repo.id,
-      name: repo.name,
-      owner: repo.owner?.login || null,
-      full_name: repo.full_name,
-      private: repo.private,
-      default_branch: repo.default_branch,
-      html_url: repo.html_url,
-    })),
+    repos: reposWithBranches,
   };
 };
 

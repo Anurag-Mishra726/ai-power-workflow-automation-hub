@@ -90,6 +90,7 @@ export const handleGithubWebhook = async (req, res) => {
 
         console.log("Sender:", payload.sender?.login || payload.sender?.name);
         console.log("--- End GitHub Webhook ---");
+        //console.log(payload);
 
         return res.status(200).json({ received: true });
     } catch (error) {

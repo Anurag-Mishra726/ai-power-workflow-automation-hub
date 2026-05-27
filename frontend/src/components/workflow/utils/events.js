@@ -61,6 +61,6 @@ export const GITHUB_ACTION_OPTIONS = [
   { value: 'create_issue', label: 'Create Issue' },
   { value: 'comment_on_issue', label: 'Comment on Issue' },
   { value: 'create_pull_request', label: 'Create Pull Request' },
-  { value: 'create_file', label: 'Create File' },
-  { value: 'update_file', label: 'Update File' },
+  //{ value: 'create_file', label: 'Create File' },
+  //{ value: 'update_file', label: 'Update File' },
 ];

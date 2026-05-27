@@ -4,6 +4,7 @@ import {
     integrationInsertOAuthToken
  } from "../../../services/integration/utils/integration.service.js";
 import { handleGithubCallback } from "../../../services/integration/github/github.auth.service.js";
+import { Integration } from "../../../models/integration/integration.model.js";
 
 export const startOAuth = async (req, res) => {
     try {
@@ -70,25 +71,40 @@ export const handleGithubSetupCallback = async (req, res) => {
             state
         } = req.query;
 
-        const decoded = JSON.parse(
-            Buffer.from(state, "base64").toString("utf-8")
-        );
-
-        const { workflowId, userId } = decoded;
-
         if (!installation_id) {
             return res.redirect(
               `http://localhost:5173/workflow/`
             );
         }
 
+        let workflowId;
+        let userId;
+
+        if (state) {
+            const decoded = JSON.parse(Buffer.from(state, "base64").toString("utf-8"));
+            workflowId = decoded.workflowId;
+            userId = decoded.userId;
+        } else {                                                       
+            userId = await Integration.findUserByIntegrationId({
+                provider: "github",
+                externalId: installation_id
+            });
+
+            if (userId) {
+                return res.redirect("http://localhost:5173/workflow/")
+            }
+        }
+ // when the event comes form the github directly without state then we dont need to update the db here later i have to remove this code and if the sate is missing just redirect the user to the workflow page.
+
         await handleGithubCallback(
             userId,
             installation_id,
         );
 
-        return res.redirect(
-          `http://localhost:5173/workflow/${workflowId}`
+        return res.redirect( 
+            workflowId 
+            ? `http://localhost:5173/workflow/${workflowId}`
+            : `http://localhost:5173/workflow/`
         );
 
     } catch (error) {

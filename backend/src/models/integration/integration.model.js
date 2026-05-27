@@ -22,6 +22,15 @@ export const Integration = {        // external_id == team.id for slack
         return Number(rows[0].sameIntegrationExists) === 1;
     },
 
+    findUserByIntegrationId: async ({provider, externalId}, client = pool) => {
+        const rows = await query(
+            `SELECT user_id FROM integrations WHERE provider = ? AND external_id = ? LIMIT 1`,
+            [provider, externalId],
+            client
+        );
+        return rows[0]?.user_id || null;
+    },
+
     insertTokenProvider: async({userId, provider, externalId, name}, client = pool) => {
         const rows = await query(
             `INSERT INTO integrations (user_id, provider, external_id, name) VALUES (?, ?, ?, ?) 

@@ -3,7 +3,6 @@ import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { ChevronRight, Plus, Braces } from 'lucide-react';
-
 import useEditorUIStore from '@/stores/workflowEditorStore';
 import {
   GITHUB_ACTION_OPTIONS,
@@ -19,7 +18,7 @@ const errorClass = 'text-[10px] text-red-500 font-medium mt-1';
 
 const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
   const { setIsConfigSidebarClose } = useEditorUIStore();
-  //console.log("Data : ", data);
+  console.log("Data : ", data);
   const isTriggerNode = selectedNode?.type === 'trigger';
   
   const {
@@ -34,6 +33,7 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
     defaultValues: {
       githubAccountId: '',
       repository: '',
+      repositoryId: '',
       branch: '',
       event: '',
       action: '',
@@ -60,6 +60,7 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
     const initialAccount = data.find((account) => account.external_id === safeConfig.githubAccountId) || data[0];
     const accountRepos = initialAccount?.metadata?.repos || [];
     const defaultRepo = accountRepos[0]?.name || '';
+    const defaultRepoId = accountRepos[0]?.id || '';
     const defaultEvent = 'push';
     const defaultAction = GITHUB_ACTION_OPTIONS[0].value;
     const hasBranches = Array.isArray(accountRepos[0]?.branches) && accountRepos[0].branches.length > 0;
@@ -68,6 +69,7 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
     reset({
       githubAccountId: safeConfig.githubAccountId || data[0].external_id || '',
       repository: safeConfig.repository || defaultRepo,
+      repositoryId: safeConfig.repositoryId || defaultRepoId,
       branch: safeConfig.branch || defaultBranch,
       event: safeConfig.event || defaultEvent,
       action: safeConfig.action || defaultAction,
@@ -95,11 +97,10 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
     return data.find((account) => account.external_id === selectedGitHubAccountId) || data[0];
   }, [data, selectedGitHubAccountId]);
 
-  const connectedUsername =
-    selectedAccount?.metadata?.login || selectedAccount?.name || selectedAccount?.email || 'GitHub Account';
-  const connectedAvatar =
-    selectedAccount?.metadata?.avatar_url ||
-    'https://avatars.githubusercontent.com/u/9919?s=64&v=4';
+  const connectedUsername = selectedAccount?.metadata?.login || selectedAccount?.name || selectedAccount?.email || 'GitHub Account';
+
+  const connectedAvatar = selectedAccount?.metadata?.avatar_url || 'https://avatars.githubusercontent.com/u/9919?s=64&v=4';
+
   const repositoryOptions = useMemo(() => selectedAccount?.metadata?.repos || [], [selectedAccount]);
 
   const branchOptions = useMemo(() => {
