@@ -51,18 +51,41 @@ export const httpWebhookExecuteWorkflowService = async (workflowId, payload) => 
     }
 }
 
+const GITHUB_EVENT_ALIASES = {
+    issues_opened: "issue_opened",
+    issue_created: "issue_opened",
+    issue_opened: "issue_opened",
+    issues_closed: "issue_closed",
+    issue_closed: "issue_closed",
+    pull_opened: "pull_request_opened",
+    pull_request_opened: "pull_request_opened",
+    pull_closed: "pull_request_closed",
+    pull_request_closed: "pull_request_closed",
+    pull_merged: "pull_request_merged",
+    pull_request_merged: "pull_request_merged",
+    issue_comment_added: "issue_comment_created",
+    issue_comment_created: "issue_comment_created",
+    push: "push",
+};
+
+const normalizeGithubEvent = (event) => GITHUB_EVENT_ALIASES[event] || event;
+
+const normalizeGithubRepoName = (repoName) => String(repoName || "").split("/").pop().toLowerCase();
+
 const matchesGithubRepo = (triggerConfig, githubData) => {
     const triggerRepoId = triggerConfig?.repoId || triggerConfig?.repositoryId;
-    const triggerRepoName = triggerConfig?.repoName || triggerConfig?.repositoryName;
-    const triggerEvent = triggerConfig?.event;
+    const triggerRepoName = triggerConfig?.repoName || triggerConfig?.repositoryName || triggerConfig?.repository;
+    const triggerEvent = normalizeGithubEvent(triggerConfig?.event);
+    const webhookEvent = normalizeGithubEvent(githubData?.event);
+
 
     if (!triggerRepoId && !triggerRepoName) {
         return false;
     }
 
-    const isCorrectEvent = triggerEvent === githubData.event;
+    const isCorrectEvent = triggerEvent === webhookEvent;
     const isRepoIdMatch = triggerRepoId && Number(triggerRepoId) === Number(githubData.repoId);
-    const isRepoNameMatch = triggerRepoName && String(triggerRepoName).toLowerCase() === String(githubData.repoName || "").toLowerCase();
+    const isRepoNameMatch = triggerRepoName && normalizeGithubRepoName(triggerRepoName) === normalizeGithubRepoName(githubData.repoName);
 
     if (isCorrectEvent && (isRepoIdMatch || isRepoNameMatch)) {
         return true;
