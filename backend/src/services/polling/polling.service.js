@@ -5,6 +5,7 @@ import { fetchGmailData } from "./gmail.polling.service.js";
 import { fetchDriveData } from "./googleDrive.polling.service.js";
 import { fetchGoogleFormData } from "./googleForm.polling.service.js";
 import { executeGoogleRequestWithAutoRefresh } from "../integration/google/google.auth.service.js";
+import { parseTriggerConfig } from "../../utils/parseTriggerConfig.js";
 
 export const getSafeIsoDate = (value) => {
 
@@ -20,19 +21,19 @@ export const getSafeIsoDate = (value) => {
   return parsedDate.toISOString();
 };
 
-export const parseTriggerConfig = (config) => {
-  if (!config) return {};
-  if (typeof config === "object") return config;
-  if (typeof config === "string") {
-    try {
-      return JSON.parse(config);
-    } catch {
-      console.warn("Failed to parse trigger config_json, using empty config.");
-      return {};
-    }
-  }
-  return {};
-};
+// export const parseTriggerConfig = (config) => {
+//   if (!config) return {};
+//   if (typeof config === "object") return config;
+//   if (typeof config === "string") {
+//     try {
+//       return JSON.parse(config);
+//     } catch {
+//       console.warn("Failed to parse trigger config_json, using empty config.");
+//       return {};
+//     }
+//   }
+//   return {};
+// };
 
 const getGoogleAccessToken = async (userId) => {
   const integration = await Integration.getIntegration({ userId, provider: "google" });

@@ -189,6 +189,18 @@ export const Workflow = {
         return rows;
     },
 
+    getGithubTriggersByUserId: async ({ userId }, client = pool) => {
+        const rows = await query(
+            `SELECT id, user_id, workflow_id, node_id, trigger_type, config_json
+            FROM workflow_triggers
+            WHERE user_id = ? AND trigger_type = 'github' AND is_active = TRUE`,
+            [userId],
+            client
+        );
+
+        return rows;
+    },
+
     getPollingTriggers: async (client = pool) => {
         const rows = await query(
             `SELECT id, user_id, workflow_id, node_id, trigger_type, page_token, config_json, poll_interval, last_checked

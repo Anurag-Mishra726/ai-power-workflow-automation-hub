@@ -147,6 +147,19 @@ export const Integration = {        // external_id == team.id for slack
 
         return rows[0]?.refresh_token || null;
     },
+    
+    getIntegrationByExternalId: async ({ provider, externalId }, client = pool) => {   // findUserByExternalId above the query is same remove it if it's useless
+        const rows = await query(
+            `SELECT i.user_id, i.id, i.provider, i.external_id, i.name
+            FROM integrations AS i
+            WHERE i.provider = ? AND i.external_id = ?
+            LIMIT 1`,
+            [provider, externalId],
+            client
+        );
+
+        return rows[0] || null;
+    },
 
     updateOAuthTokenByExternalId: async ({
         userId,

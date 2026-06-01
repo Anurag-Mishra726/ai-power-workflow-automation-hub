@@ -9,6 +9,7 @@ import { slackExecutor } from "./slackExecutor.js";
 import { gmailExecutor } from "./gmail/gmailExecutor.js";
 import { googleDriveExecutor } from "./googleDrive/googleDriveExecutor.js";
 import { handleGoogleForm } from "./googleForm/getResponse.js";
+import { githubExecutor } from "./github/githubExecutor.js";
 
 export const executorRegistry =  {
     manual: manualExecutor,
@@ -21,6 +22,7 @@ export const executorRegistry =  {
     gmail: gmailExecutor,
     googleDrive: googleDriveExecutor,
     googleForm: handleGoogleForm,
+    github: githubExecutor,
 }
 
 export const getNodeExecutor = (type) => {
