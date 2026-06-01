@@ -70,14 +70,11 @@ const GITHUB_EVENT_ALIASES = {
 
 const normalizeGithubEvent = (event) => GITHUB_EVENT_ALIASES[event] || event;
 
-const normalizeGithubRepoName = (repoName) => String(repoName || "").split("/").pop().toLowerCase();
-
 const matchesGithubRepo = (triggerConfig, githubData) => {
     const triggerRepoId = triggerConfig?.repoId || triggerConfig?.repositoryId;
     const triggerRepoName = triggerConfig?.repoName || triggerConfig?.repositoryName || triggerConfig?.repository;
     const triggerEvent = normalizeGithubEvent(triggerConfig?.event);
     const webhookEvent = normalizeGithubEvent(githubData?.event);
-
 
     if (!triggerRepoId && !triggerRepoName) {
         return false;
@@ -85,12 +82,11 @@ const matchesGithubRepo = (triggerConfig, githubData) => {
 
     const isCorrectEvent = triggerEvent === webhookEvent;
     const isRepoIdMatch = triggerRepoId && Number(triggerRepoId) === Number(githubData.repoId);
-    const isRepoNameMatch = triggerRepoName && normalizeGithubRepoName(triggerRepoName) === normalizeGithubRepoName(githubData.repoName);
 
-    if (isCorrectEvent && (isRepoIdMatch || isRepoNameMatch)) {
+    if (isCorrectEvent && isRepoIdMatch) {
         return true;
     }
-
+                                    // todo : match the branch when the event is push, pull_request. not in issue
     return false;
 };
 
@@ -117,7 +113,8 @@ export const githubWebhookExecuteWorkflowService = async (githubData) => {
 
         const filteredTriggers = workflowTriggers.filter((trigger) => {
             const triggerConfig = parseTriggerConfig(trigger.config_json);
-            return matchesGithubRepo(triggerConfig, githubData);
+            const matches = matchesGithubRepo(triggerConfig, githubData);;
+            return matches;
         });
 
         await Promise.all(

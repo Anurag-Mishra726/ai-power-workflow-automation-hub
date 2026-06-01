@@ -1,6 +1,5 @@
 import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
-import { Integration } from "../../../../../models/integration/integration.model.js";
 import { createExecutionResult } from "../../../../../utils/executionResult.js";
 import { githubApp } from "../../../../../utils/githubApp.js";
 
@@ -9,7 +8,7 @@ const render = (value, context) => Handlebars.compile(String(value || ""))(conte
 const getOwner = (config) => {
   const repository = config.repository || config.repoName;
   if (repository?.includes("/")) return repository.split("/")[0];
-  return config.repositoryOwner || config.owner || config.githubAccountName;
+  return config.githubAccountName;
 };
 
 const getRepo = (config) => {
@@ -17,18 +16,6 @@ const getRepo = (config) => {
   return repository?.includes("/") ? repository.split("/")[1] : repository;
 };
 
-const getOctokit = async ({ userId, installationId }) => {
-  const integration = await Integration.getIntegrationByExternalId({
-    provider: "github",
-    externalId: String(installationId),
-  });
-
-  if (!integration || String(integration.user_id) !== String(userId)) {
-    throw new NonRetriableError("GitHub integration not found for selected account.");
-  }
-
-  return githubApp.getInstallationOctokit(Number(installationId));
-};
 
 export const handleCreateIssue = async ({ data, nodeId, context, userId }) => {
   const config = data?.config || {};
@@ -43,8 +30,17 @@ export const handleCreateIssue = async ({ data, nodeId, context, userId }) => {
     throw new NonRetriableError("Missing required GitHub issue fields.");
   }
 
-  const octokit = await getOctokit({ userId, installationId });
+  const octokit = await githubApp.getInstallationOctokit(Number(installationId));
   const response = await octokit.rest.issues.create({ owner, repo, title, body });
+
+  console.log("header : ", response.headers);
+
+  console.log({
+    deprecation: response.headers.deprecation,
+    sunset: response.headers.sunset,
+    link: response.headers.link,
+    apiVersion: response.headers["x-github-api-version-selected"],
+  });
 
   return createExecutionResult({
     output: {

@@ -124,6 +124,11 @@ const ConfigState = ({ selectedNode, setNodeConfig, data, handleConnect }) => {
   }, []);
 
   useEffect(() => {
+    const repoId = repositoryOptions.find((repo) => repo.name === selectedRepository);
+    setValue("repositoryId", repoId?.id || "");
+  }, [selectedRepository, repositoryOptions, setValue]);
+
+  useEffect(() => {
     if (!selectedAccount) return;
     const repos = selectedAccount?.metadata?.repos || [];
     const repoNames = repos.map((repo) => repo.name);
