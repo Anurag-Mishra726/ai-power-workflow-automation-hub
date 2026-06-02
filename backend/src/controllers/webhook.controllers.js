@@ -105,6 +105,8 @@ const formatGithubEventData = (event, body) => {
             isMerged: body.pull_request?.merged,
             pullRequestState: body.pull_request?.state,
             closedAt: body.pull_request?.closed_at,
+            sourceBranch: body.pull_request?.head?.ref,
+            targetBranch: body.pull_request?.base?.ref,
             senderName: body.sender?.login,
         };
     }

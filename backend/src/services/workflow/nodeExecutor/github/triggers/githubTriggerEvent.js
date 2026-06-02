@@ -26,8 +26,6 @@ export const githubTriggerEvent = async ({ data, nodeId, context }) => {
   const receivedEvent = normalizeEvent(webhookData?.event);
   const startTime = Date.now();
 
-  console.log("hello everyone ", context.githubWebhook);
-
   if (!configuredEvent) {
     throw new NonRetriableError("GitHub trigger event is not configured.");
   }

@@ -33,15 +33,6 @@ export const handleCreateIssue = async ({ data, nodeId, context, userId }) => {
   const octokit = await githubApp.getInstallationOctokit(Number(installationId));
   const response = await octokit.rest.issues.create({ owner, repo, title, body });
 
-  console.log("header : ", response.headers);
-
-  console.log({
-    deprecation: response.headers.deprecation,
-    sunset: response.headers.sunset,
-    link: response.headers.link,
-    apiVersion: response.headers["x-github-api-version-selected"],
-  });
-
   return createExecutionResult({
     output: {
       nodeId,

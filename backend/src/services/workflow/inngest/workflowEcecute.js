@@ -68,6 +68,8 @@ const GITHUB_EVENT_ALIASES = {
     push: "push",
 };
 
+const events = ["push", "pull_request_opened", "pull_request_closed", "pull_request_merged"];
+
 const normalizeGithubEvent = (event) => GITHUB_EVENT_ALIASES[event] || event;
 
 const matchesGithubRepo = (triggerConfig, githubData) => {
@@ -84,9 +86,15 @@ const matchesGithubRepo = (triggerConfig, githubData) => {
     const isRepoIdMatch = triggerRepoId && Number(triggerRepoId) === Number(githubData.repoId);
 
     if (isCorrectEvent && isRepoIdMatch) {
+        const targetBranch = triggerConfig?.branch;
+        if (events.includes(triggerEvent)) {
+            if (targetBranch == githubData?.branch || targetBranch == githubData?.targetBranch) {
+                return true;
+            }
+            return false;
+        }
         return true;
     }
-                                    // todo : match the branch when the event is push, pull_request. not in issue
     return false;
 };
 
@@ -110,10 +118,10 @@ export const githubWebhookExecuteWorkflowService = async (githubData) => {
         }
 
         const workflowTriggers = await Workflow.getGithubTriggersByUserId({ userId });
-
+        console.log(workflowTriggers);
         const filteredTriggers = workflowTriggers.filter((trigger) => {
             const triggerConfig = parseTriggerConfig(trigger.config_json);
-            const matches = matchesGithubRepo(triggerConfig, githubData);;
+            const matches = matchesGithubRepo(triggerConfig, githubData);
             return matches;
         });
 
